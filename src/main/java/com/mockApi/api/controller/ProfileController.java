@@ -4,10 +4,7 @@ import com.mockApi.api.dto.ProfileRequestDto;
 import com.mockApi.api.dto.ProfileResponseDto;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -61,5 +58,19 @@ public class ProfileController {
         return null; // 검증 통과
     }
 
+    @PostMapping("/check/username")
+    public ResponseEntity<String> checkUserName(@RequestBody ProfileRequestDto.CheckUserName request) {
+        String username = request.getUsername();
+
+        if (username.length() < 2 || username.length() > 10) {
+            return ResponseEntity.badRequest().body("글자 수 에러");
+        }
+
+        if (username.equals("mock1")) {
+            return ResponseEntity.badRequest().body("이미 사용중인 이름");
+        }
+
+        return ResponseEntity.ok("사용 가능한 닉네임입니다.");
+    }
 
 }

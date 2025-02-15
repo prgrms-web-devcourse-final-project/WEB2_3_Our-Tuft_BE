@@ -15,4 +15,9 @@ public class ProfileRequestDto {
     private int mouse;
     private int skin;
     private int nickColor;
+
+    @Getter
+    public static class CheckUserName {
+        private String username;
+    }
 }
