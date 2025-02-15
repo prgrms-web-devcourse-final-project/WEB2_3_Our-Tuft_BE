@@ -4,10 +4,13 @@ import com.mockApi.api.dto.ProfileRequestDto;
 import com.mockApi.api.dto.ProfileResponseDto;
 import com.mockApi.api.dto.ResponseMessageDto;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 public class ProfileController {
@@ -74,4 +77,15 @@ public class ProfileController {
         return ResponseEntity.ok(new ResponseMessageDto("사용 가능한 닉네임입니다."));
     }
 
+    @GetMapping("/users/{username}")
+    public ResponseEntity<?> getUserProfile(@PathVariable String username) {
+        if (!Objects.equals(username, "mock1")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseMessageDto("존재하지 않는 유저입니다."));
+        }
+
+        ProfileResponseDto.EquipsDto equips = new ProfileResponseDto.EquipsDto(1,2,3,4,5);
+        ProfileResponseDto response = new ProfileResponseDto(username, "hello!", 4, 15, 465, 500, 93.0, equips);
+
+        return ResponseEntity.ok(response);
+    }
 }
