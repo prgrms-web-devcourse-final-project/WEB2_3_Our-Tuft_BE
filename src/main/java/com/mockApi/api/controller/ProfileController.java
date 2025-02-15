@@ -2,6 +2,7 @@ package com.mockApi.api.controller;
 
 import com.mockApi.api.dto.ProfileRequestDto;
 import com.mockApi.api.dto.ProfileResponseDto;
+import com.mockApi.api.dto.ResponseMessageDto;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,13 +36,13 @@ public class ProfileController {
     }
 
     @PutMapping("/my")
-    public ResponseEntity<String> updateProfile(@RequestBody ProfileRequestDto request) {
+    public ResponseEntity<ResponseMessageDto> updateProfile(@RequestBody ProfileRequestDto request) {
         String msg = validateProfile(request);
         if (msg != null) {
-            return ResponseEntity.badRequest().body(msg);
+            return ResponseEntity.badRequest().body(new ResponseMessageDto(msg));
         }
 
-        return ResponseEntity.ok("프로필 변경 성공");
+        return ResponseEntity.ok(new ResponseMessageDto("프로필 변경 성공"));
     }
 
     private String validateProfile(ProfileRequestDto requestDto) {
@@ -59,18 +60,18 @@ public class ProfileController {
     }
 
     @PostMapping("/check/username")
-    public ResponseEntity<String> checkUserName(@RequestBody ProfileRequestDto.CheckUserName request) {
+    public ResponseEntity<ResponseMessageDto> checkUserName(@RequestBody ProfileRequestDto.CheckUserName request) {
         String username = request.getUsername();
 
         if (username.length() < 2 || username.length() > 10) {
-            return ResponseEntity.badRequest().body("글자 수 에러");
+            return ResponseEntity.badRequest().body(new ResponseMessageDto("글자 수 에러"));
         }
 
         if (username.equals("mock1")) {
-            return ResponseEntity.badRequest().body("이미 사용중인 이름");
+            return ResponseEntity.badRequest().body(new ResponseMessageDto("이미 사용중인 이름"));
         }
 
-        return ResponseEntity.ok("사용 가능한 닉네임입니다.");
+        return ResponseEntity.ok(new ResponseMessageDto("사용 가능한 닉네임입니다."));
     }
 
 }
