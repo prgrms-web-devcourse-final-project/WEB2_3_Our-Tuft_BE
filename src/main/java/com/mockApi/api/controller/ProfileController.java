@@ -88,4 +88,10 @@ public class ProfileController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/my/point")
+    public ResponseEntity<Integer> myPoint() {
+        int point = 100;
+        return ResponseEntity.ok(point);
+    }
 }
