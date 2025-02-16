@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/rooms")
-public class RoomController {
+public class GameRoomController {
 
     @PutMapping("/{id}/settings")
     public ResponseEntity<ResponseRoomSettingsDTO> roomSetting(
