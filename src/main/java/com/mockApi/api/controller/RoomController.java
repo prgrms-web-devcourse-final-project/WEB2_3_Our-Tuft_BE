@@ -2,9 +2,7 @@ package com.mockApi.api.controller;
 
 import com.mockApi.api.dto.RoomResponseDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,5 +31,13 @@ public class RoomController {
                 .toList();
 
         return ResponseEntity.ok(filteredRooms);
+    }
+
+    @PostMapping("/room/{roomId}")
+    public ResponseEntity<?> joinRoom(@PathVariable Long roomId) {
+
+        RoomResponseDto mockRoom = new RoomResponseDto(roomId,"스피드 퀴즈", "스피드 퀴즈입니다", false, 100, 8, 5, "user1");
+
+        return ResponseEntity.ok(mockRoom);
     }
 }
