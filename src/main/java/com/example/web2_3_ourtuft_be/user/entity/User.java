@@ -11,21 +11,20 @@ import lombok.*;
 @Table(name = "USERS")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USER_ID")
-    private Long userId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "USER_ID")
+  private Long userId;
 
-    @Column(name = "NICKNAME", nullable = false, unique = true)
-    private String nickname;
+  @Column(name = "NICKNAME", nullable = false, unique = true)
+  private String nickname;
 
-    @Column(name = "EMAIL", nullable = false, unique = true)
-    private String email;
+  @Column(name = "EMAIL", nullable = false, unique = true)
+  private String email;
 
-    @Column(name = "PASSWORD", nullable = false)
-    private String password;
+  @Column(name = "PASSWORD", nullable = false)
+  private String password;
 
-    @Column(name = "ROLE", nullable = false)
-    private String role;
-
+  @Column(name = "ROLE", nullable = false)
+  private String role;
 }
