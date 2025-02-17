@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.8'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.diffplug.spotless' version '7.0.2'
 }
 
 group = 'com.ourtuft'
@@ -33,8 +34,40 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    // Swagger UI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+spotless {
+    java {
+        importOrder(
+                'java|javax|jakarta',
+                'org.springframework',
+                'lombok',
+                '',
+                'org.junit|org.mockito',
+                '\\#',
+                '\\#org.junit'
+        )
+
+        googleJavaFormat()
+        formatAnnotations()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+tasks.named('compileJava') {
+    dependsOn 'spotlessApply'
 }
