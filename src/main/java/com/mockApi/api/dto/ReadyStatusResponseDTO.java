@@ -6,9 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ReadyStatusResponseDTO {
-    private Long playerId;
-    private Long roomId;
-    private boolean isReady;
-    private String message;
-
+  private Long playerId;
+  private Long roomId;
+  private boolean isReady;
+  private String message;
 }

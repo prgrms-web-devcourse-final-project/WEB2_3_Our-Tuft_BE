@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.4.2'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.diffplug.spotless' version '7.0.2'
+
 }
 
 group = 'com.mockApi'
@@ -24,8 +26,36 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// Swagger UI
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+spotless {
+	java {
+		importOrder(
+				'java|javax|jakarta',
+				'org.springframework',
+				'lombok',
+				'',
+				'org.junit|org.mockito',
+				'\\#',
+				'\\#org.junit'
+		)
+
+		googleJavaFormat()
+		formatAnnotations()
+		removeUnusedImports()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+}
+
+tasks.named('compileJava') {
+	dependsOn 'spotlessApply'
 }

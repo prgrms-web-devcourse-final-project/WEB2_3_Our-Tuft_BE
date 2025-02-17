@@ -8,16 +8,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ProfileRequestDto {
-    private String username;
-    private String introduce;
-    private int hair;
-    private int eye;
-    private int mouse;
-    private int skin;
-    private int nickColor;
+  private String username;
+  private String introduce;
+  private int hair;
+  private int eye;
+  private int mouse;
+  private int skin;
+  private int nickColor;
 
-    @Getter
-    public static class CheckUserName {
-        private String username;
-    }
+  @Getter
+  public static class CheckUserName {
+    private String username;
+  }
 }
