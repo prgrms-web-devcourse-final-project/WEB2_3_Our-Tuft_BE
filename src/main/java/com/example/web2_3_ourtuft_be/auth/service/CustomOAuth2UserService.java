@@ -42,14 +42,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
   }
 
   private User findOrCreateUser(OAuth2Response oAuth2Response) {
-    User user = userRepository.findByUsername(oAuth2Response.getProviderId()).orElse(null);
+    User user = userRepository.findBySocialId(oAuth2Response.getProviderId()).orElse(null);
 
     if (user == null) {
       user =
           User.builder()
               .email(oAuth2Response.getEmail())
               .name(oAuth2Response.getName())
-              .username(oAuth2Response.getProviderId())
+              .socialId(oAuth2Response.getProviderId())
+              .provider(oAuth2Response.getProvider())
               .role(Role.ROLE_USER)
               .build();
       userRepository.save(user);

@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.user.entity;
 
 import com.example.web2_3_ourtuft_be.common.BaseTime;
+import com.example.web2_3_ourtuft_be.user.entity.enums.Provider;
 import com.example.web2_3_ourtuft_be.user.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,11 +22,15 @@ public class User extends BaseTime {
   @Column(name = "EMAIL", nullable = false, unique = true)
   private String email;
 
-  @Column(name = "USERNAME", nullable = false, unique = true)
-  private String username;
+  @Column(name = "SOCIAL_ID", nullable = false, unique = true)
+  private String socialId;
 
   @Column(name = "NAME", nullable = false)
   private String name;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "PROVIDER", nullable = false)
+  private Provider provider;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "ROLE", nullable = false)

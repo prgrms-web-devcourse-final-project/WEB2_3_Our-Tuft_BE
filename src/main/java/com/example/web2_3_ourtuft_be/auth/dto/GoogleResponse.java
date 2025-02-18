@@ -1,5 +1,6 @@
 package com.example.web2_3_ourtuft_be.auth.dto;
 
+import com.example.web2_3_ourtuft_be.user.entity.enums.Provider;
 import java.util.Map;
 
 public class GoogleResponse implements OAuth2Response {
@@ -11,8 +12,8 @@ public class GoogleResponse implements OAuth2Response {
   }
 
   @Override
-  public String getProvider() {
-    return "google";
+  public Provider getProvider() {
+    return Provider.GOOGLE;
   }
 
   @Override

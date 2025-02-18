@@ -1,5 +1,6 @@
 package com.example.web2_3_ourtuft_be.auth.dto;
 
+import com.example.web2_3_ourtuft_be.user.entity.enums.Provider;
 import java.util.Map;
 
 public class KakaoResponse implements OAuth2Response {
@@ -15,8 +16,8 @@ public class KakaoResponse implements OAuth2Response {
   }
 
   @Override
-  public String getProvider() {
-    return "Kakao";
+  public Provider getProvider() {
+    return Provider.KAKAO;
   }
 
   @Override

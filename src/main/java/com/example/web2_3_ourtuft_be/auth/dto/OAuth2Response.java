@@ -1,8 +1,10 @@
 package com.example.web2_3_ourtuft_be.auth.dto;
 
+import com.example.web2_3_ourtuft_be.user.entity.enums.Provider;
+
 public interface OAuth2Response {
 
-  String getProvider();
+  Provider getProvider();
 
   String getProviderId();
 
