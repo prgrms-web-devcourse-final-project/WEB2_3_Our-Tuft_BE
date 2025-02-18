@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UserItemDto {
-  private Long itemId;
-  private String imageUrl;
+public class ItemImageUrlDto {
+    private Long itemId;
+    private String imageUrl;
 }
