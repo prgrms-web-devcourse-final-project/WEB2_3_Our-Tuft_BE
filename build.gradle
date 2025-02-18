@@ -30,6 +30,12 @@ dependencies {
 	// Swagger UI
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
+	// Hibernate Validator 의존성 추가
+	implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
+
+	// Jakarta Validation API 의존성 추가
+	implementation 'jakarta.validation:jakarta.validation-api:2.0.2'
+
 }
 
 tasks.named('test') {
