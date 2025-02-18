@@ -12,22 +12,23 @@ import lombok.Getter;
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public class GlobalResponse<T> {
 
-  private boolean success;
-  private String code;
-  private String message;
+    private boolean success;
+    private String code;
+    private String message;
 
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private T data;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private T data;
 
-  public static <T> GlobalResponse<T> success(T data) {
-    return new GlobalResponse<>(true, "200", "요청에 성공하였습니다.", data);
-  }
+    public static <T> GlobalResponse<T> success(T data) {
+        return new GlobalResponse<>(true, "200", "요청에 성공하였습니다.", data);
+    }
 
-  public static <T> GlobalResponse<T> created(T data) {
-    return new GlobalResponse<>(true, "201", "리소스가 성공적으로 생성되었습니다.", data);
-  }
+    public static <T> GlobalResponse<T> created(T data) {
+        return new GlobalResponse<>(true, "201", "리소스가 성공적으로 생성되었습니다.", data);
+    }
 
-  public static <T> GlobalResponse<T> fail(GlobalException e) {
-    return new GlobalResponse<>(false, String.valueOf(e.getStatus().value()), e.getMessage(), null);
-  }
+    public static <T> GlobalResponse<T> fail(GlobalException e) {
+        return new GlobalResponse<>(
+                false, String.valueOf(e.getStatus().value()), e.getMessage(), null);
+    }
 }

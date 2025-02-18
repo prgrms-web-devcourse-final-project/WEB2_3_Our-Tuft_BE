@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-    info = @Info(title = "Quiz API", version = "1.0", description = "실시간 퀴즈 API 명세"),
-    security = @SecurityRequirement(name = "accessToken"))
+        info = @Info(title = "Quiz API", version = "1.0", description = "실시간 퀴즈 API 명세"),
+        security = @SecurityRequirement(name = "accessToken"))
 @SecurityScheme(
-    name = "accessToken",
-    type = SecuritySchemeType.APIKEY,
-    paramName = "access",
-    in = SecuritySchemeIn.HEADER)
+        name = "accessToken",
+        type = SecuritySchemeType.APIKEY,
+        paramName = "access",
+        in = SecuritySchemeIn.HEADER)
 public class SwaggerConfig {}
