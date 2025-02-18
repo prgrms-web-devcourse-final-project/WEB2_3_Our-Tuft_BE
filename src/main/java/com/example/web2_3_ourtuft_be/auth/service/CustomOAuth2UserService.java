@@ -50,8 +50,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
               .email(oAuth2Response.getEmail())
               .name(oAuth2Response.getName())
               .socialId(oAuth2Response.getProviderId())
-              .provider(oAuth2Response.getProvider())
-              .role(Role.ROLE_USER)
+              .provider(oAuth2Response.getProvider().toString())
+              .role(Role.ROLE_USER.toString())
               .build();
       userRepository.save(user);
     }

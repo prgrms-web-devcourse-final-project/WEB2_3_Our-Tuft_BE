@@ -28,11 +28,9 @@ public class User extends BaseTime {
   @Column(name = "NAME", nullable = false)
   private String name;
 
-  @Enumerated(EnumType.STRING)
   @Column(name = "PROVIDER", nullable = false)
-  private Provider provider;
+  private String provider;
 
-  @Enumerated(EnumType.STRING)
   @Column(name = "ROLE", nullable = false)
-  private Role role;
+  private String role;
 }
