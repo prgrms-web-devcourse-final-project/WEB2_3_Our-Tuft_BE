@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(value = {GlobalException.class})
-  protected ResponseEntity<GlobalResponse<Void>> handleGlobalException(final GlobalException e) {
-    log.error("handleGlobalException throw CustomException : {}", e.getMessage());
-    return ResponseEntity.status(e.getStatus()).body(GlobalResponse.fail(e));
-  }
+    @ExceptionHandler(value = {GlobalException.class})
+    protected ResponseEntity<GlobalResponse<Void>> handleGlobalException(final GlobalException e) {
+        log.error("handleGlobalException throw CustomException : {}", e.getMessage());
+        return ResponseEntity.status(e.getStatus()).body(GlobalResponse.fail(e));
+    }
 }

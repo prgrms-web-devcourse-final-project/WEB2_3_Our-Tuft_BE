@@ -12,5 +12,5 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "👀 인증", description = "사용자 인증 관련 API")
 public class AuthController {
 
-  private final UserService userService;
+    private final UserService userService;
 }

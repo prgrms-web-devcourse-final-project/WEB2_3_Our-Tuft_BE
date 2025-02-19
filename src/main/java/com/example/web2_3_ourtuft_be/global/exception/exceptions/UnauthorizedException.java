@@ -4,7 +4,7 @@ import com.example.web2_3_ourtuft_be.global.exception.messages.UnauthorizedMessa
 import org.springframework.http.HttpStatus;
 
 public class UnauthorizedException extends GlobalException {
-  public UnauthorizedException(UnauthorizedMessages message) {
-    super(message.getMessage(), HttpStatus.UNAUTHORIZED);
-  }
+    public UnauthorizedException(UnauthorizedMessages message) {
+        super(message.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
 }

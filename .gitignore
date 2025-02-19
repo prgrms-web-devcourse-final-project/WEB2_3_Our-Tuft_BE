@@ -69,4 +69,4 @@ out/
 .vscode/
 
 ### .env ###
-**/resources/.env
+.env

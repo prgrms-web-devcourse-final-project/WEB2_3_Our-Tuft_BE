@@ -14,23 +14,23 @@ import lombok.*;
 @Table(name = "USERS")
 public class User extends BaseTime {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "USER_ID")
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "USER_ID")
+    private Long id;
 
-  @Column(name = "EMAIL", nullable = false, unique = true)
-  private String email;
+    @Column(name = "EMAIL", nullable = false, unique = true)
+    private String email;
 
-  @Column(name = "SOCIAL_ID", nullable = false, unique = true)
-  private String socialId;
+    @Column(name = "SOCIAL_ID", nullable = false, unique = true)
+    private String socialId;
 
-  @Column(name = "NAME", nullable = false)
-  private String name;
+    @Column(name = "NAME", nullable = false)
+    private String name;
 
-  @Column(name = "PROVIDER", nullable = false)
-  private String provider;
+    @Column(name = "PROVIDER", nullable = false)
+    private String provider;
 
-  @Column(name = "ROLE", nullable = false)
-  private String role;
+    @Column(name = "ROLE", nullable = false)
+    private String role;
 }
