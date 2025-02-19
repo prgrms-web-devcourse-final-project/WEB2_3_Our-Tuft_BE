@@ -1,11 +1,8 @@
 package com.example.web2_3_ourtuft_be.room.entity;
 
-import com.example.web2_3_ourtuft_be.common.BaseTime;
 import com.example.web2_3_ourtuft_be.item.game.entity.Game;
-import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
+import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
 import com.example.web2_3_ourtuft_be.room.entity.enums.GameStatus;
-import com.example.web2_3_ourtuft_be.user.entity.User;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,9 +21,10 @@ public class Room{
     @ManyToOne
     @JoinColumn(name = "game_id")
     private Game gameId;
+
     @ManyToOne
     @JoinColumn(name = "quiz_id")
-    private Quiz quizId;
+    private QuizSet quizId;
 
     @Column(nullable = false)
     private String roomName;
