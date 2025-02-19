@@ -12,11 +12,11 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 public class ChatController {
 
-  private final ChatService chatService;
+    private final ChatService chatService;
 
-  @MessageMapping("/chat.sendMessage")
-  public void sendMessage(
-      @Payload final ChatRequest.Message message, SimpMessageHeaderAccessor headerAccessor) {
-    chatService.sendMessage(message, headerAccessor);
-  }
+    @MessageMapping("/chat.sendMessage")
+    public void sendMessage(
+            @Payload final ChatRequest.Message message, SimpMessageHeaderAccessor headerAccessor) {
+        chatService.sendMessage(message, headerAccessor);
+    }
 }

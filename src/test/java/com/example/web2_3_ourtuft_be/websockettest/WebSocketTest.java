@@ -19,40 +19,41 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 public class WebSocketTest {
 
-  @InjectMocks private ChatService chatService;
+    @InjectMocks private ChatService chatService;
 
-  @Mock private SimpMessagingTemplate messagingTemplate;
+    @Mock private SimpMessagingTemplate messagingTemplate;
 
-  @Mock private SimpMessageHeaderAccessor headerAccessor;
+    @Mock private SimpMessageHeaderAccessor headerAccessor;
 
-  @Test
-  void ifNotIncludeNickname() {
-    // given
-    ChatRequest.Message message = new ChatRequest.Message(1L, "안녕하세요");
-    when(headerAccessor.getSessionAttributes()).thenReturn(new HashMap<>());
+    @Test
+    void ifNotIncludeNickname() {
+        // given
+        ChatRequest.Message message = new ChatRequest.Message(1L, "안녕하세요");
+        when(headerAccessor.getSessionAttributes()).thenReturn(new HashMap<>());
 
-    // when
-    chatService.sendMessage(message, headerAccessor);
+        // when
+        chatService.sendMessage(message, headerAccessor);
 
-    // then
-    // MessagingTemplate 가 호출되지 않았어야 한다
-    verify(messagingTemplate, never()).convertAndSend(anyString(), anyString());
-  }
+        // then
+        // MessagingTemplate 가 호출되지 않았어야 한다
+        verify(messagingTemplate, never()).convertAndSend(anyString(), anyString());
+    }
 
-  @Test
-  void IfIncludeNickname() {
-    // given
-    ChatRequest.Message message = new ChatRequest.Message(1L, "안녕하세요");
-    Map<String, Object> sessionAttributes = new HashMap<>();
-    sessionAttributes.put("nickname", "테스트 유저");
+    @Test
+    void IfIncludeNickname() {
+        // given
+        ChatRequest.Message message = new ChatRequest.Message(1L, "안녕하세요");
+        Map<String, Object> sessionAttributes = new HashMap<>();
+        sessionAttributes.put("nickname", "테스트 유저");
 
-    when(headerAccessor.getSessionAttributes()).thenReturn(sessionAttributes);
+        when(headerAccessor.getSessionAttributes()).thenReturn(sessionAttributes);
 
-    // when
-    chatService.sendMessage(message, headerAccessor);
+        // when
+        chatService.sendMessage(message, headerAccessor);
 
-    // then
-    // messagingTemplate 가 호출되어야 한다
-    verify(messagingTemplate).convertAndSend(eq("/topic/room/1"), any(ChatResponse.Message.class));
-  }
+        // then
+        // messagingTemplate 가 호출되어야 한다
+        verify(messagingTemplate)
+                .convertAndSend(eq("/topic/room/1"), any(ChatResponse.Message.class));
+    }
 }

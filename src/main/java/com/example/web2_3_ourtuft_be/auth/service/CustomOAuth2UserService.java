@@ -18,44 +18,44 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-  private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-  @Override
-  public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
-    OAuth2User oAuth2User = super.loadUser(userRequest);
+        OAuth2User oAuth2User = super.loadUser(userRequest);
 
-    String provider = userRequest.getClientRegistration().getRegistrationId();
+        String provider = userRequest.getClientRegistration().getRegistrationId();
 
-    OAuth2Response oAuth2Response;
-    if (provider.equals("kakao")) {
-      oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
-    } else if (provider.equals("google")) {
-      oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-    } else {
-      return null;
+        OAuth2Response oAuth2Response;
+        if (provider.equals("kakao")) {
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+        } else if (provider.equals("google")) {
+            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
+        } else {
+            return null;
+        }
+
+        User user = findOrCreateUser(oAuth2Response);
+
+        return new CustomOAuth2User(user, oAuth2User.getAttributes());
     }
 
-    User user = findOrCreateUser(oAuth2Response);
+    private User findOrCreateUser(OAuth2Response oAuth2Response) {
+        User user = userRepository.findBySocialId(oAuth2Response.getProviderId()).orElse(null);
 
-    return new CustomOAuth2User(user, oAuth2User.getAttributes());
-  }
+        if (user == null) {
+            user =
+                    User.builder()
+                            .email(oAuth2Response.getEmail())
+                            .name(oAuth2Response.getName())
+                            .socialId(oAuth2Response.getProviderId())
+                            .provider(oAuth2Response.getProvider().toString())
+                            .role(Role.ROLE_USER.toString())
+                            .build();
+            userRepository.save(user);
+        }
 
-  private User findOrCreateUser(OAuth2Response oAuth2Response) {
-    User user = userRepository.findBySocialId(oAuth2Response.getProviderId()).orElse(null);
-
-    if (user == null) {
-      user =
-          User.builder()
-              .email(oAuth2Response.getEmail())
-              .name(oAuth2Response.getName())
-              .socialId(oAuth2Response.getProviderId())
-              .provider(oAuth2Response.getProvider().toString())
-              .role(Role.ROLE_USER.toString())
-              .build();
-      userRepository.save(user);
+        return user;
     }
-
-    return user;
-  }
 }
