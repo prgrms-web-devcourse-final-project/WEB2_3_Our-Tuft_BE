@@ -7,5 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class NickNameColorItemDto {
     private Long itemId;
-    private String color;
+    private String value;
 }
