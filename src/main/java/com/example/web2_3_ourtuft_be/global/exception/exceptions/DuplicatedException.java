@@ -4,7 +4,7 @@ import com.example.web2_3_ourtuft_be.global.exception.messages.DuplicatedMessage
 import org.springframework.http.HttpStatus;
 
 public class DuplicatedException extends GlobalException {
-  public DuplicatedException(DuplicatedMessages message) {
-    super(message.getMessage(), HttpStatus.CONFLICT);
-  }
+    public DuplicatedException(DuplicatedMessages message) {
+        super(message.getMessage(), HttpStatus.CONFLICT);
+    }
 }

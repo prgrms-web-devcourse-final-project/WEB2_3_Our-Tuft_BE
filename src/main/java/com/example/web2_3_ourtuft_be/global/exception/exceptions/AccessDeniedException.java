@@ -4,7 +4,7 @@ import com.example.web2_3_ourtuft_be.global.exception.messages.AccessDeniedMessa
 import org.springframework.http.HttpStatus;
 
 public class AccessDeniedException extends GlobalException {
-  public AccessDeniedException(AccessDeniedMessages message) {
-    super(message.getMessage(), HttpStatus.FORBIDDEN);
-  }
+    public AccessDeniedException(AccessDeniedMessages message) {
+        super(message.getMessage(), HttpStatus.FORBIDDEN);
+    }
 }

@@ -1,5 +1,8 @@
 package com.example.web2_3_ourtuft_be.user.entity;
 
+import com.example.web2_3_ourtuft_be.common.BaseTime;
+import com.example.web2_3_ourtuft_be.user.entity.enums.Provider;
+import com.example.web2_3_ourtuft_be.user.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,22 +12,25 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Table(name = "USERS")
-public class User {
+public class User extends BaseTime {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "USER_ID")
-  private Long userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "USER_ID")
+    private Long id;
 
-  @Column(name = "NICKNAME", nullable = false, unique = true)
-  private String nickname;
+    @Column(name = "EMAIL", nullable = false, unique = true)
+    private String email;
 
-  @Column(name = "EMAIL", nullable = false, unique = true)
-  private String email;
+    @Column(name = "SOCIAL_ID", nullable = false, unique = true)
+    private String socialId;
 
-  @Column(name = "PASSWORD", nullable = false)
-  private String password;
+    @Column(name = "NAME", nullable = false)
+    private String name;
 
-  @Column(name = "ROLE", nullable = false)
-  private String role;
+    @Column(name = "PROVIDER", nullable = false)
+    private String provider;
+
+    @Column(name = "ROLE", nullable = false)
+    private String role;
 }

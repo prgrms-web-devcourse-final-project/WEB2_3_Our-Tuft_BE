@@ -6,10 +6,10 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class GlobalException extends RuntimeException {
 
-  private final HttpStatus status;
+    private final HttpStatus status;
 
-  public GlobalException(final String message, final HttpStatus status) {
-    super(message);
-    this.status = status;
-  }
+    public GlobalException(final String message, final HttpStatus status) {
+        super(message);
+        this.status = status;
+    }
 }
