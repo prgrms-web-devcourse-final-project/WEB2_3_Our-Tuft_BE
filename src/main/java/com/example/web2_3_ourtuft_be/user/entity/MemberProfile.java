@@ -1,6 +1,6 @@
 package com.example.web2_3_ourtuft_be.user.entity;
 
-import com.example.web2_3_ourtuft_be.common.BaseTime;
+import com.example.web2_3_ourtuft_be.global.common.BaseTime;
 import jakarta.persistence.*;
 import lombok.*;
 

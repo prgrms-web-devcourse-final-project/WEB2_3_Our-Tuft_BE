@@ -44,7 +44,11 @@ dependencies {
 
     // oauth
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket:3.3.8'
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()
