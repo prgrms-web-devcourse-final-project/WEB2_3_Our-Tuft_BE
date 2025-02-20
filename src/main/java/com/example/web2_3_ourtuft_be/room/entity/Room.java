@@ -36,5 +36,5 @@ public class Room {
     private String host;
 
     @Enumerated(EnumType.STRING)
-    private GameStatus gameStatus;
+    private String gameStatus;
 }
