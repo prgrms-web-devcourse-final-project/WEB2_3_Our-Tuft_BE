@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum NotFoundMessages {
     USER("존재하지 않는 회원입니다."),
-    ;
+    ITEM("아이템이 존재하지 않습니다.");
 
     private final String message;
 }
