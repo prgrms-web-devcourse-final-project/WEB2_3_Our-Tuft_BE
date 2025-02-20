@@ -1,8 +1,11 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
+import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.item.entity.Item;
 import com.example.web2_3_ourtuft_be.item.entity.enums.Category;
 import com.example.web2_3_ourtuft_be.item.repository.ItemRepository;
+import com.example.web2_3_ourtuft_be.item.service.ItemService;
 import com.example.web2_3_ourtuft_be.user.dto.InventoryItemDto;
 import com.example.web2_3_ourtuft_be.user.dto.ItemImageUrlDto;
 import com.example.web2_3_ourtuft_be.user.dto.NickNameColorItemDto;
@@ -17,7 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InventoryService {
 
-    private final ItemRepository itemRepository;
+    private final ItemService itemService;
     private final InventoryRepository inventoryRepository;
 
     public InventoryItemDto getMyItems() {
@@ -31,20 +34,19 @@ public class InventoryService {
         List<NickNameColorItemDto> nickColorItems = new ArrayList<>();
 
         for (Inventory inventory : inventories) {
-            Category category = Category.valueOf(inventory.getCategory());
-            Item item = itemRepository.findById(inventory.getItemId()).orElse(null);
 
-            if (item != null) {
-                if (Category.EYE == category) {
-                    eyeItems.add(new ItemImageUrlDto(inventory.getItemId(), item.getImageUrl()));
-                } else if (Category.MOUTH == category) {
-                    mouthItems.add(new ItemImageUrlDto(inventory.getItemId(), item.getImageUrl()));
-                } else if (Category.SKIN == category) {
-                    skinItems.add(new ItemImageUrlDto(inventory.getItemId(), item.getImageUrl()));
-                } else if (Category.NICKNAME == category) {
-                    nickColorItems.add(
-                            new NickNameColorItemDto(inventory.getItemId(), item.getNickColor()));
-                }
+            Category category = Category.valueOf(inventory.getCategory());
+            Item item = itemService.getItem(inventory.getItemId());
+
+            if (Category.EYE == category) {
+                eyeItems.add(new ItemImageUrlDto(inventory.getItemId(), item.getImageUrl()));
+            } else if (Category.MOUTH == category) {
+                mouthItems.add(new ItemImageUrlDto(inventory.getItemId(), item.getImageUrl()));
+            } else if (Category.SKIN == category) {
+                skinItems.add(new ItemImageUrlDto(inventory.getItemId(), item.getImageUrl()));
+            } else if (Category.NICKNAME == category) {
+                nickColorItems.add(
+                        new NickNameColorItemDto(inventory.getItemId(), item.getNickColor()));
             }
         }
 
