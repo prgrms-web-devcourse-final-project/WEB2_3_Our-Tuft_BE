@@ -3,6 +3,7 @@ package com.example.web2_3_ourtuft_be.user.service;
 import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.MemberProfile;
 import com.example.web2_3_ourtuft_be.user.entity.MemberRecord;
+import com.example.web2_3_ourtuft_be.user.entity.Nickname;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,7 @@ public class UserFacadeService {
     @Transactional
     public UserInfoResponseDto updateProfile(UserInfoRequestDto request) {
 
+        // TODO: userId SecurityHolder 에서 가져옴
         Long userId = 1L;
         // TODO: Item 로직 생성 후 ItemService 에서 처리 예정
         ItemImageUrlDto eye = new ItemImageUrlDto(request.getEye(), "1");
@@ -50,5 +52,13 @@ public class UserFacadeService {
         profileService.updateMemberProfile(userId, request.getIntroduction(), equipItems);
 
         return getMyInfo();
+    }
+
+    @Transactional
+    public NickNameResponseDto changeNickName(NickNameRequestDto request) {
+        // TODO: userId SecurityHolder 에서 가져옴
+        Long userId = 1L;
+        Nickname nickname = new Nickname(request.getNickName());
+        return profileService.changeNickname(userId, nickname.getNickname());
     }
 }

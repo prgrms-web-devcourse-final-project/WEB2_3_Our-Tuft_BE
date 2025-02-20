@@ -19,7 +19,9 @@ public class MemberProfile extends BaseTime {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Column(unique = true)
     private String nickname;
+
     private String introduction;
     private Long eyeItemId;
     private Long mouseItemId;
