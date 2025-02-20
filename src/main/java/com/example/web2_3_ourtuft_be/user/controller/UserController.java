@@ -1,6 +1,8 @@
 package com.example.web2_3_ourtuft_be.user.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
+import com.example.web2_3_ourtuft_be.user.dto.NickNameRequestDto;
+import com.example.web2_3_ourtuft_be.user.dto.NickNameResponseDto;
 import com.example.web2_3_ourtuft_be.user.dto.UserInfoRequestDto;
 import com.example.web2_3_ourtuft_be.user.dto.UserInfoResponseDto;
 import com.example.web2_3_ourtuft_be.user.service.UserFacadeService;
@@ -40,6 +42,13 @@ public class UserController {
             @RequestBody UserInfoRequestDto request) {
 
         UserInfoResponseDto response = userFacadeService.updateProfile(request);
+        return ResponseEntity.ok(GlobalResponse.success(response));
+    }
+
+    @PutMapping("/myInfo/nickname")
+    public ResponseEntity<GlobalResponse<NickNameResponseDto>> changeNickname(
+            @RequestBody NickNameRequestDto request) {
+        NickNameResponseDto response = userFacadeService.changeNickName(request);
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 }
