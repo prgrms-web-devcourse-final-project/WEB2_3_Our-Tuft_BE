@@ -1,13 +1,13 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
-import com.example.web2_3_ourtuft_be.user.dto.ItemImageUrlDto;
-import com.example.web2_3_ourtuft_be.user.dto.NickNameColorItemDto;
-import com.example.web2_3_ourtuft_be.user.dto.UserInfoResponseDto;
+import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.MemberProfile;
 import com.example.web2_3_ourtuft_be.user.entity.MemberRecord;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +20,7 @@ public class UserFacadeService {
 
         MemberProfile profile = profileService.getMemberProfile(userId);
         MemberRecord record = recordService.getRecord(userId);
-        // TODO: Item 생성 후 처리
+        // TODO: Item 생성 후 변경 예정
         ItemImageUrlDto eye = new ItemImageUrlDto(profile.getEyeItemId(), "1");
         ItemImageUrlDto mouse = new ItemImageUrlDto(profile.getMouseItemId(), "2");
         ItemImageUrlDto skin = new ItemImageUrlDto(profile.getSkinItemId(), "3");
@@ -35,5 +35,22 @@ public class UserFacadeService {
         // TODO: userId SecurityHolder 에서 가져옴
         Long userId = 1L;
         return getUserInfo(userId);
+    }
+
+    @Transactional
+    public UserInfoResponseDto updateProfile(UserInfoRequestDto request) {
+
+        Long userId = 1L;
+        //TODO: Item 로직 생성 후 ItemService 에서 처리 예정
+        ItemImageUrlDto eye = new ItemImageUrlDto(request.getEye(), "1");
+        ItemImageUrlDto mouse = new ItemImageUrlDto(request.getMouth(), "2");
+        ItemImageUrlDto skin = new ItemImageUrlDto(request.getMouth(), "3");
+        NickNameColorItemDto nickColor =
+                new NickNameColorItemDto(request.getNickColor(), "#123456");
+        EquipItems equipItems = new EquipItems(eye, mouse, skin, nickColor);
+
+        profileService.updateMemberProfile(userId, request.getIntroduction(), equipItems);
+
+        return getMyInfo();
     }
 }

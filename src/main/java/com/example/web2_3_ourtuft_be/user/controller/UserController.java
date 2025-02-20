@@ -1,14 +1,12 @@
 package com.example.web2_3_ourtuft_be.user.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
+import com.example.web2_3_ourtuft_be.user.dto.UserInfoRequestDto;
 import com.example.web2_3_ourtuft_be.user.dto.UserInfoResponseDto;
 import com.example.web2_3_ourtuft_be.user.service.UserFacadeService;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -33,7 +31,15 @@ public class UserController {
     public ResponseEntity<GlobalResponse<UserInfoResponseDto>> getUserInfo(
             @PathVariable Long userId) {
 
-        UserInfoResponseDto responseDto = userFacadeService.getUserInfo(userId);
-        return ResponseEntity.ok(GlobalResponse.success(responseDto));
+        UserInfoResponseDto response = userFacadeService.getUserInfo(userId);
+        return ResponseEntity.ok(GlobalResponse.success(response));
+    }
+
+    @PutMapping("/myInfo")
+    public ResponseEntity<GlobalResponse<UserInfoResponseDto>> updateMyInfo(
+        @RequestBody UserInfoRequestDto request) {
+
+        UserInfoResponseDto response = userFacadeService.updateProfile(request);
+        return ResponseEntity.ok(GlobalResponse.success(response));
     }
 }
