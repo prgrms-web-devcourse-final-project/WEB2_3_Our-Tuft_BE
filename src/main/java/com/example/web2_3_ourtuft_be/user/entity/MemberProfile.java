@@ -31,10 +31,7 @@ public class MemberProfile extends BaseTime {
     }
 
     public void updateEquipItem(
-            Long eyeItemId,
-            Long mouseItemId,
-            Long skinItemId,
-            Long nicknameItemId) {
+            Long eyeItemId, Long mouseItemId, Long skinItemId, Long nicknameItemId) {
         this.eyeItemId = eyeItemId;
         this.mouseItemId = mouseItemId;
         this.skinItemId = skinItemId;

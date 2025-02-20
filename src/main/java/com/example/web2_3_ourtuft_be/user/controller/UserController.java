@@ -37,7 +37,7 @@ public class UserController {
 
     @PutMapping("/myInfo")
     public ResponseEntity<GlobalResponse<UserInfoResponseDto>> updateMyInfo(
-        @RequestBody UserInfoRequestDto request) {
+            @RequestBody UserInfoRequestDto request) {
 
         UserInfoResponseDto response = userFacadeService.updateProfile(request);
         return ResponseEntity.ok(GlobalResponse.success(response));

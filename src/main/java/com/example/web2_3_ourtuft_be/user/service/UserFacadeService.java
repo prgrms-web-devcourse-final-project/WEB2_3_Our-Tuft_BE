@@ -3,11 +3,9 @@ package com.example.web2_3_ourtuft_be.user.service;
 import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.MemberProfile;
 import com.example.web2_3_ourtuft_be.user.entity.MemberRecord;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +39,7 @@ public class UserFacadeService {
     public UserInfoResponseDto updateProfile(UserInfoRequestDto request) {
 
         Long userId = 1L;
-        //TODO: Item 로직 생성 후 ItemService 에서 처리 예정
+        // TODO: Item 로직 생성 후 ItemService 에서 처리 예정
         ItemImageUrlDto eye = new ItemImageUrlDto(request.getEye(), "1");
         ItemImageUrlDto mouse = new ItemImageUrlDto(request.getMouth(), "2");
         ItemImageUrlDto skin = new ItemImageUrlDto(request.getMouth(), "3");

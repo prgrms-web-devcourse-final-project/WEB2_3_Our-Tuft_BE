@@ -22,11 +22,18 @@ public class MemberProfileService {
     }
 
     @Transactional
-    public MemberProfile updateMemberProfile(Long userId, String introduction, EquipItems equipItems) {
-        MemberProfile userProfile = profileRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
+    public void updateMemberProfile(Long userId, String introduction, EquipItems equipItems) {
+        MemberProfile userProfile =
+                profileRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
 
         userProfile.updateIntroduction(introduction);
-        userProfile.updateEquipItem(equipItems.getEyeItemId(), equipItems.getMouseItemId(), equipItems.getSkinItemId(), equipItems.getNameItemId());
-        return profileRepository.save(userProfile);
+        userProfile.updateEquipItem(
+                equipItems.getEyeItemId(),
+                equipItems.getMouseItemId(),
+                equipItems.getSkinItemId(),
+                equipItems.getNameItemId());
+        profileRepository.save(userProfile);
     }
 }
