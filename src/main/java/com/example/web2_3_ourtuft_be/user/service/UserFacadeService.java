@@ -38,6 +38,7 @@ public class UserFacadeService {
 
     @Transactional
     public UserInfoResponseDto updateProfile(UserInfoRequestDto request) {
+
         // TODO: userId SecurityHolder 에서 가져옴
         Long userId = 1L;
         // TODO: Item 로직 생성 후 ItemService 에서 처리 예정
