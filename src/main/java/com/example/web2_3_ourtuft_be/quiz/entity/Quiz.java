@@ -22,7 +22,4 @@ public class Quiz {
     private String question;
     private String hint;
     private String answer;
-
-
-
 }

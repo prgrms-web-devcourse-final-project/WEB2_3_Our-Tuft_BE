@@ -3,11 +3,9 @@ package com.example.web2_3_ourtuft_be.quiz.entity;
 import com.example.web2_3_ourtuft_be.common.BaseTime;
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizType;
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import lombok.*;
 
 @Getter
 @Entity
@@ -24,7 +22,7 @@ public class QuizSet extends BaseTime {
     @OneToMany(mappedBy = "quizSet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Quiz> quizzes = new ArrayList<>();
 
-    @Column(name="quizset_name",nullable = false )
+    @Column(name = "quizset_name", nullable = false)
     private String quiz;
 
     @Enumerated(EnumType.STRING)
@@ -33,5 +31,4 @@ public class QuizSet extends BaseTime {
 
     @Column(name = "quizset_run_cnt", nullable = false)
     private int quizsetRunCnt;
-
 }
