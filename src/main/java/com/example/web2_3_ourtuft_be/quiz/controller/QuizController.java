@@ -7,7 +7,6 @@ import com.example.web2_3_ourtuft_be.quiz.dto.QuizeSetRequest;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
 import com.example.web2_3_ourtuft_be.quiz.service.QuizService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
