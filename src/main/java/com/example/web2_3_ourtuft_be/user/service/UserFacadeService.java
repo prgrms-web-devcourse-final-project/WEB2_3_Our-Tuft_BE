@@ -30,20 +30,10 @@ public class UserFacadeService {
         return new UserInfoResponseDto(profile, record, eye, mouse, skin, nickColor);
     }
 
-    // TODO : 프로필 수정 MyInfo 관련 entity 생성이 다 끝나고 나면 중복 제거 예정
     @Transactional(readOnly = true)
     public UserInfoResponseDto getMyInfo() {
         // TODO: userId SecurityHolder 에서 가져옴
         Long userId = 1L;
-        MemberProfile profile = profileService.getMemberProfile(userId);
-        MemberRecord record = recordService.getRecord(userId);
-        // TODO: Item 생성 후 처리
-        ItemImageUrlDto eye = new ItemImageUrlDto(profile.getEyeItemId(), "1");
-        ItemImageUrlDto mouse = new ItemImageUrlDto(profile.getMouseItemId(), "2");
-        ItemImageUrlDto skin = new ItemImageUrlDto(profile.getSkinItemId(), "3");
-        NickNameColorItemDto nickColor =
-                new NickNameColorItemDto(profile.getNicknameItemId(), "#123456");
-
-        return new UserInfoResponseDto(profile, record, eye, mouse, skin, nickColor);
+        return getUserInfo(userId);
     }
 }

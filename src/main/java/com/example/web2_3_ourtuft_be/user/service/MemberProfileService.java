@@ -15,7 +15,7 @@ public class MemberProfileService {
 
     public MemberProfile getMemberProfile(Long userId) {
         return profileRepository
-                .findById(userId)
+                .findByUserId(userId)
                 .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
     }
 }
