@@ -14,19 +14,22 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "game_id", nullable = false)
     private Long id;
+
     @Column(name = "game_name", nullable = false)
-    private String gameName ;
+    private String gameName;
+
     @Column(name = "min_players", nullable = false)
-    private String minPlayers ;
+    private String minPlayers;
+
     @Column(name = "max_players", nullable = false)
-    private String maxPlayers ;
+    private String maxPlayers;
+
     @Column(name = "min_round", nullable = false)
-    private String minRound ;
+    private String minRound;
+
     @Column(name = "max_round", nullable = false)
-    private String maxRound ;
+    private String maxRound;
+
     @Column(name = "time_limit", nullable = false)
-    private String timeLimit ;
-
-
-
+    private String timeLimit;
 }
