@@ -27,13 +27,13 @@ public class QuizSet extends BaseTime {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "quiz_set_type", nullable = false)
-    private QuizType quizSetType;
+    private String quizSetType;
 
     @Column(name = "quiz_set_run_cnt", nullable = false)
     private int quizSetRunCnt;
 
     public QuizSet(
-            List<Quiz> quizzes, String quizSetName, QuizType quizSetType, int quizSetRunCnt) {
+            List<Quiz> quizzes, String quizSetName, String quizSetType, int quizSetRunCnt) {
         this.quizzes = quizzes;
         this.quizSetName = quizSetName;
         this.quizSetType = quizSetType;
@@ -41,7 +41,7 @@ public class QuizSet extends BaseTime {
     }
 
     public static QuizSet of(
-            List<Quiz> quizzes, String quizSetName, QuizType quizSetType, int quizSetRunCnt) {
+            List<Quiz> quizzes, String quizSetName, String quizSetType, int quizSetRunCnt) {
 
         QuizSet quizSet = new QuizSet(quizzes, quizSetName, quizSetType, quizSetRunCnt);
 
