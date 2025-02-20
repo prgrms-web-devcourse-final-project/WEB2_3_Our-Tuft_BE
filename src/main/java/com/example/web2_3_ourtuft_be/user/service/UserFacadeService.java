@@ -1,8 +1,6 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
-import com.example.web2_3_ourtuft_be.user.dto.ItemImageUrlDto;
-import com.example.web2_3_ourtuft_be.user.dto.NickNameColorItemDto;
-import com.example.web2_3_ourtuft_be.user.dto.UserInfoResponseDto;
+import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.MemberProfile;
 import com.example.web2_3_ourtuft_be.user.entity.MemberRecord;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,7 @@ public class UserFacadeService {
 
         MemberProfile profile = profileService.getMemberProfile(userId);
         MemberRecord record = recordService.getRecord(userId);
-        // TODO: Item 생성 후 처리
+        // TODO: Item 생성 후 변경 예정
         ItemImageUrlDto eye = new ItemImageUrlDto(profile.getEyeItemId(), "1");
         ItemImageUrlDto mouse = new ItemImageUrlDto(profile.getMouseItemId(), "2");
         ItemImageUrlDto skin = new ItemImageUrlDto(profile.getSkinItemId(), "3");
@@ -30,20 +28,27 @@ public class UserFacadeService {
         return new UserInfoResponseDto(profile, record, eye, mouse, skin, nickColor);
     }
 
-    // TODO : 프로필 수정 MyInfo 관련 entity 생성이 다 끝나고 나면 중복 제거 예정
     @Transactional(readOnly = true)
     public UserInfoResponseDto getMyInfo() {
         // TODO: userId SecurityHolder 에서 가져옴
         Long userId = 1L;
-        MemberProfile profile = profileService.getMemberProfile(userId);
-        MemberRecord record = recordService.getRecord(userId);
-        // TODO: Item 생성 후 처리
-        ItemImageUrlDto eye = new ItemImageUrlDto(profile.getEyeItemId(), "1");
-        ItemImageUrlDto mouse = new ItemImageUrlDto(profile.getMouseItemId(), "2");
-        ItemImageUrlDto skin = new ItemImageUrlDto(profile.getSkinItemId(), "3");
-        NickNameColorItemDto nickColor =
-                new NickNameColorItemDto(profile.getNicknameItemId(), "#123456");
+        return getUserInfo(userId);
+    }
 
-        return new UserInfoResponseDto(profile, record, eye, mouse, skin, nickColor);
+    @Transactional
+    public UserInfoResponseDto updateProfile(UserInfoRequestDto request) {
+
+        Long userId = 1L;
+        // TODO: Item 로직 생성 후 ItemService 에서 처리 예정
+        ItemImageUrlDto eye = new ItemImageUrlDto(request.getEye(), "1");
+        ItemImageUrlDto mouse = new ItemImageUrlDto(request.getMouth(), "2");
+        ItemImageUrlDto skin = new ItemImageUrlDto(request.getMouth(), "3");
+        NickNameColorItemDto nickColor =
+                new NickNameColorItemDto(request.getNickColor(), "#123456");
+        EquipItems equipItems = new EquipItems(eye, mouse, skin, nickColor);
+
+        profileService.updateMemberProfile(userId, request.getIntroduction(), equipItems);
+
+        return getMyInfo();
     }
 }
