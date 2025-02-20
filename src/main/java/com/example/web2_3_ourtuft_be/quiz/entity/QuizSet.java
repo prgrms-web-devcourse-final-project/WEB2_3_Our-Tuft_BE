@@ -25,7 +25,7 @@ public class QuizSet extends BaseTime {
     @Column(name = "quiz_set_name", nullable = false)
     private String quizSetName;
 
-    @Enumerated(EnumType.STRING)
+    
     @Column(name = "quiz_set_type", nullable = false)
     private String quizSetType;
 
