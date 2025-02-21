@@ -22,11 +22,22 @@ public class UserFacadeService {
         MemberProfile profile = profileService.getMemberProfile(userId);
         MemberRecord record = recordService.getRecord(userId);
         // TODO: Item 생성 후 변경 예정
-        ItemImageUrlDto eye = new ItemImageUrlDto(profile.getEyeItemId(), itemService.getItem(profile.getEyeItemId()).getImageUrl());
-        ItemImageUrlDto mouse = new ItemImageUrlDto(profile.getMouseItemId(), itemService.getItem(profile.getMouseItemId()).getImageUrl());
-        ItemImageUrlDto skin = new ItemImageUrlDto(profile.getSkinItemId(), itemService.getItem(profile.getSkinItemId()).getImageUrl());
+        ItemImageUrlDto eye =
+                new ItemImageUrlDto(
+                        profile.getEyeItemId(),
+                        itemService.getItem(profile.getEyeItemId()).getImageUrl());
+        ItemImageUrlDto mouse =
+                new ItemImageUrlDto(
+                        profile.getMouseItemId(),
+                        itemService.getItem(profile.getMouseItemId()).getImageUrl());
+        ItemImageUrlDto skin =
+                new ItemImageUrlDto(
+                        profile.getSkinItemId(),
+                        itemService.getItem(profile.getSkinItemId()).getImageUrl());
         NickNameColorItemDto nickColor =
-                new NickNameColorItemDto(profile.getNicknameItemId(), itemService.getItem(profile.getNicknameItemId()).getNickColor());
+                new NickNameColorItemDto(
+                        profile.getNicknameItemId(),
+                        itemService.getItem(profile.getNicknameItemId()).getNickColor());
 
         return new UserInfoResponseDto(profile, record, eye, mouse, skin, nickColor);
     }
@@ -44,11 +55,19 @@ public class UserFacadeService {
         // TODO: userId SecurityHolder 에서 가져옴
         Long userId = 1L;
         // TODO: Item 로직 생성 후 ItemService 에서 처리 예정
-        ItemImageUrlDto eye = new ItemImageUrlDto(request.getEye(), itemService.getItem(request.getEye()).getImageUrl());
-        ItemImageUrlDto mouse = new ItemImageUrlDto(request.getMouth(), itemService.getItem(request.getMouth()).getImageUrl());
-        ItemImageUrlDto skin = new ItemImageUrlDto(request.getSkin(), itemService.getItem(request.getSkin()).getImageUrl());
+        ItemImageUrlDto eye =
+                new ItemImageUrlDto(
+                        request.getEye(), itemService.getItem(request.getEye()).getImageUrl());
+        ItemImageUrlDto mouse =
+                new ItemImageUrlDto(
+                        request.getMouth(), itemService.getItem(request.getMouth()).getImageUrl());
+        ItemImageUrlDto skin =
+                new ItemImageUrlDto(
+                        request.getSkin(), itemService.getItem(request.getSkin()).getImageUrl());
         NickNameColorItemDto nickColor =
-                new NickNameColorItemDto(request.getNickColor(), itemService.getItem(request.getNickColor()).getNickColor());
+                new NickNameColorItemDto(
+                        request.getNickColor(),
+                        itemService.getItem(request.getNickColor()).getNickColor());
         EquipItems equipItems = new EquipItems(eye, mouse, skin, nickColor);
 
         profileService.updateMemberProfile(userId, request.getIntroduction(), equipItems);

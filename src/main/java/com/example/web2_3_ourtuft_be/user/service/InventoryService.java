@@ -1,10 +1,7 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
-import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.item.entity.Item;
 import com.example.web2_3_ourtuft_be.item.entity.enums.Category;
-import com.example.web2_3_ourtuft_be.item.repository.ItemRepository;
 import com.example.web2_3_ourtuft_be.item.service.ItemService;
 import com.example.web2_3_ourtuft_be.user.dto.InventoryItemDto;
 import com.example.web2_3_ourtuft_be.user.dto.ItemImageUrlDto;
