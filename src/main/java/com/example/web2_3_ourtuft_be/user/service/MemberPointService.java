@@ -1,8 +1,6 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
-import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.user.dto.MyPointsResponseDto;
 import com.example.web2_3_ourtuft_be.user.entity.MemberPoint;

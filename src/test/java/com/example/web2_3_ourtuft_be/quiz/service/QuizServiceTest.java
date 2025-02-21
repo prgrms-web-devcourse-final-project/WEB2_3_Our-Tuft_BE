@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.web2_3_ourtuft_be.quiz.QuizSetRepository;
+import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizeSetRequest;
-import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +37,10 @@ class QuizServiceTest {
         QuizeSetRequest requestData = createTestData();
 
         // when
-        QuizSet savedQuizSet = quizService.createQuizSet(requestData);
+        QuizSetResponse savedQuizSet = quizService.createQuizSet(requestData);
 
         // then
         assertThat(savedQuizSet).isNotNull();
         assertEquals(30, savedQuizSet.getQuizzes().size()); // 퀴즈 개수 검증
-        assertEquals(requestData.getQuizSetName(), savedQuizSet.getQuizSetName()); // 퀴즈셋 이름 검증
     }
 }

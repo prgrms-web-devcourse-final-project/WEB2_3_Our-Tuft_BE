@@ -1,7 +1,10 @@
 package com.example.web2_3_ourtuft_be.quiz.service;
 
+import com.example.web2_3_ourtuft_be.quiz.QuizRepository;
 import com.example.web2_3_ourtuft_be.quiz.QuizSetRepository;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizRequest;
+import com.example.web2_3_ourtuft_be.quiz.dto.QuizResponse;
+import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizeSetRequest;
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
@@ -18,17 +21,46 @@ import org.springframework.stereotype.Service;
 public class QuizService {
 
     private final QuizSetRepository quizSetRepository;
+    private final QuizRepository quizRepository;
 
     @Transactional
-    public QuizSet createQuizSet(QuizeSetRequest dto) {
+    public QuizSetResponse createQuizSet(QuizeSetRequest request) {
+        QuizSet quizSet =
+                QuizSet.create(request.getQuizSetName(), request.getQuizSetType().name(), 0);
+        QuizSet savedQuizSet = quizSetRepository.save(quizSet);
+
         List<Quiz> quizzes =
-                dto.getQuizzes().stream()
-                        .map(q -> Quiz.of(q.getQuestion(), q.getHint(), q.getAnswer()))
+                request.getQuizzes().stream()
+                        .map(
+                                quiz ->
+                                        Quiz.create(
+                                                savedQuizSet.getId(),
+                                                quiz.getQuestion(),
+                                                quiz.getHint(),
+                                                quiz.getAnswer()))
+                        .toList();
+        List<Quiz> savedQuiz = quizRepository.saveAll(quizzes);
+
+        List<QuizResponse> savedQuizDTO =
+                savedQuiz.stream()
+                        .map(
+                                quiz ->
+                                        QuizResponse.builder()
+                                                .question(quiz.getQuestion())
+                                                .hint(quiz.getHint())
+                                                .answer(quiz.getAnswer())
+                                                .build())
                         .toList();
 
-        QuizSet quizSet = QuizSet.of(quizzes, dto.getQuizSetName(), dto.getQuizSetType(), 0);
+        QuizSetResponse response =
+                QuizSetResponse.builder()
+                        .quizSetId(savedQuizSet.getId())
+                        .quizzes(savedQuizDTO)
+                        .quizSetName(savedQuizSet.getQuizSetName())
+                        .quizSetType(request.getQuizSetType())
+                        .build();
 
-        return quizSetRepository.save(quizSet);
+        return response;
     }
 
     public static QuizeSetRequest createTestData() {
