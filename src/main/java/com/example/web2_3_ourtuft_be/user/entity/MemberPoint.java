@@ -19,11 +19,11 @@ public class MemberPoint {
 
     private int points;
 
-    public void updatePoints(int amount) {
-        if (this.points + amount < 0) {
+    public void updatePoints(int points) {
+        if (points < 0) {
             throw new InvalidRequestException(InvalidRequestMessages.INSUFFICIENT_POINTS);
         }
-        this.points += amount;
+        this.points = points;
     }
 
 }
