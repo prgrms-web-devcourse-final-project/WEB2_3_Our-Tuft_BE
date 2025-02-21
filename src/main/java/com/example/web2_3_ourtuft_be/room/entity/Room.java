@@ -2,7 +2,6 @@ package com.example.web2_3_ourtuft_be.room.entity;
 
 import com.example.web2_3_ourtuft_be.item.game.entity.Game;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
-import com.example.web2_3_ourtuft_be.room.entity.enums.GameStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

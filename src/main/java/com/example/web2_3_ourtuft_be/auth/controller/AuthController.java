@@ -42,8 +42,9 @@ public class AuthController {
             description =
                     """
                                 카카오 로그인 경로입니다. 해당 사이트에서 로그인 후 리다이렉트 되는 URL의 엑세스 토큰을 활용하면 됩니다.
+                                http://localhost:8080/oauth2/authorization/kakao
                                 """)
-    @GetMapping("/kakao")
+    @GetMapping("/kakao/이거 진짜 경로 아임니다")
     public String kakaoLogin() {
         return "http://localhost:8080/oauth2/authorization/kakao";
     }
@@ -53,8 +54,9 @@ public class AuthController {
             description =
                     """
                                 구글 로그인 경로입니다. 해당 사이트에서 로그인 후 리다이렉트 되는 URL의 엑세스 토큰을 활용하면 됩니다.
+                                http://localhost:8080/oauth2/authorization/google
                                 """)
-    @GetMapping("/google")
+    @GetMapping("/google/이거 진짜 경로 아임니다")
     public String googleLogin() {
         return "http://localhost:8080/oauth2/authorization/google";
     }
