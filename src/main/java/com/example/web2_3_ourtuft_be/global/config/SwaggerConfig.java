@@ -1,4 +1,4 @@
-package com.example.web2_3_ourtuft_be.config;
+package com.example.web2_3_ourtuft_be.global.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -15,6 +15,6 @@ import org.springframework.context.annotation.Configuration;
 @SecurityScheme(
         name = "accessToken",
         type = SecuritySchemeType.APIKEY,
-        paramName = "access",
+        paramName = "Authorization",
         in = SecuritySchemeIn.HEADER)
 public class SwaggerConfig {}
