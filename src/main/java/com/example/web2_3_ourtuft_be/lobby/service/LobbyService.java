@@ -1,6 +1,5 @@
 package com.example.web2_3_ourtuft_be.lobby.service;
 
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.GlobalException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,7 +22,7 @@ public class LobbyService {
     public List<RoomResponseDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
 
-        if(rooms.isEmpty()) {
+        if (rooms.isEmpty()) {
             throw new NotFoundException(NotFoundMessages.ROOM);
         }
 
@@ -45,7 +43,7 @@ public class LobbyService {
 
         } else if (roomName != null) {
 
-            rooms = roomRepository.findRoomNameContaining(roomName);
+            rooms = roomRepository.findByRoomNameContaining(roomName);
 
             if (rooms.isEmpty()) {
                 throw new NotFoundException(NotFoundMessages.ROOM_NAME);
