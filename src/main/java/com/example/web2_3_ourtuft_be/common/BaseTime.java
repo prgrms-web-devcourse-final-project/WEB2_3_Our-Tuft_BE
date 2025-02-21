@@ -1,4 +1,4 @@
-package com.example.web2_3_ourtuft_be.global.common;
+package com.example.web2_3_ourtuft_be.common;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
