@@ -16,18 +16,12 @@ public class MemberPointService {
 
     private final MemberPointRepository memberPointRepository;
 
-    public void addPoints(Long userId, int amount) {
+    public void updatePoints(Long userId, int amount) {
         MemberPoint memberPoint = getPoint(userId);
-        memberPoint.addPoints(amount);
-        memberPointRepository.save(memberPoint);
-    }
 
-    public void subtractPoints(Long userId, int amount) {
-        MemberPoint memberPoint = getPoint(userId);
-        if (memberPoint.getPoints() < amount) {
-            throw new InvalidRequestException(InvalidRequestMessages.INSUFFICIENT_POINTS);
-        }
-        memberPoint.subtractPoints(amount);
+        int updatedPoints = memberPoint.getPoints() + amount;
+
+        memberPoint.updatePoints(updatedPoints);
         memberPointRepository.save(memberPoint);
     }
 

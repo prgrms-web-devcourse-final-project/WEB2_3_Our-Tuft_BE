@@ -1,5 +1,7 @@
 package com.example.web2_3_ourtuft_be.user.entity;
 
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
+import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,11 +19,11 @@ public class MemberPoint {
 
     private int points;
 
-    public void addPoints(int amount) {
+    public void updatePoints(int amount) {
+        if (this.points + amount < 0) {
+            throw new InvalidRequestException(InvalidRequestMessages.INSUFFICIENT_POINTS);
+        }
         this.points += amount;
     }
 
-    public void subtractPoints(int amount) {
-        this.points -= amount;
-    }
 }
