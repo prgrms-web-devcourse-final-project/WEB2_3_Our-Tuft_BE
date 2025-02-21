@@ -1,6 +1,8 @@
 package com.example.web2_3_ourtuft_be.lobby.service;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.GlobalException;
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
@@ -27,8 +29,7 @@ public class LobbyService {
 
             Room room = roomRepository.findById(roomId).orElse(null);
             if (room == null) {
-                throw new GlobalException(
-                        NotFoundMessages.ROOM_ID.getMessage(), HttpStatus.NOT_FOUND);
+                throw new NotFoundException(NotFoundMessages.ROOM_ID);
             }
             rooms.add(room);
 
@@ -37,14 +38,11 @@ public class LobbyService {
             rooms = roomRepository.findRoomNameContaining(roomName);
 
             if (rooms.isEmpty()) {
-                throw new GlobalException(
-                        NotFoundMessages.ROOM_NAME.getMessage(), HttpStatus.NOT_FOUND);
+                throw new NotFoundException(NotFoundMessages.ROOM_NAME);
             }
 
         } else {
-            throw new GlobalException(
-                    InvalidRequestMessages.EMPTY_SEARCH_CONDITION.getMessage(),
-                    HttpStatus.BAD_REQUEST);
+            throw new InvalidRequestException(InvalidRequestMessages.EMPTY_SEARCH_CONDITION);
         }
 
         return rooms.stream().map(RoomResponseDto::new).collect(Collectors.toList());
