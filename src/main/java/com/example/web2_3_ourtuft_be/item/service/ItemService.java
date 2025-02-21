@@ -57,7 +57,7 @@ public class ItemService {
         Item item =
                 Item.builder()
                         .name(request.getName())
-                        .category(request.getCategory())
+                        .category(request.getCategory().name())
                         .imageUrl(request.getImageUrl())
                         .nickColor(request.getNickColor())
                         .price(request.getPrice())
@@ -79,7 +79,7 @@ public class ItemService {
 
         item.update(
                 request.getName(),
-                request.getCategory(),
+                request.getCategory().name(),
                 request.getImageUrl(),
                 request.getNickColor(),
                 request.getPrice(),
@@ -90,7 +90,7 @@ public class ItemService {
 
     private void validateValue(ItemRequest request) {
 
-        Category category = Category.valueOf(request.getCategory());
+        Category category = request.getCategory();
 
         if (Category.NICKNAME == category) {
             if (request.getNickColor() == null) {
@@ -111,5 +111,12 @@ public class ItemService {
                         .orElseThrow(() -> new NotFoundException(NotFoundMessages.ITEM));
 
         itemRepository.delete(item);
+    }
+
+    public Item getItem(Long itemId) {
+
+        return itemRepository
+                .findById(itemId)
+                .orElseThrow(() -> new NotFoundException(NotFoundMessages.ITEM));
     }
 }
