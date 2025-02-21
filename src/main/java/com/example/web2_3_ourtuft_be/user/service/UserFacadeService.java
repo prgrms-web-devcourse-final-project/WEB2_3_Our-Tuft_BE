@@ -2,6 +2,7 @@ package com.example.web2_3_ourtuft_be.user.service;
 
 import com.example.web2_3_ourtuft_be.item.service.ItemService;
 import com.example.web2_3_ourtuft_be.user.dto.*;
+import com.example.web2_3_ourtuft_be.user.entity.MemberExp;
 import com.example.web2_3_ourtuft_be.user.entity.MemberProfile;
 import com.example.web2_3_ourtuft_be.user.entity.MemberRecord;
 import com.example.web2_3_ourtuft_be.user.entity.Nickname;
@@ -15,12 +16,16 @@ public class UserFacadeService {
     private final MemberProfileService profileService;
     private final MemberRecordService recordService;
     private final ItemService itemService;
+    private final MemberExpService expService;
+
 
     @Transactional(readOnly = true)
     public UserInfoResponseDto getUserInfo(Long userId) {
 
         MemberProfile profile = profileService.getMemberProfile(userId);
         MemberRecord record = recordService.getRecord(userId);
+        MemberExp exp = expService.getMemberExp(userId);
+
         // TODO: Item 생성 후 변경 예정
         ItemImageUrlDto eye =
                 new ItemImageUrlDto(
@@ -39,7 +44,7 @@ public class UserFacadeService {
                         profile.getNicknameItemId(),
                         itemService.getItem(profile.getNicknameItemId()).getNickColor());
 
-        return new UserInfoResponseDto(profile, record, eye, mouse, skin, nickColor);
+        return new UserInfoResponseDto(profile, record, exp, eye, mouse, skin, nickColor);
     }
 
     @Transactional(readOnly = true)
