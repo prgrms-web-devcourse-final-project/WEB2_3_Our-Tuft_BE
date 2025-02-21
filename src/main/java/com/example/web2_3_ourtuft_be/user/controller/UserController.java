@@ -1,15 +1,12 @@
 package com.example.web2_3_ourtuft_be.user.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
-import com.example.web2_3_ourtuft_be.user.dto.UserProfileResponseDto;
-import com.example.web2_3_ourtuft_be.user.dto.UserResponse;
+import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
