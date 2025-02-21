@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
 import com.example.web2_3_ourtuft_be.user.dto.*;
+import com.example.web2_3_ourtuft_be.user.entity.MemberExp;
 import com.example.web2_3_ourtuft_be.user.entity.MemberProfile;
 import com.example.web2_3_ourtuft_be.user.entity.MemberRecord;
 import com.example.web2_3_ourtuft_be.user.entity.Nickname;
@@ -13,12 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserFacadeService {
     private final MemberProfileService profileService;
     private final MemberRecordService recordService;
+    private final MemberExpService expService;
 
     @Transactional(readOnly = true)
     public UserInfoResponseDto getUserInfo(Long userId) {
 
         MemberProfile profile = profileService.getMemberProfile(userId);
         MemberRecord record = recordService.getRecord(userId);
+        MemberExp exp = expService.getMemberExp(userId);
+
         // TODO: Item 생성 후 변경 예정
         ItemImageUrlDto eye = new ItemImageUrlDto(profile.getEyeItemId(), "1");
         ItemImageUrlDto mouse = new ItemImageUrlDto(profile.getMouseItemId(), "2");
@@ -26,7 +30,7 @@ public class UserFacadeService {
         NickNameColorItemDto nickColor =
                 new NickNameColorItemDto(profile.getNicknameItemId(), "#123456");
 
-        return new UserInfoResponseDto(profile, record, eye, mouse, skin, nickColor);
+        return new UserInfoResponseDto(profile, record, exp, eye, mouse, skin, nickColor);
     }
 
     @Transactional(readOnly = true)
