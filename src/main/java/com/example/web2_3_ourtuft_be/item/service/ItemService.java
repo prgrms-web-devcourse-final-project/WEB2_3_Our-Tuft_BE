@@ -1,15 +1,21 @@
 package com.example.web2_3_ourtuft_be.item.service;
 
+import com.example.web2_3_ourtuft_be.common.PageResponse;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
+import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.item.dto.ItemRequest;
+import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
 import com.example.web2_3_ourtuft_be.item.entity.Item;
-import com.example.web2_3_ourtuft_be.item.entity.ItemAppearance;
-import com.example.web2_3_ourtuft_be.item.entity.enums.ItemAppearanceType;
-import com.example.web2_3_ourtuft_be.item.repository.ItemAppearanceRepository;
+import com.example.web2_3_ourtuft_be.item.entity.enums.Category;
 import com.example.web2_3_ourtuft_be.item.repository.ItemRepository;
 import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,50 +23,100 @@ import org.springframework.stereotype.Service;
 public class ItemService {
 
     private final ItemRepository itemRepository;
-    private final ItemAppearanceRepository itemAppearanceRepository;
+
+    public PageResponse<ItemResponse> getItems(String category, String keyword, Pageable pageable) {
+        Slice<Item> items;
+
+        if (category != null && keyword != null) {
+            items = itemRepository.findByCategoryAndNameContaining(category, keyword, pageable);
+        } else if (category != null) {
+            items = itemRepository.findByCategory(category, pageable);
+        } else if (keyword != null) {
+            items = itemRepository.findByNameContaining(keyword, pageable);
+        } else {
+            items = itemRepository.findAll(pageable);
+        }
+
+        List<ItemResponse> itemResponses =
+                items.stream().map(ItemResponse::from).collect(Collectors.toList());
+
+        return new PageResponse<>(
+                itemResponses,
+                items.hasNext(),
+                items.isFirst(),
+                items.isLast(),
+                items.isEmpty(),
+                items.getNumberOfElements());
+    }
 
     @Transactional
-    public void registerItem(ItemRequest request) {
+    public ItemResponse registerItem(ItemRequest request) {
+
+        validateValue(request);
 
         Item item =
                 Item.builder()
                         .name(request.getName())
-                        .category(request.getCategory())
-                        .description(request.getDescription())
+                        .category(request.getCategory().name())
+                        .imageUrl(request.getImageUrl())
+                        .nickColor(request.getNickColor())
                         .price(request.getPrice())
                         .build();
 
         itemRepository.save(item);
 
-        String appearanceValue = validateAppearanceValue(request);
-
-        ItemAppearance itemAppearance =
-                ItemAppearance.builder()
-                        .item(item)
-                        .type(request.getAppearanceType())
-                        .value(appearanceValue)
-                        .build();
-
-        itemAppearanceRepository.save(itemAppearance);
+        return ItemResponse.from(item);
     }
 
-    private String validateAppearanceValue(ItemRequest request) {
+    @Transactional
+    public ItemResponse updateItem(Long itemId, ItemRequest request) {
+        Item item =
+                itemRepository
+                        .findById(itemId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ITEM));
 
-        ItemAppearanceType appearanceType = ItemAppearanceType.valueOf(request.getAppearanceType());
-        String appearanceValue = null;
+        validateValue(request);
 
-        if (ItemAppearanceType.IMAGE == appearanceType) {
+        item.update(
+                request.getName(),
+                request.getCategory().name(),
+                request.getImageUrl(),
+                request.getNickColor(),
+                request.getPrice(),
+                request.getStock());
+
+        return ItemResponse.from(item);
+    }
+
+    private void validateValue(ItemRequest request) {
+
+        Category category = request.getCategory();
+
+        if (Category.NICKNAME == category) {
+            if (request.getNickColor() == null) {
+                throw new InvalidRequestException(InvalidRequestMessages.INVALID_COLOR_VALUE);
+            }
+        } else {
             if (request.getImageUrl() == null) {
                 throw new InvalidRequestException(InvalidRequestMessages.INVALID_IMAGE_VALUE);
             }
-            appearanceValue = request.getImageUrl();
-        } else if (ItemAppearanceType.COLOR == appearanceType) {
-            if (request.getColor() == null) {
-                throw new InvalidRequestException(InvalidRequestMessages.INVALID_COLOR_VALUE);
-            }
-            appearanceValue = request.getColor();
         }
+    }
 
-        return appearanceValue;
+    public void deleteItem(Long itemId) {
+
+        Item item =
+                itemRepository
+                        .findById(itemId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ITEM));
+
+        itemRepository.delete(item);
+    }
+
+    public Item getItem(Long itemId) {
+
+        return itemRepository
+                .findById(itemId)
+                .orElseThrow(() -> new NotFoundException(NotFoundMessages.ITEM));
     }
 }

@@ -16,19 +16,39 @@ public class QuizSet extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "quizset_id", nullable = false)
+    @Column(name = "quiz_set_id", nullable = false)
     private Long id;
 
     @OneToMany(mappedBy = "quizSet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Quiz> quizzes = new ArrayList<>();
 
-    @Column(name = "quizset_name", nullable = false)
-    private String quiz;
+    @Column(name = "quiz_set_name", nullable = false)
+    private String quizSetName;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "quizset_type", nullable = false)
-    private QuizType quizsetType;
+    @Column(name = "quiz_set_type", nullable = false)
+    private String quizSetType;
 
-    @Column(name = "quizset_run_cnt", nullable = false)
-    private int quizsetRunCnt;
+    @Column(name = "quiz_set_run_cnt", nullable = false)
+    private int quizSetRunCnt;
+
+    public QuizSet(
+            List<Quiz> quizzes, String quizSetName, String quizSetType, int quizSetRunCnt) {
+        this.quizzes = quizzes;
+        this.quizSetName = quizSetName;
+        this.quizSetType = quizSetType;
+        this.quizSetRunCnt = quizSetRunCnt;
+    }
+
+    public static QuizSet of(
+            List<Quiz> quizzes, String quizSetName, String quizSetType, int quizSetRunCnt) {
+
+        QuizSet quizSet = new QuizSet(quizzes, quizSetName, quizSetType, quizSetRunCnt);
+
+        // 각 Quiz 객체에 quizSet 바인딩
+        for (Quiz quiz : quizzes) {
+            quiz.bindQuizSet(quizSet);
+        }
+
+        return quizSet;
+    }
 }

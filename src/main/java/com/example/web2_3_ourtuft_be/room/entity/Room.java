@@ -34,7 +34,5 @@ public class Room {
     private int peopleEntering;
     private int round;
     private String host;
-
-    @Enumerated(EnumType.STRING)
-    private GameStatus gameStatus;
+    private String gameStatus;
 }
