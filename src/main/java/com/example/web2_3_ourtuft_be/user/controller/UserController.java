@@ -7,10 +7,12 @@ import com.example.web2_3_ourtuft_be.user.service.InventoryService;
 import com.example.web2_3_ourtuft_be.user.service.MemberPointService;
 import com.example.web2_3_ourtuft_be.user.service.UserFacadeService;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -72,5 +74,14 @@ public class UserController {
         return ResponseEntity.ok(
                 GlobalResponse.success(
                         new UserResponse.GetUserByContext(user.getId(), user.getRole())));
+    }
+
+    // 게임종료 후, 경험치와 포인트를 받아 올리는 api, 아마 게임 쪽에서 메서드를 호출해서 처리할 듯( 임시로 작성해뒀습니다. )
+    @PostMapping("/reward")
+    public ResponseEntity<GlobalResponse<RewardDto>> reward(
+            @RequestBody RewardDto request) {
+
+        RewardDto response = userFacadeService.reward(request);
+        return ResponseEntity.ok(GlobalResponse.success(response));
     }
 }
