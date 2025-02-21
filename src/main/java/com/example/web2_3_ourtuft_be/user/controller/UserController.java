@@ -1,26 +1,24 @@
 package com.example.web2_3_ourtuft_be.user.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
-import com.example.web2_3_ourtuft_be.user.dto.NickNameRequestDto;
-import com.example.web2_3_ourtuft_be.user.dto.NickNameResponseDto;
-import com.example.web2_3_ourtuft_be.user.dto.UserInfoRequestDto;
-import com.example.web2_3_ourtuft_be.user.dto.UserInfoResponseDto;
+import com.example.web2_3_ourtuft_be.user.dto.*;
+import com.example.web2_3_ourtuft_be.user.service.InventoryService;
+import com.example.web2_3_ourtuft_be.user.service.MemberPointService;
 import com.example.web2_3_ourtuft_be.user.service.UserFacadeService;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final UserFacadeService userFacadeService;
-
-    public UserController(UserService userService, UserFacadeService userFacadeService) {
-        this.userService = userService;
-        this.userFacadeService = userFacadeService;
-    }
+    private final InventoryService inventoryService;
+    private final MemberPointService memberPointService;
 
     @GetMapping("/myInfo")
     public ResponseEntity<GlobalResponse<UserInfoResponseDto>> getMyProfile() {
@@ -49,6 +47,20 @@ public class UserController {
     public ResponseEntity<GlobalResponse<NickNameResponseDto>> changeNickname(
             @RequestBody NickNameRequestDto request) {
         NickNameResponseDto response = userFacadeService.changeNickName(request);
+        return ResponseEntity.ok(GlobalResponse.success(response));
+    }
+
+    @GetMapping("/myInfo/items")
+    public ResponseEntity<GlobalResponse<InventoryItemDto>> getMyItems() {
+        InventoryItemDto response = inventoryService.getMyItems();
+
+        return ResponseEntity.ok(GlobalResponse.success(response));
+    }
+
+    @GetMapping("/myInfo/points")
+    public ResponseEntity<GlobalResponse<MyPointsResponseDto>> getMyPoints() {
+        MyPointsResponseDto response = memberPointService.getMyPoints();
+
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 }
