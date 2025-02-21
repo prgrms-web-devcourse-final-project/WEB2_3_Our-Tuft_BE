@@ -2,8 +2,11 @@ package com.example.web2_3_ourtuft_be.user.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.user.dto.UserProfileResponseDto;
+import com.example.web2_3_ourtuft_be.user.dto.UserResponse;
+import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,5 +26,13 @@ public class UserController {
 
         UserProfileResponseDto response = userService.getMyPage();
         return ResponseEntity.ok(GlobalResponse.success(response));
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<GlobalResponse<UserResponse.GetUserByContext>> getUserByContext(
+            @AuthenticationPrincipal(expression = "user") User user) {
+        return ResponseEntity.ok(
+                GlobalResponse.success(
+                        new UserResponse.GetUserByContext(user.getId(), user.getRole())));
     }
 }

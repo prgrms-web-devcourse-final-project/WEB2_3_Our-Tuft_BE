@@ -2,6 +2,8 @@ package com.example.web2_3_ourtuft_be.global.config;
 
 import com.example.web2_3_ourtuft_be.auth.service.CustomOAuth2UserService;
 import com.example.web2_3_ourtuft_be.security.filter.CustomRequestFilter;
+import com.example.web2_3_ourtuft_be.security.handler.CustomAccessDeniedHandler;
+import com.example.web2_3_ourtuft_be.security.handler.CustomAuthenticationEntrypoint;
 import com.example.web2_3_ourtuft_be.security.handler.CustomOAuthFailureHandler;
 import com.example.web2_3_ourtuft_be.security.handler.CustomOAuthSuccessHandler;
 import com.example.web2_3_ourtuft_be.security.util.JwtUtil;
@@ -32,9 +34,7 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private static final String[] authUrls = {
-        "/api/v1/auth/login", "/api/v1/auth/reissue",
-    };
+    private static final String[] authUrls = {"/api/v1/auth/**"};
     private static final String[] allowUrls = {"api/v1/admin/**"};
 
     @Bean
@@ -48,6 +48,12 @@ public class SecurityConfig {
                 .addFilterBefore(
                         new CustomRequestFilter(jwtUtil),
                         UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(
+                        exceptionHandler ->
+                                exceptionHandler
+                                        .authenticationEntryPoint(
+                                                new CustomAuthenticationEntrypoint())
+                                        .accessDeniedHandler(new CustomAccessDeniedHandler()))
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
@@ -70,13 +76,22 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/swagger-ui/**"));
+        return (web) ->
+                web.ignoring()
+                        .requestMatchers(new AntPathRequestMatcher("/favicon.ico"))
+                        .requestMatchers(new AntPathRequestMatcher("/css/**"))
+                        .requestMatchers(new AntPathRequestMatcher("/js/**"))
+                        .requestMatchers(new AntPathRequestMatcher("/image/**"))
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**"))
+                        .requestMatchers(new AntPathRequestMatcher("/test"))
+                        .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**"))
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui.html"));
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000")); // frontend url
+        config.setAllowedOrigins(List.of("http://localhost:3000"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

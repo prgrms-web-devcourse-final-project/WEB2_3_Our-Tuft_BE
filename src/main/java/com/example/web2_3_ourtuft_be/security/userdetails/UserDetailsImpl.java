@@ -24,8 +24,8 @@ public class UserDetailsImpl implements UserDetails {
         return collection;
     }
 
-    public Long getUserId() {
-        return user.getId();
+    public User getUser() {
+        return user;
     }
 
     @Override

@@ -8,11 +8,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint {
     @Override
@@ -22,12 +24,13 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
             AuthenticationException authException)
             throws IOException, ServletException {
 
+        log.error(this.getClass().getName() + "에러 핸들링");
         response.setContentType("application/json; charset=UTF-8");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
         GlobalResponse<Object> errorResponse =
                 GlobalResponse.fail(
-                        new UnauthorizedException(UnauthorizedMessages.AUTHENTICATION_REQUIRED));
+                        new UnauthorizedException(UnauthorizedMessages.AUTHENTICATION_FAILED));
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getOutputStream(), errorResponse);

@@ -28,10 +28,12 @@ public class CustomOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User user = oAuth2User.getUser();
 
-        String accessToken = jwtUtil.createJwt("access", user.getId(), user.getRole(), 1500000L);
+        String accessToken = jwtUtil.createJwt("access", user.getId(), user.getRole(), 100000L);
         String refreshToken = jwtUtil.createJwt("refresh", user.getId(), user.getRole(), 86400000L);
 
-        jwtUtil.saveRefreshToken(refreshToken);
+        response.addCookie(jwtUtil.createCookie("refresh", refreshToken));
+
+        jwtUtil.saveRefreshTokenInRedis(refreshToken);
 
         String SUCCESS_TARGET_URL = "http://localhost:3000/success#token=";
         String targetUrl = SUCCESS_TARGET_URL + accessToken;

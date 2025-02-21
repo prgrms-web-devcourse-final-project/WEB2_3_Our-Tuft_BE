@@ -77,10 +77,10 @@ public class CustomRequestFilter extends OncePerRequestFilter {
         String role = jwtUtil.getRole(accessToken);
 
         UserDetailsImpl customUserDetails = new UserDetailsImpl(User.to(id, role));
-        Authentication authToken =
+        Authentication authentication =
                 new UsernamePasswordAuthenticationToken(
                         customUserDetails, null, customUserDetails.getAuthorities());
 
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.security.util;
 
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -83,7 +84,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public void saveRefreshToken(String refreshToken) {
+    public void saveRefreshTokenInRedis(String refreshToken) {
         redisTemplate
                 .opsForValue()
                 .set(
@@ -93,12 +94,18 @@ public class JwtUtil {
                         TimeUnit.SECONDS);
     }
 
-    public String getRefreshToken(Long userId) {
-        Object token = redisTemplate.opsForValue().get(userId.toString());
+    public String getRefreshTokenInRedis(Long userId) {
+        Object token = redisTemplate.opsForValue().get("RT:" + userId.toString());
         return token != null ? token.toString() : null;
     }
 
-    public void deleteRefreshToken(Long userId) {
-        redisTemplate.delete(userId.toString());
+    public Cookie createCookie(String key, String value) {
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24 * 60 * 60);
+        // cookie.setSecure(true); // nginx ssl 리버스 프록시 또는 스프링 서버 https 로 변경시 true
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
+        return cookie;
     }
 }

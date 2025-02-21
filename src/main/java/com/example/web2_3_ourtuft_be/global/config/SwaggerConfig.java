@@ -15,6 +15,6 @@ import org.springframework.context.annotation.Configuration;
 @SecurityScheme(
         name = "accessToken",
         type = SecuritySchemeType.APIKEY,
-        paramName = "access",
+        paramName = "Authorization",
         in = SecuritySchemeIn.HEADER)
 public class SwaggerConfig {}
