@@ -6,9 +6,8 @@ import lombok.Getter;
 public class ItemRequest {
     private String name;
     private String category;
-    private String description;
-    private int price;
-    private String appearanceType;
-    private String color;
     private String imageUrl;
+    private String nickColor;
+    private int price;
+    private int stock;
 }
