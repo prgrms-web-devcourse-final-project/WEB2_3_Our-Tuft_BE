@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum DuplicatedMessages {
     NICKNAME("이미 등록된 닉네임입니다."),
     EMAIL("이미 등록된 이메일입니다."),
-    UNIQUE("UNIQUE 제약 조건 위배");
+    UNIQUE("UNIQUE 제약 조건 위배"),
+    CONFLICT("충돌 발생, 다시 시도해주세요");
 
     private final String message;
 }

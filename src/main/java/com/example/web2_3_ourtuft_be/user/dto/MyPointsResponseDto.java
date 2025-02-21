@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class NickNameColorItemDto {
-    private Long itemId;
-    private String value;
+public class MyPointsResponseDto {
+    private int points;
 }
