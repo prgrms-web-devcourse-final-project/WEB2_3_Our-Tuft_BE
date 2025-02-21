@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
     private final JwtUtil jwtUtil;
 
     public Void reissue(HttpServletRequest request, HttpServletResponse response) {
