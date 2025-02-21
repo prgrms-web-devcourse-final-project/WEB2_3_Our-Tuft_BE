@@ -18,12 +18,22 @@ public class Quiz {
     private String hint;
     private String answer;
 
-    public static Quiz create(long quizSetId, String question, String hint, String answer) {
-        Quiz quiz = new Quiz();
-        quiz.quizSetId = quizSetId;
-        quiz.question = question;
-        quiz.hint = hint;
-        quiz.answer = answer;
-        return quiz;
+    @Builder
+    public Quiz(Long quizSetId, String question, String hint, String answer) {
+        this.quizSetId = quizSetId;
+        this.question = question;
+        this.hint = hint;
+        this.answer = answer;
     }
+
+    public static Quiz to(long quizSetId, String question, String hint, String answer) {
+        return Quiz.builder()
+                .quizSetId(quizSetId)
+                .question(question)
+                .hint(hint)
+                .answer(answer)
+                .build();
+    }
+
+
 }

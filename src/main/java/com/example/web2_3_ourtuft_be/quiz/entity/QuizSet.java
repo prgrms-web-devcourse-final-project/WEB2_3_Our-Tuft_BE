@@ -23,11 +23,19 @@ public class QuizSet extends BaseTime {
     @Column(name = "quiz_set_run_cnt", nullable = false)
     private int quizSetRunCnt;
 
-    public static QuizSet create(String quizSetName, String quizSetType, int quizSetRunCnt) {
-        QuizSet quizSet = new QuizSet();
-        quizSet.quizSetName = quizSetName;
-        quizSet.quizSetType = quizSetType;
-        quizSet.quizSetRunCnt = quizSetRunCnt;
-        return quizSet;
+    @Builder
+    public QuizSet(String quizSetName, String quizSetType, int quizSetRunCnt) {
+        this.quizSetName = quizSetName;
+        this.quizSetType = quizSetType;
+        this.quizSetRunCnt = quizSetRunCnt;
+    }
+
+
+    public static QuizSet to(String quizSetName, String quizSetType, int quizSetRunCnt) {
+        return QuizSet.builder()
+                .quizSetName(quizSetName)
+                .quizSetType(quizSetType)
+                .quizSetRunCnt(quizSetRunCnt)
+                .build();
     }
 }

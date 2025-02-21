@@ -17,7 +17,6 @@ public class QuizController {
 
     private final QuizService quizService;
 
-
     @RequestMapping("/quizzes/regist")
     public GlobalResponse<QuizSetResponse> registQuizset(
             @RequestBody QuizeSetRequest quizeSetRequest) {

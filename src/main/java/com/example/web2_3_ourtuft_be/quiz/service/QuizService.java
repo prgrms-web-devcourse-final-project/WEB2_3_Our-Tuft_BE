@@ -26,14 +26,14 @@ public class QuizService {
     @Transactional
     public QuizSetResponse createQuizSet(QuizeSetRequest request) {
         QuizSet quizSet =
-                QuizSet.create(request.getQuizSetName(), request.getQuizSetType().name(), 0);
+                QuizSet.to(request.getQuizSetName(), request.getQuizSetType().name(), 0);
         QuizSet savedQuizSet = quizSetRepository.save(quizSet);
 
         List<Quiz> quizzes =
                 request.getQuizzes().stream()
                         .map(
                                 quiz ->
-                                        Quiz.create(
+                                        Quiz.to(
                                                 savedQuizSet.getId(),
                                                 quiz.getQuestion(),
                                                 quiz.getHint(),
