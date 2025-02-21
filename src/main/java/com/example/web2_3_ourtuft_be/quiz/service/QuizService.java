@@ -26,7 +26,7 @@ public class QuizService {
                         .map(q -> Quiz.of(q.getQuestion(), q.getHint(), q.getAnswer()))
                         .toList();
 
-        QuizSet quizSet = QuizSet.of(quizzes, dto.getQuizSetName(), dto.getQuizSetType(), 0);
+        QuizSet quizSet = QuizSet.of(quizzes, dto.getQuizSetName(), dto.getQuizSetType().name(), 0);
 
         return quizSetRepository.save(quizSet);
     }

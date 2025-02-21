@@ -18,7 +18,6 @@ public class UserFacadeService {
     private final ItemService itemService;
     private final MemberExpService expService;
 
-
     @Transactional(readOnly = true)
     public UserInfoResponseDto getUserInfo(Long userId) {
 

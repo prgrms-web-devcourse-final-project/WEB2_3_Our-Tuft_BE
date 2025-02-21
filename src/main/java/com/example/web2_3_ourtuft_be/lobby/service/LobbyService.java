@@ -22,7 +22,7 @@ public class LobbyService {
     public List<RoomResponseDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
 
-        if(rooms.isEmpty()) {
+        if (rooms.isEmpty()) {
             throw new NotFoundException(NotFoundMessages.ROOM);
         }
 
@@ -43,7 +43,7 @@ public class LobbyService {
 
         } else if (roomName != null) {
 
-            rooms = roomRepository.findRoomNameContaining(roomName);
+            rooms = roomRepository.findByRoomNameContaining(roomName);
 
             if (rooms.isEmpty()) {
                 throw new NotFoundException(NotFoundMessages.ROOM_NAME);
