@@ -2,6 +2,7 @@ package com.example.web2_3_ourtuft_be.global.response;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.GlobalException;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,10 +10,12 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@JsonPropertyOrder({"isSuccess", "code", "message", "result"})
+@JsonPropertyOrder({"isSuccess", "code", "message", "data"})
 public class GlobalResponse<T> {
 
+    @JsonProperty("isSuccess")
     private boolean success;
+
     private String code;
     private String message;
 

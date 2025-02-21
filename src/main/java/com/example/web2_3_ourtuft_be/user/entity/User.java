@@ -31,4 +31,8 @@ public class User extends BaseTime {
 
     @Column(name = "ROLE", nullable = false)
     private String role;
+
+    public static User to(Long id, String role) {
+        return User.builder().id(id).role(role).build();
+    }
 }
