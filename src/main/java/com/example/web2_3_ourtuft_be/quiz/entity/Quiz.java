@@ -25,15 +25,4 @@ public class Quiz {
         this.hint = hint;
         this.answer = answer;
     }
-
-    public static Quiz to(long quizSetId, String question, String hint, String answer) {
-        return Quiz.builder()
-                .quizSetId(quizSetId)
-                .question(question)
-                .hint(hint)
-                .answer(answer)
-                .build();
-    }
-
-
 }

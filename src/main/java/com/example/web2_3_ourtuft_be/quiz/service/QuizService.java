@@ -1,14 +1,14 @@
 package com.example.web2_3_ourtuft_be.quiz.service;
 
-import com.example.web2_3_ourtuft_be.quiz.QuizRepository;
-import com.example.web2_3_ourtuft_be.quiz.QuizSetRepository;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizRequest;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizResponse;
+import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetRequest;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetResponse;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizeSetRequest;
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizType;
+import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
+import com.example.web2_3_ourtuft_be.quiz.repository.QuizSetRepository;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,46 +24,57 @@ public class QuizService {
     private final QuizRepository quizRepository;
 
     @Transactional
-    public QuizSetResponse createQuizSet(QuizeSetRequest request) {
-        QuizSet quizSet =
-                QuizSet.to(request.getQuizSetName(), request.getQuizSetType().name(), 0);
-        QuizSet savedQuizSet = quizSetRepository.save(quizSet);
+    public QuizSetResponse registQuizSet(QuizSetRequest request) {
 
-        List<Quiz> quizzes =
-                request.getQuizzes().stream()
-                        .map(
-                                quiz ->
-                                        Quiz.to(
-                                                savedQuizSet.getId(),
-                                                quiz.getQuestion(),
-                                                quiz.getHint(),
-                                                quiz.getAnswer()))
-                        .toList();
-        List<Quiz> savedQuiz = quizRepository.saveAll(quizzes);
+        QuizSet newQuizSet = insertQuizSet(request);
 
-        List<QuizResponse> savedQuizDTO =
-                savedQuiz.stream()
-                        .map(
-                                quiz ->
-                                        QuizResponse.builder()
-                                                .question(quiz.getQuestion())
-                                                .hint(quiz.getHint())
-                                                .answer(quiz.getAnswer())
-                                                .build())
-                        .toList();
+        List<Quiz> newQuiz = insertQuizList(request.getQuizzes());
 
-        QuizSetResponse response =
-                QuizSetResponse.builder()
-                        .quizSetId(savedQuizSet.getId())
-                        .quizzes(savedQuizDTO)
-                        .quizSetName(savedQuizSet.getQuizSetName())
-                        .quizSetType(request.getQuizSetType())
-                        .build();
+        List<QuizResponse> newQuizDTO = toQuizResponse(newQuiz);
+
+        QuizSetResponse response = toQuizSetResponse(request, newQuizSet, newQuizDTO);
 
         return response;
     }
 
-    public static QuizeSetRequest createTestData() {
+    public List<Quiz> insertQuizList(List<QuizRequest> request) {
+        List<Quiz> quizzes = toQuizEntityList(request);
+        return quizRepository.saveAll(quizzes);
+    }
+
+    public QuizSet insertQuizSet(QuizSetRequest request) {
+        QuizSet quizSet =
+                QuizSet.builder()
+                        .quizSetName(request.getQuizSetName())
+                        .quizSetType(request.getQuizSetType().name())
+                        .quizSetRunCnt(0)
+                        .build();
+        return quizSetRepository.save(quizSet);
+    }
+
+    public QuizSetResponse toQuizSetResponse(
+            QuizSetRequest request, QuizSet newQuizSet, List<QuizResponse> newQuizDTO) {
+        QuizSetResponse quizSetResponse =
+                QuizSetResponse.builder()
+                        .quizSetId(newQuizSet.getId())
+                        .quizzes(newQuizDTO)
+                        .quizSetName(newQuizSet.getQuizSetName())
+                        .quizSetType(newQuizSet.getQuizSetType())
+                        .build();
+        return quizSetResponse;
+    }
+
+    public List<QuizResponse> toQuizResponse(List<Quiz> newQuiz) {
+        return newQuiz.stream().map(QuizResponse::to).toList();
+    }
+
+    public List<Quiz> toQuizEntityList(List<QuizRequest> request) {
+        return request.stream().map(QuizRequest::to).toList();
+    }
+
+    // TODO : 테스트를 위한 메서드로 추후 삭제 예정 요청 데이터 랜덤생성 메서드
+    //  요청 데이터 랜덤생성 메서드
+    public static QuizSetRequest createTestData() {
         Random random = new Random();
         int randomInt = random.nextInt(100);
         List<QuizRequest> quizzes = new ArrayList<>();
@@ -81,7 +92,7 @@ public class QuizService {
             quizzes.add(quizRequest);
         }
 
-        return QuizeSetRequest.builder()
+        return QuizSetRequest.builder()
                 .quizzes(quizzes)
                 .quizSetName(quizSetName)
                 .quizSetType(QuizType.OX)

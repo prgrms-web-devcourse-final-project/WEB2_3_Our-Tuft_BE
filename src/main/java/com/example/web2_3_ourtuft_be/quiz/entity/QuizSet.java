@@ -29,13 +29,4 @@ public class QuizSet extends BaseTime {
         this.quizSetType = quizSetType;
         this.quizSetRunCnt = quizSetRunCnt;
     }
-
-
-    public static QuizSet to(String quizSetName, String quizSetType, int quizSetRunCnt) {
-        return QuizSet.builder()
-                .quizSetName(quizSetName)
-                .quizSetType(quizSetType)
-                .quizSetRunCnt(quizSetRunCnt)
-                .build();
-    }
 }

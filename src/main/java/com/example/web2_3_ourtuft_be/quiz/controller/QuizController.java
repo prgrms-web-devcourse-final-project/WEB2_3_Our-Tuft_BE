@@ -3,8 +3,8 @@ package com.example.web2_3_ourtuft_be.quiz.controller;
 import static com.example.web2_3_ourtuft_be.quiz.service.QuizService.createTestData;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
+import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetRequest;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetResponse;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizeSetRequest;
 import com.example.web2_3_ourtuft_be.quiz.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,16 +19,16 @@ public class QuizController {
 
     @RequestMapping("/quizzes/regist")
     public GlobalResponse<QuizSetResponse> registQuizset(
-            @RequestBody QuizeSetRequest quizeSetRequest) {
+            @RequestBody QuizSetRequest quizeSetRequest) {
 
-        QuizSetResponse resultData = quizService.createQuizSet(quizeSetRequest);
+        QuizSetResponse resultData = quizService.registQuizSet(quizeSetRequest);
         return GlobalResponse.created(resultData);
     }
 
     // 테스트 퀴즈세트 생성
     public GlobalResponse<QuizSetResponse> registTestQuizSet() {
-        QuizeSetRequest testData = createTestData();
-        QuizSetResponse resultData = quizService.createQuizSet(testData);
+        QuizSetRequest testData = createTestData();
+        QuizSetResponse resultData = quizService.registQuizSet(testData);
         return GlobalResponse.created(resultData);
     }
 }
