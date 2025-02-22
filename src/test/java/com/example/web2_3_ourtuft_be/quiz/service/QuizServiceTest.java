@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.web2_3_ourtuft_be.quiz.QuizSetRepository;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetResponse;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizeSetRequest;
+import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetRequest;
+import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ class QuizServiceTest {
     void testData() {
 
         // when
-        QuizeSetRequest result = createTestData();
+        QuizSetRequest result = createTestData();
         // then
         assertThat(result).isNotNull();
         assertThat(result.getQuizzes().size()).isEqualTo(30);
@@ -34,7 +35,7 @@ class QuizServiceTest {
     @Test
     void createQuizSet() {
         // given
-        QuizeSetRequest requestData = createTestData();
+        QuizSetRequest requestData = createTestData();
 
         // when
         QuizSetResponse savedQuizSet = quizService.createQuizSet(requestData);

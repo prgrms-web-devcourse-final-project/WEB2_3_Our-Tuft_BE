@@ -3,9 +3,13 @@ package com.example.web2_3_ourtuft_be.quiz.service;
 import com.example.web2_3_ourtuft_be.quiz.QuizRepository;
 import com.example.web2_3_ourtuft_be.quiz.QuizSetRepository;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizRequest;
+
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizeSetRequest;
+
+import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetRequest;
+
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizType;
@@ -64,7 +68,7 @@ public class QuizService {
         return response;
     }
 
-    public static QuizeSetRequest createTestData() {
+    public static QuizSetRequest createTestData() {
         Random random = new Random();
         int randomInt = random.nextInt(100);
         List<QuizRequest> quizzes = new ArrayList<>();
@@ -82,7 +86,7 @@ public class QuizService {
             quizzes.add(quizRequest);
         }
 
-        return QuizeSetRequest.builder()
+        return QuizSetRequest.builder()
                 .quizzes(quizzes)
                 .quizSetName(quizSetName)
                 .quizSetType(QuizType.OX)
