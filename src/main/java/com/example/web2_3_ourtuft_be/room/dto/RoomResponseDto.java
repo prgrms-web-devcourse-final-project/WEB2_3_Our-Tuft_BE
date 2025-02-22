@@ -1,7 +1,6 @@
 package com.example.web2_3_ourtuft_be.room.dto;
 
 import com.example.web2_3_ourtuft_be.room.entity.Room;
-import com.example.web2_3_ourtuft_be.room.entity.enums.GameStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -12,7 +11,7 @@ public class RoomResponseDto {
     private final String roomName;
     private final int peopleEntering;
     private final int round;
-    private final GameStatus gameStatus;
+    private final String gameStatus;
 
     public RoomResponseDto(Room room) {
         this.roomId = room.getId();

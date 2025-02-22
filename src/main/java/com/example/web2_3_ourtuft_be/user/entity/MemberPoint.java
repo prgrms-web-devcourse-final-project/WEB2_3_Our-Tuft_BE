@@ -25,5 +25,4 @@ public class MemberPoint {
         }
         this.points = points;
     }
-
 }
