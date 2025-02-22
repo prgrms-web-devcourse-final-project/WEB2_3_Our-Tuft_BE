@@ -25,11 +25,16 @@ public class AuthController {
             summary = "토큰 재발급 API",
             description =
                     """
-                            새로 발급받은 엑세스 토큰은 응답 헤더, 리프레쉬 토큰은 브라우저 쿠키에 담습니다.
-                            프론트엔드에서 요청 시 credentials 를 통해 쿠키를 포함시켜야 합니다.
-                            백엔드에서 테스트 시 스웨거의 Authorize 를 해제해야 합니다.
+                            새로 발급받은 엑세스 토큰은 응답 헤더, 리프레쉬 토큰은 브라우저 쿠키 및 레디스에 저장됩니다..
+                            클라이언트 요청 시, withCredentials 를 통해 쿠키를 포함시켜야 합니다.
+                            스웨거에서 테스트할 때, Authorize 를 해제해야 합니다(엑세스 토큰 만료 시).
                             """)
-    @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "성공"),
+        @ApiResponse(responseCode = "404", description = "리프레쉬 토큰을 찾을 수 없습니다."),
+        @ApiResponse(responseCode = "401", description = "리프레쉬 토큰이 만료되었습니다."),
+        @ApiResponse(responseCode = "401", description = "유효하지 않은 리프레쉬 토큰입니다.")
+    })
     @PostMapping("/reissue")
     public ResponseEntity<GlobalResponse<Void>> reissue(
             HttpServletRequest request, HttpServletResponse response) {
@@ -42,8 +47,9 @@ public class AuthController {
             description =
                     """
                                 카카오 로그인 경로입니다. 해당 사이트에서 로그인 후 리다이렉트 되는 URL의 엑세스 토큰을 활용하면 됩니다.
+                                http://localhost:8080/oauth2/authorization/kakao
                                 """)
-    @GetMapping("/kakao")
+    @GetMapping("/kakao/이거 진짜 경로 아임니다")
     public String kakaoLogin() {
         return "http://localhost:8080/oauth2/authorization/kakao";
     }
@@ -53,8 +59,9 @@ public class AuthController {
             description =
                     """
                                 구글 로그인 경로입니다. 해당 사이트에서 로그인 후 리다이렉트 되는 URL의 엑세스 토큰을 활용하면 됩니다.
+                                http://localhost:8080/oauth2/authorization/google
                                 """)
-    @GetMapping("/google")
+    @GetMapping("/google/이거 진짜 경로 아임니다")
     public String googleLogin() {
         return "http://localhost:8080/oauth2/authorization/google";
     }

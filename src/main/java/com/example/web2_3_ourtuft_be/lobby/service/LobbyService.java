@@ -19,6 +19,16 @@ public class LobbyService {
 
     private final RoomRepository roomRepository;
 
+    public List<RoomResponseDto> getAllRooms() {
+        List<Room> rooms = roomRepository.findAll();
+
+        if (rooms.isEmpty()) {
+            throw new NotFoundException(NotFoundMessages.ROOM);
+        }
+
+        return rooms.stream().map(RoomResponseDto::new).collect(Collectors.toList());
+    }
+
     public List<RoomResponseDto> searchRoom(String roomName, Long roomId) {
 
         List<Room> rooms = new ArrayList<>();
@@ -33,7 +43,7 @@ public class LobbyService {
 
         } else if (roomName != null) {
 
-            rooms = roomRepository.findRoomNameContaining(roomName);
+            rooms = roomRepository.findByRoomNameContaining(roomName);
 
             if (rooms.isEmpty()) {
                 throw new NotFoundException(NotFoundMessages.ROOM_NAME);
