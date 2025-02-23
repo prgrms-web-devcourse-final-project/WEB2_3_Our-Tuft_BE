@@ -8,6 +8,7 @@ import com.example.web2_3_ourtuft_be.shop.repository.PurchaseHistoryRepository;
 import com.example.web2_3_ourtuft_be.shop.repository.PurchaseItemRepository;
 import com.example.web2_3_ourtuft_be.user.entity.MemberPoint;
 import com.example.web2_3_ourtuft_be.user.entity.PointHistory;
+import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
 import com.example.web2_3_ourtuft_be.user.repository.MemberPointRepository;
 import com.example.web2_3_ourtuft_be.user.repository.PointHistoryRepository;
 import com.example.web2_3_ourtuft_be.user.service.MemberPointService;
@@ -23,9 +24,8 @@ public class PurchaseService {
 
     private final PurchaseHistoryRepository purchaseHistoryRepository;
     private final PurchaseItemRepository purchaseItemRepository;
-    private final MemberPointService memberPointService;
-    private final MemberPointRepository memberPointRepository;
     private final PointHistoryRepository pointHistoryRepository;
+    private final MemberPointService memberPointService;
     private final ItemService itemService;
 
     @Transactional
@@ -33,33 +33,18 @@ public class PurchaseService {
 
         Long userId = 1L;
 
-        int totalPrice = 0;
+        int totalPrice = calculateTotalPrice(items);
         int totalQuantity = items.size();
-
-        for (Long itemId : items) {
-            Item item = itemService.getItem(itemId);
-            totalPrice += item.getPrice();
-        }
 
         processPointUsage(userId, totalPrice);
 
-        PurchaseHistory purchaseHistory =
-                PurchaseHistory.builder()
-                        .userId(userId)
-                        .totalPrice(totalPrice)
-                        .totalQuantity(totalQuantity)
-                        .purchasedAt(LocalDateTime.now())
-                        .build();
-        purchaseHistoryRepository.save(purchaseHistory);
+        PurchaseHistory purchaseHistory = savePurchaseHistory(userId, totalPrice, totalQuantity);
 
-        for (Long itemId : items) {
-            PurchaseItem purchaseItem =
-                    PurchaseItem.builder()
-                            .purchaseHistoryId(purchaseHistory.getId())
-                            .itemId(itemId)
-                            .build();
-            purchaseItemRepository.save(purchaseItem);
-        }
+        savePurchaseItems(purchaseHistory.getId(), items);
+    }
+
+    private int calculateTotalPrice(List<Long> items) {
+        return items.stream().mapToInt(itemId -> itemService.getItem(itemId).getPrice()).sum();
     }
 
     private void processPointUsage(Long userId, int totalPrice) {
@@ -67,15 +52,37 @@ public class PurchaseService {
         MemberPoint memberPoint = memberPointService.getPoint(userId);
 
         memberPointService.updatePoints(userId, -totalPrice);
-        memberPointRepository.save(memberPoint);
 
         PointHistory pointHistory =
                 PointHistory.builder()
                         .memberPointId(memberPoint.getId())
                         .pointChange(-totalPrice)
-                        .reason("아이템 구매")
+                        .reason(PointChangeReason.PURCHASE.name())
                         .usageTime(LocalDateTime.now())
                         .build();
         pointHistoryRepository.save(pointHistory);
+    }
+
+    private PurchaseHistory savePurchaseHistory(Long userId, int totalPrice, int totalQuantity) {
+        PurchaseHistory purchaseHistory =
+                PurchaseHistory.builder()
+                        .userId(userId)
+                        .totalPrice(totalPrice)
+                        .totalQuantity(totalQuantity)
+                        .purchasedAt(LocalDateTime.now())
+                        .build();
+
+        return purchaseHistoryRepository.save(purchaseHistory);
+    }
+
+    private void savePurchaseItems(Long purchaseHistoryId, List<Long> items) {
+        for (Long itemId : items) {
+            PurchaseItem purchaseItem =
+                    PurchaseItem.builder()
+                            .purchaseHistoryId(purchaseHistoryId)
+                            .itemId(itemId)
+                            .build();
+            purchaseItemRepository.save(purchaseItem);
+        }
     }
 }
