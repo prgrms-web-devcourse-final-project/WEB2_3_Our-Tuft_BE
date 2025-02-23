@@ -13,14 +13,7 @@ public class QuizRequest {
     private String hint;
     private String answer;
 
-    public static Quiz toEntity(QuizRequest quizRequest) {
-        return Quiz.builder()
-                .quizSetId(quizRequest.getQuizSetId())
-                .question(quizRequest.getQuestion())
-                .hint(quizRequest.getHint())
-                .answer(quizRequest.getAnswer())
-                .build();
-    }
+
 
     public void setQuizSetId(Long quizSetId) {
         this.quizSetId = quizSetId;

@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizRequest;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetRequest;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetResponse;
+import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetRequest;
+import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetResponse;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
-import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizType;
+import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizSetRepository;
 import java.util.ArrayList;
@@ -53,15 +53,15 @@ class QuizServiceTest {
     void createQuizSet() {
         // given
         List<QuizRequest> quizList = createTestData();
-        QuizSetRequest requestData =
-                QuizSetRequest.builder()
+        RegistQuizSetRequest requestData =
+                RegistQuizSetRequest.builder()
                         .creatorId("testUser")
                         .quizzes(quizList)
                         .quizSetName("testQuizSet")
-                        .quizSetType(QuizType.OX)
+                        .quizSetType(QuizSetType.OX)
                         .build();
         // when
-        QuizSetResponse savedQuizSet = quizService.registQuizSet(requestData);
+        RegistQuizSetResponse savedQuizSet = quizService.registQuizSet(requestData);
 
         // then
         assertThat(savedQuizSet).isNotNull();
@@ -72,11 +72,11 @@ class QuizServiceTest {
     @Test
     void insertQuizSet() {
         // given
-        QuizSetRequest request =
-                QuizSetRequest.builder()
+        RegistQuizSetRequest request =
+                RegistQuizSetRequest.builder()
                         .creatorId("testUser")
                         .quizSetName("테스트세트")
-                        .quizSetType(QuizType.OX)
+                        .quizSetType(QuizSetType.OX)
                         .build();
 
         // when
@@ -135,23 +135,26 @@ class QuizServiceTest {
     void deleteQuizSet() {
 
         List<QuizRequest> quizzes = createTestData();
-        QuizSetRequest newQuizSet =
-                QuizSetRequest.builder()
+        RegistQuizSetRequest newQuizSet =
+                RegistQuizSetRequest.builder()
                         .creatorId("testUser")
                         .quizzes(quizzes)
                         .quizSetName("테스트퀴즈세트")
-                        .quizSetType(QuizType.SPEED)
+                        .quizSetType(QuizSetType.SPEED)
                         .build();
 
-        QuizSetResponse quizSetResponse = quizService.registQuizSet(newQuizSet);
+        RegistQuizSetResponse registQuizSetResponse = quizService.registQuizSet(newQuizSet);
 
         // when
-        quizService.deleteQuizSet(quizSetResponse.getQuizSetId());
+        quizService.deleteQuizSet(registQuizSetResponse.getQuizSetId());
 
         // then
-        assertTrue(quizSetRepository.findById(quizSetResponse.getQuizSetId()).isEmpty());
+        assertTrue(quizSetRepository.findById(registQuizSetResponse.getQuizSetId()).isEmpty());
         assertTrue(
-                quizRepository.findAllByQuizSetId(quizSetResponse.getQuizSetId()).get().isEmpty());
+                quizRepository
+                        .findAllByQuizSetId(registQuizSetResponse.getQuizSetId())
+                        .get()
+                        .isEmpty());
     }
 
     @DisplayName("존재하지 않는 퀴즈 삭제시 예외 발생")

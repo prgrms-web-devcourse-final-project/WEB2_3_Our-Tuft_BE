@@ -5,12 +5,10 @@ import static com.example.web2_3_ourtuft_be.global.exception.messages.InvalidReq
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizRequest;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizResponse;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetRequest;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetResponse;
+import com.example.web2_3_ourtuft_be.quiz.dto.*;
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
+import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizSetRepository;
 import jakarta.transaction.Transactional;
@@ -24,6 +22,12 @@ public class QuizService {
 
     private final QuizSetRepository quizSetRepository;
     private final QuizRepository quizRepository;
+
+    @Transactional
+    public List<QuizSetSummaryResponse> getQuizSetList(QuizSetType quizSetType) {
+        List<QuizSet> quizSets = quizSetRepository.findAllByQuizSetType(quizSetType.name());
+        return quizSets.stream().map(QuizSetSummaryResponse::from).toList();
+    }
 
     @Transactional
     public void deleteQuizSet(Long quizSetId) {
@@ -40,7 +44,7 @@ public class QuizService {
     }
 
     @Transactional
-    public QuizSetResponse registQuizSet(QuizSetRequest request) {
+    public RegistQuizSetResponse registQuizSet(RegistQuizSetRequest request) {
 
         QuizSet newQuizSet = createQuizSet(request);
 
@@ -50,7 +54,7 @@ public class QuizService {
 
         List<Quiz> newQuizzes = createQuizList(quizListDTO);
 
-        return toQuizSetResponse(newQuizSet, newQuizzes);
+        return RegistQuizSetResponse.from(newQuizSet, newQuizzes);
     }
 
     public void bindQuizSetId(Long quizSetId, List<QuizRequest> quizListDTO) {
@@ -66,7 +70,7 @@ public class QuizService {
     }
 
     // QuizSet 객체생성
-    public QuizSet createQuizSet(QuizSetRequest request) {
+    public QuizSet createQuizSet(RegistQuizSetRequest request) {
 
         QuizSet quizSet =
                 QuizSet.builder()
@@ -78,14 +82,14 @@ public class QuizService {
         return quizSetRepository.save(quizSet);
     }
 
-    public QuizSetResponse toQuizSetResponse(QuizSet newQuizSet, List<Quiz> newQuizzes) {
-
-        List<QuizResponse> quizResponses = newQuizzes.stream().map(QuizResponse::from).toList();
-
-        return QuizSetResponse.from(newQuizSet, quizResponses);
-    }
-
     public List<Quiz> toQuizEntityList(List<QuizRequest> quizRequestList) {
-        return quizRequestList.stream().map(QuizRequest::toEntity).toList();
+        return quizRequestList.stream().map(
+                quizRequest -> Quiz.builder()
+                .quizSetId(quizRequest.getQuizSetId())
+                .question(quizRequest.getQuestion())
+                .hint(quizRequest.getHint())
+                .answer(quizRequest.getAnswer())
+                .build()
+        ).toList();
     }
 }
