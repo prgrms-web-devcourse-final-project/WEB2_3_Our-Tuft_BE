@@ -1,7 +1,5 @@
 package com.example.web2_3_ourtuft_be.quiz.controller;
 
-import static com.example.web2_3_ourtuft_be.quiz.service.QuizService.createTestData;
-
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetRequest;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetResponse;
@@ -10,10 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,12 +27,12 @@ public class QuizController {
         return GlobalResponse.created(resultData);
     }
 
-    @Operation(summary = "퀴즈 더미 데이터 등록 API", description = "퀴즈 더미 데이터를 등록합니다.")
+    @Operation(summary = "퀴즈세트 삭제 API", description = "등록된 퀴즈세트를 삭제합니다.")
     @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
-    @PostMapping("/testregistration")
-    public GlobalResponse<QuizSetResponse> registTestQuizSet() {
-        QuizSetRequest testData = createTestData();
-        QuizSetResponse resultData = quizService.registQuizSet(testData);
-        return GlobalResponse.created(resultData);
+    @PostMapping("/delete/{quizsetid}")
+    public GlobalResponse<String> registQuizset(@PathVariable("quizsetid") Long quizSetId) {
+
+        quizService.deleteQuizSet(quizSetId);
+        return GlobalResponse.success("퀴즈세트를 삭제 했습니다.");
     }
 }

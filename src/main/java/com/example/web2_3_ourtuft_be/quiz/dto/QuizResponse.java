@@ -11,7 +11,7 @@ public class QuizResponse {
     private String hint;
     private String answer;
 
-    public static QuizResponse to(Quiz quiz) {
+    public static QuizResponse from(Quiz quiz) {
         return QuizResponse.builder()
                 .question(quiz.getQuestion())
                 .hint(quiz.getHint())

@@ -11,7 +11,9 @@ import lombok.ToString;
 @ToString
 public class QuizSetRequest {
 
+    private final String creatorId;
     private final List<QuizRequest> quizzes;
     private final String quizSetName;
     private final QuizType quizSetType;
+    private final int quizSetRunCnt = 0;
 }

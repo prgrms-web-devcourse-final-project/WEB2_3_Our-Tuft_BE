@@ -13,9 +13,16 @@ public class Quiz {
     @Column(name = "quiz_id", nullable = false)
     private Long id;
 
+    @Column(name = "quiz_set_id", nullable = false)
     private Long quizSetId;
+
+    @Column(name = "question", nullable = false)
     private String question;
+
+    @Column(name = "hint", nullable = false)
     private String hint;
+
+    @Column(name = "answer", nullable = false)
     private String answer;
 
     @Builder
