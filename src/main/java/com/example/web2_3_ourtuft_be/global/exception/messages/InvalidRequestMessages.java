@@ -10,7 +10,7 @@ public enum InvalidRequestMessages {
     INVALID_IMAGE_VALUE("유효한 이미지 값을 입력하세요."),
     EMPTY_SEARCH_CONDITION("검색 조건을 입력하세요."),
     INSUFFICIENT_POINTS("보유 포인트가 부족합니다."),
-    ;
+    INVALID_QUIZ_COUNT("퀴즈 리스트는 최소 1개 이상이어야 합니다.");
 
     private final String message;
 }

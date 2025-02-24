@@ -1,4 +1,4 @@
-package com.example.web2_3_ourtuft_be.config;
+package com.example.web2_3_ourtuft_be.global.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -10,11 +10,15 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "Quiz API", version = "1.0", description = "실시간 퀴즈 API 명세"),
+        info =
+                @Info(
+                        title = "하이큐 API Docs",
+                        version = "1.0",
+                        description = "'여긴 내 구역이야' 팀의 최종 프로젝트 '하이큐' API 문서입니다."),
         security = @SecurityRequirement(name = "accessToken"))
 @SecurityScheme(
         name = "accessToken",
         type = SecuritySchemeType.APIKEY,
-        paramName = "access",
+        paramName = "Authorization",
         in = SecuritySchemeIn.HEADER)
 public class SwaggerConfig {}

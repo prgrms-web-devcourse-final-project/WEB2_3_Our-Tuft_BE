@@ -7,6 +7,7 @@ import com.example.web2_3_ourtuft_be.user.entity.MemberPoint;
 import com.example.web2_3_ourtuft_be.user.repository.MemberPointRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +15,7 @@ public class MemberPointService {
 
     private final MemberPointRepository memberPointRepository;
 
+    @Transactional
     public void updatePoints(Long userId, int amount) {
         MemberPoint memberPoint = getPoint(userId);
 
