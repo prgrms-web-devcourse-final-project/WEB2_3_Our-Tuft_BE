@@ -10,13 +10,13 @@ import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
 import com.example.web2_3_ourtuft_be.item.entity.Item;
 import com.example.web2_3_ourtuft_be.item.entity.enums.Category;
 import com.example.web2_3_ourtuft_be.item.repository.ItemRepository;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

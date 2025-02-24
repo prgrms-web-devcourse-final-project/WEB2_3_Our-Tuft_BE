@@ -6,9 +6,9 @@ import com.example.web2_3_ourtuft_be.user.dto.MyPointsResponseDto;
 import com.example.web2_3_ourtuft_be.user.entity.MemberPoint;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
 import com.example.web2_3_ourtuft_be.user.repository.MemberPointRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
