@@ -63,7 +63,9 @@ public class QuizService {
     }
 
     private static List<QuizResponse> toQuizResponse(List<Quiz> newQuizzes) {
+
         return newQuizzes.stream().map(QuizResponse::from).toList();
+
     }
 
     public List<QuizzesWithQuizSetId> bindQuizSetId(
@@ -77,6 +79,7 @@ public class QuizService {
         return quizzesWithQuizSetId;
     }
 
+    @Transactional
     public List<Quiz> createQuizList(List<QuizzesWithQuizSetId> requestQuizzes) {
         if (requestQuizzes.isEmpty()) {
             throw new InvalidRequestException(INVALID_QUIZ_COUNT);
