@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/items")
 @Tag(name = "🕶️ Item", description = "아이템 관련 API")
-
 public class ItemController {
 
     private final ItemService itemService;

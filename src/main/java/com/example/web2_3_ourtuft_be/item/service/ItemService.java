@@ -34,7 +34,7 @@ public class ItemService {
         } else if (keyword != null) {
             items = itemRepository.findByNameContaining(keyword, pageable);
         } else {
-            items = itemRepository.findAll(pageable);
+            items = itemRepository.findAllBy(pageable);
         }
 
         List<ItemResponse> itemResponses =
