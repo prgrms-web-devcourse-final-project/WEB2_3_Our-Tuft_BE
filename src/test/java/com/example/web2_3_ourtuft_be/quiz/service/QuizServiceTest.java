@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizRequest;
+import com.example.web2_3_ourtuft_be.quiz.dto.QuizzesWithQuizSetId;
+import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizRequest;
 import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetRequest;
 import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetResponse;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
@@ -29,9 +30,9 @@ class QuizServiceTest {
     @Autowired private QuizRepository quizRepository;
 
     @DisplayName("테스트 퀴즈데이터를 생성한다.")
-    static List<QuizRequest> createTestData() {
+    static List<RegistQuizRequest> createTestData() {
 
-        List<QuizRequest> quizzes = new ArrayList<>();
+        List<RegistQuizRequest> quizzes = new ArrayList<>();
         String question;
         String hint;
         String answer;
@@ -40,9 +41,13 @@ class QuizServiceTest {
             question = "문제" + i;
             hint = i + "번 문제 힌트";
             answer = i + "번 문제 답";
-            QuizRequest quizRequest =
-                    QuizRequest.builder().question(question).hint(hint).answer(answer).build();
-            quizzes.add(quizRequest);
+            RegistQuizRequest registQuizRequest =
+                    RegistQuizRequest.builder()
+                            .question(question)
+                            .hint(hint)
+                            .answer(answer)
+                            .build();
+            quizzes.add(registQuizRequest);
         }
 
         return quizzes;
@@ -52,7 +57,7 @@ class QuizServiceTest {
     @Test
     void createQuizSet() {
         // given
-        List<QuizRequest> quizList = createTestData();
+        List<RegistQuizRequest> quizList = createTestData();
         RegistQuizSetRequest requestData =
                 RegistQuizSetRequest.builder()
                         .creatorId("testUser")
@@ -96,45 +101,46 @@ class QuizServiceTest {
     void bindQuizSetID() {
         // given
         Long quizSetId = 100L;
-        List<QuizRequest> quizListDTO =
+        List<RegistQuizRequest> testQuizzes =
                 List.of(
-                        QuizRequest.builder()
+                        RegistQuizRequest.builder()
                                 .question("Question1")
                                 .hint("Hint1")
                                 .answer("answer1")
                                 .build(),
-                        QuizRequest.builder()
+                        RegistQuizRequest.builder()
                                 .question("Question2")
                                 .hint("Hint2")
                                 .answer("answer2")
                                 .build(),
-                        QuizRequest.builder()
+                        RegistQuizRequest.builder()
                                 .question("Question3")
                                 .hint("Hint3")
                                 .answer("answer3")
                                 .build());
         // when
-        quizService.bindQuizSetId(quizSetId, quizListDTO);
+        List<QuizzesWithQuizSetId> quizzesWithQuizSetId =
+                quizService.bindQuizSetId(quizSetId, testQuizzes);
         // then
-        assertThat(quizListDTO).isNotEmpty();
-        quizListDTO.forEach(quiz -> assertThat(quiz.getQuizSetId()).isEqualTo(quizSetId));
+        assertThat(quizzesWithQuizSetId).isNotEmpty();
+        quizzesWithQuizSetId.forEach(quiz -> assertThat(quiz.getQuizSetId()).isEqualTo(quizSetId));
     }
 
     @DisplayName("퀴즈 개수가 1개 미만일경우에 예외 발생")
     @Test
     void insertQuizListWithNoQuiz() {
         // given
-        List<QuizRequest> request = new ArrayList<>();
+        List<QuizzesWithQuizSetId> emptyList = new ArrayList<>();
 
         // when & then
-        assertThrows(InvalidRequestException.class, () -> quizService.createQuizList(request));
+        assertThrows(InvalidRequestException.class, () -> quizService.createQuizList(emptyList));
     }
 
     @DisplayName("퀴즈셋 삭제 시 관련된 퀴즈도 함께 삭제된다.")
     @Test
     void deleteQuizSet() {
 
-        List<QuizRequest> quizzes = createTestData();
+        List<RegistQuizRequest> quizzes = createTestData();
         RegistQuizSetRequest newQuizSet =
                 RegistQuizSetRequest.builder()
                         .creatorId("testUser")
@@ -146,7 +152,7 @@ class QuizServiceTest {
         RegistQuizSetResponse registQuizSetResponse = quizService.registQuizSet(newQuizSet);
 
         // when
-        quizService.deleteQuizSet(registQuizSetResponse.getQuizSetId());
+        quizService.deleteQuizSetAndQuizzes(registQuizSetResponse.getQuizSetId());
 
         // then
         assertTrue(quizSetRepository.findById(registQuizSetResponse.getQuizSetId()).isEmpty());
@@ -164,7 +170,7 @@ class QuizServiceTest {
         assertThrows(
                 NotFoundException.class,
                 () -> {
-                    quizService.deleteQuizSet(noneExistId);
+                    quizService.deleteQuizSetAndQuizzes(noneExistId);
                 });
     }
 }

@@ -25,12 +25,14 @@ public class QuizService {
 
     @Transactional
     public List<QuizSetSummaryResponse> getQuizSetList(QuizSetType quizSetType) {
+
         List<QuizSet> quizSets = quizSetRepository.findAllByQuizSetType(quizSetType.name());
+
         return quizSets.stream().map(QuizSetSummaryResponse::from).toList();
     }
 
     @Transactional
-    public void deleteQuizSet(Long quizSetId) {
+    public void deleteQuizSetAndQuizzes(Long quizSetId) {
 
         boolean existsByQuizSetId = quizRepository.existsByQuizSetId(quizSetId);
 
@@ -48,24 +50,40 @@ public class QuizService {
 
         QuizSet newQuizSet = createQuizSet(request);
 
-        List<QuizRequest> quizListDTO = request.getQuizzes();
+        List<RegistQuizRequest> quizzes = request.getQuizzes();
 
-        bindQuizSetId(newQuizSet.getId(), quizListDTO);
+        List<QuizzesWithQuizSetId> quizzesWithQuizSetId =
+                bindQuizSetId(newQuizSet.getId(), quizzes);
 
-        List<Quiz> newQuizzes = createQuizList(quizListDTO);
+        List<Quiz> newQuizzes = createQuizList(quizzesWithQuizSetId);
 
-        return RegistQuizSetResponse.from(newQuizSet, newQuizzes);
+        List<QuizResponse> quizResponses = toQuizResponse(newQuizzes);
+
+        return RegistQuizSetResponse.from(newQuizSet, quizResponses);
     }
 
-    public void bindQuizSetId(Long quizSetId, List<QuizRequest> quizListDTO) {
-        quizListDTO.forEach(quiz -> quiz.setQuizSetId(quizSetId));
+    private static List<QuizResponse> toQuizResponse(List<Quiz> newQuizzes) {
+        return newQuizzes.stream().map(QuizResponse::from).toList();
     }
 
-    public List<Quiz> createQuizList(List<QuizRequest> quizRequestList) {
-        if (quizRequestList.isEmpty()) {
+    public List<QuizzesWithQuizSetId> bindQuizSetId(
+            Long quizSetId, List<RegistQuizRequest> requestQuizzes) {
+
+        List<QuizzesWithQuizSetId> quizzesWithQuizSetId =
+                requestQuizzes.stream()
+                        .map(quiz -> QuizzesWithQuizSetId.from(quizSetId, quiz))
+                        .toList();
+
+        return quizzesWithQuizSetId;
+    }
+
+    public List<Quiz> createQuizList(List<QuizzesWithQuizSetId> requestQuizzes) {
+        if (requestQuizzes.isEmpty()) {
             throw new InvalidRequestException(INVALID_QUIZ_COUNT);
         }
-        List<Quiz> quizzes = toQuizEntityList(quizRequestList);
+
+        List<Quiz> quizzes = toQuizEntityList(requestQuizzes);
+
         return quizRepository.saveAll(quizzes);
     }
 
@@ -82,15 +100,15 @@ public class QuizService {
         return quizSetRepository.save(quizSet);
     }
 
-    public List<Quiz> toQuizEntityList(List<QuizRequest> quizRequestList) {
-        return quizRequestList.stream()
+    public List<Quiz> toQuizEntityList(List<QuizzesWithQuizSetId> registQuizRequestList) {
+        return registQuizRequestList.stream()
                 .map(
-                        quizRequest ->
+                        registQuizRequest ->
                                 Quiz.builder()
-                                        .quizSetId(quizRequest.getQuizSetId())
-                                        .question(quizRequest.getQuestion())
-                                        .hint(quizRequest.getHint())
-                                        .answer(quizRequest.getAnswer())
+                                        .quizSetId(registQuizRequest.getQuizSetId())
+                                        .question(registQuizRequest.getQuestion())
+                                        .hint(registQuizRequest.getHint())
+                                        .answer(registQuizRequest.getAnswer())
                                         .build())
                 .toList();
     }

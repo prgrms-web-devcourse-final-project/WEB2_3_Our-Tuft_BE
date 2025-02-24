@@ -35,7 +35,7 @@ public class QuizController {
     @DeleteMapping("/{quizsetid}")
     public GlobalResponse<String> deleteQuizset(@PathVariable("quizsetid") Long quizSetId) {
 
-        quizService.deleteQuizSet(quizSetId);
+        quizService.deleteQuizSetAndQuizzes(quizSetId);
         return GlobalResponse.success("퀴즈세트를 삭제 했습니다.");
     }
 
