@@ -41,7 +41,11 @@ public class ItemController {
     }
 
     @Operation(summary = "아이템 등록 API", description = "아이템을 등록합니다.")
-    @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "성공"),
+        @ApiResponse(responseCode = "400", description = "유효한 색상 값을 입력하세요."),
+        @ApiResponse(responseCode = "400", description = "유효한 이미지 값을 입력하세요.")
+    })
     @PostMapping
     public ResponseEntity<GlobalResponse<ItemResponse>> registerItem(
             @RequestBody ItemRequest request) {
@@ -53,7 +57,10 @@ public class ItemController {
     }
 
     @Operation(summary = "아이템 정보 수정 API", description = "아이템 정보를 수정합니다.")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "404", description = "아이템이 존재하지 않습니다.")
+    })
     @PutMapping("/{itemId}")
     public ResponseEntity<GlobalResponse<ItemResponse>> updateItem(
             @PathVariable Long itemId, @RequestBody ItemRequest request) {
@@ -64,7 +71,10 @@ public class ItemController {
     }
 
     @Operation(summary = "아이템 삭제 API", description = "아이템을 삭제합니다.")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "404", description = "아이템이 존재하지 않습니다.")
+    })
     @DeleteMapping("/{itemId}")
     public ResponseEntity<GlobalResponse<String>> deleteItem(@PathVariable Long itemId) {
 

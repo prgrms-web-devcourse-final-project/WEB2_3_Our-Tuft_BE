@@ -17,6 +17,7 @@ public class GlobalResponse<T> {
     private boolean success;
 
     private String code;
+
     private String message;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
