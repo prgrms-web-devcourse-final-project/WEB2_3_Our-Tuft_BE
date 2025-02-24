@@ -64,7 +64,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    @DisplayName("아이템 조회 성공")
+    @DisplayName("모든 아이템 조회 시 전체 목록 반환")
     public void getItemsSuccess() {
         // given
         PageRequest pageable = PageRequest.of(0, 6);
@@ -83,7 +83,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    @DisplayName("아이템 조회 성공")
+    @DisplayName("카테고리별 아이템 조회 시 해당하는 아이템 반환")
     public void getItemsByCategorySuccess() {
         // given
         PageRequest pageable = PageRequest.of(0, 6);
@@ -101,7 +101,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    @DisplayName("아이템 생성 성공")
+    @DisplayName("아이템 등록 성공")
     public void registerItemSuccess() {
         // given
         ItemRequest itemRequest = new ItemRequest("item1", Category.EYE, "eye.jpg", null, 100, 10);
@@ -118,7 +118,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    @DisplayName("아이템 생성 실패 - 카테고리별 항목 존재X")
+    @DisplayName("아이템 등록 실패 - 카테고리별 항목 존재X")
     void registerItemFailMissingImage() {
         // given
         ItemRequest invalidRequest = new ItemRequest("item1", Category.EYE, null, null, 1000, 10);
