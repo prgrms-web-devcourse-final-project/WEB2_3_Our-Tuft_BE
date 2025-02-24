@@ -17,12 +17,11 @@ public class PointHistory {
     @Column(name = "member_point_id", nullable = false)
     private Long memberPointId;
 
-    @Column(nullable = false)
     private int pointChange;
 
-    @Column(nullable = false)
+    private String type;
+
     private String reason;
 
-    @Column(nullable = false)
     private LocalDateTime usageTime;
 }

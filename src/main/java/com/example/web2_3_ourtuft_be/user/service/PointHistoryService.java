@@ -7,6 +7,7 @@ import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.user.entity.MemberPoint;
 import com.example.web2_3_ourtuft_be.user.entity.PointHistory;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
+import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
 import com.example.web2_3_ourtuft_be.user.repository.MemberPointRepository;
 import com.example.web2_3_ourtuft_be.user.repository.PointHistoryRepository;
 import java.time.LocalDateTime;
@@ -23,11 +24,13 @@ public class PointHistoryService {
     private final MemberPointRepository memberPointRepository;
 
     @Transactional
-    public void savePointHistory(Long memberPointId, int amount, PointChangeReason reason) {
+    public void savePointHistory(
+            Long memberPointId, int amount, PointChangeType type, PointChangeReason reason) {
         PointHistory pointHistory =
                 PointHistory.builder()
                         .memberPointId(memberPointId)
                         .pointChange(amount)
+                        .type(type.name())
                         .reason(reason.name())
                         .usageTime(LocalDateTime.now())
                         .build();
@@ -44,17 +47,23 @@ public class PointHistoryService {
                         .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
 
         int storedPoints = memberPoint.getPoints();
-
-        List<PointHistory> pointHistoryList =
-                pointHistoryRepository.findByMemberPointId(memberPoint.getId());
-
-        int calculatedPoints = storedPoints;
-        for (PointHistory pointHistory : pointHistoryList) {
-            calculatedPoints += pointHistory.getPointChange();
-        }
+        int calculatedPoints = calculatePoints(memberPoint);
 
         if (calculatedPoints != storedPoints) {
             throw new DuplicatedException(DuplicatedMessages.MISMATCH_POINT);
         }
+    }
+
+    private int calculatePoints(MemberPoint memberPoint) {
+        List<PointHistory> pointHistoryList =
+                pointHistoryRepository.findByMemberPointId(memberPoint.getId());
+
+        return pointHistoryList.stream()
+                .mapToInt(
+                        pointHistory ->
+                                pointHistory.getType().equals(PointChangeType.INCREASE.name())
+                                        ? pointHistory.getPointChange()
+                                        : -pointHistory.getPointChange())
+                .sum();
     }
 }

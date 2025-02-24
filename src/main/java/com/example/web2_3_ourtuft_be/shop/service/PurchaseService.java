@@ -2,6 +2,7 @@ package com.example.web2_3_ourtuft_be.shop.service;
 
 import com.example.web2_3_ourtuft_be.item.service.ItemService;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
+import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
 import com.example.web2_3_ourtuft_be.user.service.MemberPointService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,8 @@ public class PurchaseService {
         int totalPrice = calculateTotalPrice(items);
         int totalQuantity = items.size();
 
-        memberPointService.updatePoints(userId, -totalPrice, PointChangeReason.PURCHASE);
+        memberPointService.updatePoints(
+                userId, totalPrice, PointChangeType.DECREASE, PointChangeReason.PURCHASE);
 
         purchaseHistoryService.savePurchaseHistory(userId, items, totalPrice, totalQuantity);
     }
