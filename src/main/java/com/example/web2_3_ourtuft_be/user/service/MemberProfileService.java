@@ -60,4 +60,10 @@ public class MemberProfileService {
             throw new DuplicatedException(DuplicatedMessages.NICKNAME);
         }
     }
+
+    public void createProfile(Long userId) {
+        MemberProfile profile = MemberProfile.builder().userId(userId).build();
+
+        profileRepository.save(profile);
+    }
 }

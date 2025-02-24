@@ -23,10 +23,14 @@ public class MemberProfile extends BaseTime {
     private String nickname;
 
     private String introduction;
-    private Long eyeItemId;
-    private Long mouseItemId;
-    private Long skinItemId;
-    private Long nicknameItemId;
+
+    @Builder.Default private Long eyeItemId = 1L;
+
+    @Builder.Default private Long mouseItemId = 1L;
+
+    @Builder.Default private Long skinItemId = 1L;
+
+    @Builder.Default private Long nicknameItemId = 1L;
 
     public void changeNickname(String nickname) {
         this.nickname = nickname;

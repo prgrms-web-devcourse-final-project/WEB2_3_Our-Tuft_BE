@@ -34,4 +34,9 @@ public class MemberPointService {
 
         return new MyPointsResponseDto(getPoint(userId).getPoints());
     }
+
+    public void createPoint(Long userId) {
+        MemberPoint point = new MemberPoint(userId);
+        memberPointRepository.save(point);
+    }
 }
