@@ -24,7 +24,10 @@ public class lobbyController {
     private final LobbyService lobbyService;
 
     @Operation(summary = "방 전체 조회 API", description = "로비에서 생성된 방을 조회합니다.")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "404", description = "방이 존재하지 않습니다."),
+    })
     @GetMapping("/rooms")
     public ResponseEntity<GlobalResponse<List<RoomResponseDto>>> viewAllRooms() {
 
@@ -34,7 +37,12 @@ public class lobbyController {
     }
 
     @Operation(summary = "방 검색 API", description = "방 제목과 방ID 로 방을 검색합니다.")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "400", description = "검색 조건을 입력하세요."),
+        @ApiResponse(responseCode = "404", description = "해당 ID의 방을 찾을 수 없습니다."),
+        @ApiResponse(responseCode = "404", description = "해당 이름을 포함하는 방을 찾을 수 없습니다.")
+    })
     @GetMapping("/rooms/search")
     public ResponseEntity<GlobalResponse<List<RoomResponseDto>>> searchRoom(
             @RequestParam(required = false) String roomName,
