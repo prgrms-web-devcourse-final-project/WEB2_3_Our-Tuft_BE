@@ -150,11 +150,8 @@ class QuizServiceTest {
 
         // then
         assertTrue(quizSetRepository.findById(registQuizSetResponse.getQuizSetId()).isEmpty());
-        assertTrue(
-                quizRepository
-                        .findAllByQuizSetId(registQuizSetResponse.getQuizSetId())
-                        .get()
-                        .isEmpty());
+        assertThat(quizRepository.existsByQuizSetId(registQuizSetResponse.getQuizSetId()))
+                .isFalse();
     }
 
     @DisplayName("존재하지 않는 퀴즈 삭제시 예외 발생")

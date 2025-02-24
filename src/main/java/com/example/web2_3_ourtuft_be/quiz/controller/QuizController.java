@@ -32,8 +32,8 @@ public class QuizController {
 
     @Operation(summary = "퀴즈세트 삭제 API", description = "등록된 퀴즈세트를 삭제합니다.")
     @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
-    @DeleteMapping("/delete/{quizsetid}")
-    public GlobalResponse<String> registQuizset(@PathVariable("quizsetid") Long quizSetId) {
+    @DeleteMapping("/{quizsetid}")
+    public GlobalResponse<String> deleteQuizset(@PathVariable("quizsetid") Long quizSetId) {
 
         quizService.deleteQuizSet(quizSetId);
         return GlobalResponse.success("퀴즈세트를 삭제 했습니다.");

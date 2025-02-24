@@ -1,6 +1,5 @@
 package com.example.web2_3_ourtuft_be.quiz.dto;
 
-import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,6 +13,11 @@ public class QuizRequest {
     private String answer;
 
 
+    public QuizRequest(String question, String hint, String answer) {
+        this.question = question;
+        this.hint = hint;
+        this.answer = answer;
+    }
 
     public void setQuizSetId(Long quizSetId) {
         this.quizSetId = quizSetId;

@@ -83,13 +83,15 @@ public class QuizService {
     }
 
     public List<Quiz> toQuizEntityList(List<QuizRequest> quizRequestList) {
-        return quizRequestList.stream().map(
-                quizRequest -> Quiz.builder()
-                .quizSetId(quizRequest.getQuizSetId())
-                .question(quizRequest.getQuestion())
-                .hint(quizRequest.getHint())
-                .answer(quizRequest.getAnswer())
-                .build()
-        ).toList();
+        return quizRequestList.stream()
+                .map(
+                        quizRequest ->
+                                Quiz.builder()
+                                        .quizSetId(quizRequest.getQuizSetId())
+                                        .question(quizRequest.getQuestion())
+                                        .hint(quizRequest.getHint())
+                                        .answer(quizRequest.getAnswer())
+                                        .build())
+                .toList();
     }
 }
