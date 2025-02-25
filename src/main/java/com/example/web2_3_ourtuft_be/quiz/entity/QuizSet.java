@@ -15,7 +15,7 @@ public class QuizSet extends BaseTime {
     private Long id;
 
     @Column(name = "creator_id", nullable = false)
-    private String creatorId;
+    private Long creatorId;
 
     @Column(name = "quiz_set_name", nullable = false)
     private String quizSetName;
@@ -31,7 +31,7 @@ public class QuizSet extends BaseTime {
 
     @Builder
     public QuizSet(
-            String creatorId,
+            Long creatorId,
             String quizSetName,
             String quizSetCategoryType,
             String quizSetType,

@@ -37,19 +37,17 @@ public class QuizService {
     }
 
     @Transactional
-    public RegistQuizSetResponse registQuizSet(
-            String creatorId,
-            RegistQuizSetRequest registQuizSetRequest,
-            RegistQuizzesRequest registQuizzesRequest) {
+    public RegistQuizSetAndQuizzesResponse registQuizSet(
+            Long creatorId, RegistQuizSetAndQuizzesRequest registQuizSetAndQuizzesRequest) {
 
-        QuizSet newQuizSet = createQuizSet(creatorId, registQuizSetRequest);
+        QuizSet newQuizSet = createQuizSet(creatorId, registQuizSetAndQuizzesRequest);
 
         List<Quiz> newQuizzes =
-                createQuizList(newQuizSet.getId(), registQuizzesRequest.getQuizzes());
+                createQuizList(newQuizSet.getId(), registQuizSetAndQuizzesRequest.getQuizzes());
 
         List<QuizResponse> quizResponses = toQuizResponse(newQuizzes);
 
-        return RegistQuizSetResponse.from(newQuizSet, quizResponses);
+        return RegistQuizSetAndQuizzesResponse.from(newQuizSet, quizResponses);
     }
 
     private static List<QuizResponse> toQuizResponse(List<Quiz> newQuizzes) {
@@ -70,7 +68,7 @@ public class QuizService {
 
     // QuizSet 객체생성
     @Transactional
-    public QuizSet createQuizSet(String creatorId, RegistQuizSetRequest request) {
+    public QuizSet createQuizSet(Long creatorId, RegistQuizSetAndQuizzesRequest request) {
 
         QuizSet quizSet =
                 QuizSet.builder()

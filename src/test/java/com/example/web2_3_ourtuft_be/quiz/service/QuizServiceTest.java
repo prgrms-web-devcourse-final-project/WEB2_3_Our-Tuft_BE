@@ -50,18 +50,19 @@ class QuizServiceTest {
     @Test
     void createQuizSet() {
         // given
-        RegistQuizzesRequest quizzes = RegistQuizzesRequest.from(createTestData());
+        List<QuizRequest> quizzes = createTestData();
 
-        String creatorId = "testUser";
-        RegistQuizSetRequest requestData =
-                RegistQuizSetRequest.builder()
+        Long creatorId = 222L;
+        RegistQuizSetAndQuizzesRequest requestData =
+                RegistQuizSetAndQuizzesRequest.builder()
                         .quizSetName("testQuizSet")
                         .quizSetType(QuizSetType.OX)
                         .quizSetCategoryType(QuizSetCategoryType.ANIMAL)
+                        .quizzes(quizzes)
                         .build();
         // when
-        RegistQuizSetResponse savedQuizSet =
-                quizService.registQuizSet(creatorId, requestData, quizzes);
+        RegistQuizSetAndQuizzesResponse savedQuizSet =
+                quizService.registQuizSet(creatorId, requestData);
 
         // then
         assertThat(savedQuizSet).isNotNull();
@@ -72,9 +73,9 @@ class QuizServiceTest {
     @Test
     void insertQuizSet() {
         // given
-        String creatorId = "tsetUser";
-        RegistQuizSetRequest request =
-                RegistQuizSetRequest.builder()
+        Long creatorId = 222L;
+        RegistQuizSetAndQuizzesRequest request =
+                RegistQuizSetAndQuizzesRequest.builder()
                         .quizSetName("테스트세트")
                         .quizSetType(QuizSetType.OX)
                         .quizSetCategoryType(QuizSetCategoryType.ANIMAL)
@@ -96,26 +97,30 @@ class QuizServiceTest {
     @Test
     void deleteQuizSet() {
 
-        RegistQuizzesRequest quizzes = RegistQuizzesRequest.from(createTestData());
+        List<QuizRequest> testQuizzes = createTestData();
 
-        String creatorId = "testUser";
+        Long creatorId = 222L;
 
-        RegistQuizSetRequest newQuizSet =
-                RegistQuizSetRequest.builder()
+        RegistQuizSetAndQuizzesRequest newQuizSet =
+                RegistQuizSetAndQuizzesRequest.builder()
                         .quizSetName("테스트퀴즈세트")
                         .quizSetType(QuizSetType.SPEED)
                         .quizSetCategoryType(QuizSetCategoryType.ANIMAL)
+                        .quizzes(testQuizzes)
                         .build();
 
-        RegistQuizSetResponse registQuizSetResponse =
-                quizService.registQuizSet(creatorId, newQuizSet, quizzes);
+        RegistQuizSetAndQuizzesResponse registQuizSetAndQuizzesResponse =
+                quizService.registQuizSet(creatorId, newQuizSet);
 
         // when
-        quizService.deleteQuizSetAndQuizzes(registQuizSetResponse.getQuizSetId());
+        quizService.deleteQuizSetAndQuizzes(registQuizSetAndQuizzesResponse.getQuizSetId());
 
         // then
-        assertTrue(quizSetRepository.findById(registQuizSetResponse.getQuizSetId()).isEmpty());
-        assertThat(quizRepository.existsByQuizSetId(registQuizSetResponse.getQuizSetId()))
+        assertTrue(
+                quizSetRepository
+                        .findById(registQuizSetAndQuizzesResponse.getQuizSetId())
+                        .isEmpty());
+        assertThat(quizRepository.existsByQuizSetId(registQuizSetAndQuizzesResponse.getQuizSetId()))
                 .isFalse();
     }
 

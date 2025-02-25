@@ -6,18 +6,18 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class RegistQuizSetResponse {
+public class RegistQuizSetAndQuizzesResponse {
     private Long quizSetId;
-    private final String cretaorId;
+    private final Long cretaorId;
     private final String quizSetName;
     private final String quizSetType;
     private final String quizSetCategoryType;
     private final List<QuizResponse> quizzes;
 
     @Builder
-    public RegistQuizSetResponse(
+    public RegistQuizSetAndQuizzesResponse(
             Long quizSetId,
-            String cretaorId,
+            Long cretaorId,
             String quizSetName,
             String quizSetType,
             String quizSetCategoryType,
@@ -30,9 +30,9 @@ public class RegistQuizSetResponse {
         this.quizzes = quizzes;
     }
 
-    @Builder
-    public static RegistQuizSetResponse from(QuizSet quizSet, List<QuizResponse> quizzes) {
-        return RegistQuizSetResponse.builder()
+    public static RegistQuizSetAndQuizzesResponse from(
+            QuizSet quizSet, List<QuizResponse> quizzes) {
+        return RegistQuizSetAndQuizzesResponse.builder()
                 .quizSetId(quizSet.getId())
                 .cretaorId(quizSet.getCreatorId())
                 .quizSetName(quizSet.getQuizSetName())
