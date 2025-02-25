@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.quiz.dto.*;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
+import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetCategoryType;
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizSetRepository;
@@ -56,6 +57,7 @@ class QuizServiceTest {
                 RegistQuizSetRequest.builder()
                         .quizSetName("testQuizSet")
                         .quizSetType(QuizSetType.OX)
+                        .quizSetCategoryType(QuizSetCategoryType.ANIMAL)
                         .build();
         // when
         RegistQuizSetResponse savedQuizSet =
@@ -75,6 +77,7 @@ class QuizServiceTest {
                 RegistQuizSetRequest.builder()
                         .quizSetName("테스트세트")
                         .quizSetType(QuizSetType.OX)
+                        .quizSetCategoryType(QuizSetCategoryType.ANIMAL)
                         .build();
 
         // when
@@ -101,6 +104,7 @@ class QuizServiceTest {
                 RegistQuizSetRequest.builder()
                         .quizSetName("테스트퀴즈세트")
                         .quizSetType(QuizSetType.SPEED)
+                        .quizSetCategoryType(QuizSetCategoryType.ANIMAL)
                         .build();
 
         RegistQuizSetResponse registQuizSetResponse =

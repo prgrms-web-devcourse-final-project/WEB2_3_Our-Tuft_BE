@@ -1,17 +1,14 @@
 package com.example.web2_3_ourtuft_be.quiz.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizCategoryResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetRequest;
 import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizzesRequest;
-import com.example.web2_3_ourtuft_be.quiz.service.QuizCategoryService;
 import com.example.web2_3_ourtuft_be.quiz.service.QuizService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,11 +20,10 @@ import org.springframework.web.bind.annotation.*;
 public class QuizController {
 
     private final QuizService quizService;
-    private final QuizCategoryService quizCategoryService;
 
     @Operation(summary = "퀴즈 등록 API", description = "퀴즈를 등록합니다.")
     @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
-    @PostMapping()
+    @PostMapping("/registration")
     public GlobalResponse<RegistQuizSetResponse> registQuizset(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody RegistQuizSetRequest registQuizSetRequest,
@@ -48,14 +44,5 @@ public class QuizController {
 
         quizService.deleteQuizSetAndQuizzes(quizSetId);
         return GlobalResponse.success("퀴즈세트를 삭제 했습니다.");
-    }
-
-    @Operation(summary = "퀴즈 주제 카테고리 조회 API", description = "퀴즈 주제 카테고리를 조회합니다.")
-    @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
-    @GetMapping()
-    public GlobalResponse<List<QuizCategoryResponse>> getQuizSetList() {
-
-        List<QuizCategoryResponse> quizSetList = quizCategoryService.getQuizCategories();
-        return GlobalResponse.success(quizSetList);
     }
 }

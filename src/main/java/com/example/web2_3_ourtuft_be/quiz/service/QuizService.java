@@ -8,7 +8,6 @@ import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.quiz.dto.*;
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
-import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizSetRepository;
 import jakarta.transaction.Transactional;
@@ -22,14 +21,6 @@ public class QuizService {
 
     private final QuizSetRepository quizSetRepository;
     private final QuizRepository quizRepository;
-
-    @Transactional
-    public List<QuizSetSummaryResponse> getQuizSetList(QuizSetType quizSetType) {
-
-        List<QuizSet> quizSets = quizSetRepository.findAllByQuizSetType(quizSetType.name());
-
-        return quizSets.stream().map(QuizSetSummaryResponse::from).toList();
-    }
 
     @Transactional
     public void deleteQuizSetAndQuizzes(Long quizSetId) {
@@ -85,6 +76,7 @@ public class QuizService {
                 QuizSet.builder()
                         .creatorId(creatorId)
                         .quizSetName(request.getQuizSetName())
+                        .quizSetCategoryType(request.getQuizSetCategoryType().name())
                         .quizSetType(request.getQuizSetType().name())
                         .quizSetRunCnt(0)
                         .build();
