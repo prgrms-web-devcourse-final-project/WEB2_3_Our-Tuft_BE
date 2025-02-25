@@ -1,9 +1,10 @@
-package com.example.web2_3_ourtuft_be.lobby.service;
+package com.example.web2_3_ourtuft_be.room.service;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
+import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
@@ -50,5 +51,23 @@ public class LobbyService {
         }
 
         return rooms.stream().map(RoomResponseDto::new).collect(Collectors.toList());
+    }
+
+    public RoomResponseDto createRoom(RoomRequestDto roomRequestDto, String userName) {
+
+        Room room =
+                Room.builder()
+                    .roomName(roomRequestDto.getRoomName())
+                    .disclosure(roomRequestDto.isDisclosure())
+                    .roomPassword(roomRequestDto.getPassword())
+                    .peopleEntering(1)
+                    .round(roomRequestDto.getRound())
+                    .gameStatus("WAITING")
+                    .host(userName)
+                    .build();
+
+        room = roomRepository.save(room);
+
+        return new RoomResponseDto(room);
     }
 }
