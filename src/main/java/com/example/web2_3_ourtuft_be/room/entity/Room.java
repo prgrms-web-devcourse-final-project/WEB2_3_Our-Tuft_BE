@@ -26,7 +26,7 @@ public class Room {
     private String roomName;
 
     private boolean disclosure;
-    private Integer roomPassword;
+    private String roomPassword;
     private int peopleEntering;
     private int round;
     private String host;

@@ -54,7 +54,6 @@ public class LobbyService {
     }
 
     public RoomResponseDto createRoom(RoomRequestDto roomRequestDto, String userName) {
-
         Room room =
                 Room.builder()
                     .roomName(roomRequestDto.getRoomName())
