@@ -9,7 +9,9 @@ import lombok.Getter;
 @Getter
 public class RegistQuizSetRequest {
 
-    @NotNull(message = "퀴즈 카테고리 ID는 필수입니다.") private Long quizCategoryId;
+    @NotNull
+            @NotBlank
+            (message = "퀴즈 카테고리 ID는 필수입니다.") private Long quizCategoryId;
 
     @NotBlank(message = "퀴즈 세트 이름은 필수입니다.") private String quizSetName;
 

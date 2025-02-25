@@ -1,13 +1,18 @@
 package com.example.web2_3_ourtuft_be.quiz.dto;
 
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 public class QuizRequest {
+
+    @NotBlank
     private String question;
+    @NotBlank
     private String hint;
+    @NotBlank
     private String answer;
 
     @Builder
