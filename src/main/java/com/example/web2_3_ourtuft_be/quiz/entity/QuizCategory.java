@@ -13,9 +13,6 @@ public class QuizCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name ="quiz_category_name", nullable = false)
+    @Column(name = "quiz_category_name", nullable = false)
     private String QuizCategoryName;
-
-
-
 }

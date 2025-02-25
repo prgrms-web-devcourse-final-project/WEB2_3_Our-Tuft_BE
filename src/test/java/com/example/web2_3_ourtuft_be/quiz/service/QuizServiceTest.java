@@ -3,12 +3,8 @@ package com.example.web2_3_ourtuft_be.quiz.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizzesWithQuizSetId;
-import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizRequest;
-import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetRequest;
-import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetResponse;
+import com.example.web2_3_ourtuft_be.quiz.dto.*;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
@@ -30,9 +26,9 @@ class QuizServiceTest {
     @Autowired private QuizRepository quizRepository;
 
     @DisplayName("테스트 퀴즈데이터를 생성한다.")
-    static List<RegistQuizRequest> createTestData() {
+    static List<QuizRequest> createTestData() {
 
-        List<RegistQuizRequest> quizzes = new ArrayList<>();
+        List<QuizRequest> quizzes = new ArrayList<>();
         String question;
         String hint;
         String answer;
@@ -41,13 +37,9 @@ class QuizServiceTest {
             question = "문제" + i;
             hint = i + "번 문제 힌트";
             answer = i + "번 문제 답";
-            RegistQuizRequest registQuizRequest =
-                    RegistQuizRequest.builder()
-                            .question(question)
-                            .hint(hint)
-                            .answer(answer)
-                            .build();
-            quizzes.add(registQuizRequest);
+            QuizRequest registQuizzesRequest =
+                    QuizRequest.builder().question(question).hint(hint).answer(answer).build();
+            quizzes.add(registQuizzesRequest);
         }
 
         return quizzes;
@@ -57,16 +49,17 @@ class QuizServiceTest {
     @Test
     void createQuizSet() {
         // given
-        List<RegistQuizRequest> quizList = createTestData();
+        RegistQuizzesRequest quizzes = RegistQuizzesRequest.from(createTestData());
+
+        String creatorId = "testUser";
         RegistQuizSetRequest requestData =
                 RegistQuizSetRequest.builder()
-                        .creatorId("testUser")
-                        .quizzes(quizList)
                         .quizSetName("testQuizSet")
                         .quizSetType(QuizSetType.OX)
                         .build();
         // when
-        RegistQuizSetResponse savedQuizSet = quizService.registQuizSet(requestData);
+        RegistQuizSetResponse savedQuizSet =
+                quizService.registQuizSet(creatorId, requestData, quizzes);
 
         // then
         assertThat(savedQuizSet).isNotNull();
@@ -77,15 +70,15 @@ class QuizServiceTest {
     @Test
     void insertQuizSet() {
         // given
+        String creatorId = "tsetUser";
         RegistQuizSetRequest request =
                 RegistQuizSetRequest.builder()
-                        .creatorId("testUser")
                         .quizSetName("테스트세트")
                         .quizSetType(QuizSetType.OX)
                         .build();
 
         // when
-        QuizSet newQuizSet = quizService.createQuizSet(request);
+        QuizSet newQuizSet = quizService.createQuizSet(creatorId, request);
 
         // then
         assertThat(newQuizSet).isNotNull();
@@ -96,60 +89,22 @@ class QuizServiceTest {
         assertNotNull(newQuizSet.getId());
     }
 
-    @DisplayName("생성된 QuizSet의 Id를 각 퀴즈 데이터 DTO에 바인딩한다. ")
-    @Test
-    void bindQuizSetID() {
-        // given
-        Long quizSetId = 100L;
-        List<RegistQuizRequest> testQuizzes =
-                List.of(
-                        RegistQuizRequest.builder()
-                                .question("Question1")
-                                .hint("Hint1")
-                                .answer("answer1")
-                                .build(),
-                        RegistQuizRequest.builder()
-                                .question("Question2")
-                                .hint("Hint2")
-                                .answer("answer2")
-                                .build(),
-                        RegistQuizRequest.builder()
-                                .question("Question3")
-                                .hint("Hint3")
-                                .answer("answer3")
-                                .build());
-        // when
-        List<QuizzesWithQuizSetId> quizzesWithQuizSetId =
-                quizService.bindQuizSetId(quizSetId, testQuizzes);
-        // then
-        assertThat(quizzesWithQuizSetId).isNotEmpty();
-        quizzesWithQuizSetId.forEach(quiz -> assertThat(quiz.getQuizSetId()).isEqualTo(quizSetId));
-    }
-
-    @DisplayName("퀴즈 개수가 1개 미만일경우에 예외 발생")
-    @Test
-    void insertQuizListWithNoQuiz() {
-        // given
-        List<QuizzesWithQuizSetId> emptyList = new ArrayList<>();
-
-        // when & then
-        assertThrows(InvalidRequestException.class, () -> quizService.createQuizList(emptyList));
-    }
-
     @DisplayName("퀴즈셋 삭제 시 관련된 퀴즈도 함께 삭제된다.")
     @Test
     void deleteQuizSet() {
 
-        List<RegistQuizRequest> quizzes = createTestData();
+        RegistQuizzesRequest quizzes = RegistQuizzesRequest.from(createTestData());
+
+        String creatorId = "testUser";
+
         RegistQuizSetRequest newQuizSet =
                 RegistQuizSetRequest.builder()
-                        .creatorId("testUser")
-                        .quizzes(quizzes)
                         .quizSetName("테스트퀴즈세트")
                         .quizSetType(QuizSetType.SPEED)
                         .build();
 
-        RegistQuizSetResponse registQuizSetResponse = quizService.registQuizSet(newQuizSet);
+        RegistQuizSetResponse registQuizSetResponse =
+                quizService.registQuizSet(creatorId, newQuizSet, quizzes);
 
         // when
         quizService.deleteQuizSetAndQuizzes(registQuizSetResponse.getQuizSetId());

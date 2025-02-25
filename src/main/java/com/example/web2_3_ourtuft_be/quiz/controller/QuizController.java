@@ -2,17 +2,19 @@ package com.example.web2_3_ourtuft_be.quiz.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizCategoryResponse;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetSummaryResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetRequest;
 import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetResponse;
-import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
+import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizzesRequest;
 import com.example.web2_3_ourtuft_be.quiz.service.QuizCategoryService;
 import com.example.web2_3_ourtuft_be.quiz.service.QuizService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,9 +29,15 @@ public class QuizController {
     @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
     @PostMapping()
     public GlobalResponse<RegistQuizSetResponse> registQuizset(
-            @RequestBody RegistQuizSetRequest quizeSetRequest) {
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody RegistQuizSetRequest registQuizSetRequest,
+            @Valid @RequestBody RegistQuizzesRequest registQuizzesRequest) {
 
-        RegistQuizSetResponse resultData = quizService.registQuizSet(quizeSetRequest);
+        String creatorId = userDetails.getUsername();
+
+        RegistQuizSetResponse resultData =
+                quizService.registQuizSet(creatorId, registQuizSetRequest, registQuizzesRequest);
+
         return GlobalResponse.created(resultData);
     }
 

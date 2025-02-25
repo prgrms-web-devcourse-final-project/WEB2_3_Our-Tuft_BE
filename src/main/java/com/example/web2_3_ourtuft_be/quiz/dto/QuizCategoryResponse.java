@@ -3,19 +3,17 @@ package com.example.web2_3_ourtuft_be.quiz.dto;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizCategory;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class QuizCategoryResponse {
 
-    private Long quizCategoryId;
-    private String quizCategoryName;
-
+    private final Long quizCategoryId;
+    private final String quizCategoryName;
 
     @Builder
-    public QuizCategoryResponse(QuizCategory quizCategory ) {
-        this.quizCategoryId = quizCategory.getId();
-        this.quizCategoryName = quizCategory.getQuizCategoryName();
+    public QuizCategoryResponse(Long quizCategoryId, String quizCategoryName) {
+        this.quizCategoryId = quizCategoryId;
+        this.quizCategoryName = quizCategoryName;
     }
 
     public static QuizCategoryResponse from(QuizCategory quizCategory) {
@@ -24,5 +22,4 @@ public class QuizCategoryResponse {
                 .quizCategoryName(quizCategory.getQuizCategoryName())
                 .build();
     }
-
 }

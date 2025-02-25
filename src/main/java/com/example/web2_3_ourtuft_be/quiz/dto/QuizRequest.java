@@ -5,26 +5,20 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class QuizResponse {
-    private Long quizSetId;
-    private Long quizId;
+public class QuizRequest {
     private String question;
     private String hint;
     private String answer;
 
     @Builder
-    public QuizResponse(Long quizSetId, Long quizId, String question, String hint, String answer) {
-        this.quizSetId = quizSetId;
-        this.quizId = quizId;
+    public QuizRequest(String question, String hint, String answer) {
         this.question = question;
         this.hint = hint;
         this.answer = answer;
     }
 
-    public static QuizResponse from(Quiz quiz) {
-        return QuizResponse.builder()
-                .quizSetId(quiz.getQuizSetId())
-                .quizId(quiz.getQuizSetId())
+    public static QuizRequest from(Quiz quiz) {
+        return QuizRequest.builder()
                 .question(quiz.getQuestion())
                 .hint(quiz.getHint())
                 .answer(quiz.getAnswer())

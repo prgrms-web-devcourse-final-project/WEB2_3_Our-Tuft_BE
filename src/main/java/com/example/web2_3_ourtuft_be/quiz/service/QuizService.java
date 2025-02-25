@@ -46,16 +46,15 @@ public class QuizService {
     }
 
     @Transactional
-    public RegistQuizSetResponse registQuizSet(RegistQuizSetRequest request) {
+    public RegistQuizSetResponse registQuizSet(
+            String creatorId,
+            RegistQuizSetRequest registQuizSetRequest,
+            RegistQuizzesRequest registQuizzesRequest) {
 
-        QuizSet newQuizSet = createQuizSet(request);
+        QuizSet newQuizSet = createQuizSet(creatorId, registQuizSetRequest);
 
-        List<RegistQuizRequest> quizzes = request.getQuizzes();
-
-        List<QuizzesWithQuizSetId> quizzesWithQuizSetId =
-                bindQuizSetId(newQuizSet.getId(), quizzes);
-
-        List<Quiz> newQuizzes = createQuizList(quizzesWithQuizSetId);
+        List<Quiz> newQuizzes =
+                createQuizList(newQuizSet.getId(), registQuizzesRequest.getQuizzes());
 
         List<QuizResponse> quizResponses = toQuizResponse(newQuizzes);
 
@@ -65,37 +64,26 @@ public class QuizService {
     private static List<QuizResponse> toQuizResponse(List<Quiz> newQuizzes) {
 
         return newQuizzes.stream().map(QuizResponse::from).toList();
-
-    }
-
-    public List<QuizzesWithQuizSetId> bindQuizSetId(
-            Long quizSetId, List<RegistQuizRequest> requestQuizzes) {
-
-        List<QuizzesWithQuizSetId> quizzesWithQuizSetId =
-                requestQuizzes.stream()
-                        .map(quiz -> QuizzesWithQuizSetId.from(quizSetId, quiz))
-                        .toList();
-
-        return quizzesWithQuizSetId;
     }
 
     @Transactional
-    public List<Quiz> createQuizList(List<QuizzesWithQuizSetId> requestQuizzes) {
+    public List<Quiz> createQuizList(Long quizSetId, List<QuizRequest> requestQuizzes) {
         if (requestQuizzes.isEmpty()) {
             throw new InvalidRequestException(INVALID_QUIZ_COUNT);
         }
 
-        List<Quiz> quizzes = toQuizEntityList(requestQuizzes);
+        List<Quiz> quizzes = toQuizEntityList(quizSetId, requestQuizzes);
 
         return quizRepository.saveAll(quizzes);
     }
 
     // QuizSet 객체생성
-    public QuizSet createQuizSet(RegistQuizSetRequest request) {
+    @Transactional
+    public QuizSet createQuizSet(String creatorId, RegistQuizSetRequest request) {
 
         QuizSet quizSet =
                 QuizSet.builder()
-                        .creatorId(request.getCreatorId())
+                        .creatorId(creatorId)
                         .quizSetName(request.getQuizSetName())
                         .quizSetType(request.getQuizSetType().name())
                         .quizSetRunCnt(0)
@@ -103,15 +91,15 @@ public class QuizService {
         return quizSetRepository.save(quizSet);
     }
 
-    public List<Quiz> toQuizEntityList(List<QuizzesWithQuizSetId> registQuizRequestList) {
+    public List<Quiz> toQuizEntityList(Long quizSetId, List<QuizRequest> registQuizRequestList) {
         return registQuizRequestList.stream()
                 .map(
-                        registQuizRequest ->
+                        quiz ->
                                 Quiz.builder()
-                                        .quizSetId(registQuizRequest.getQuizSetId())
-                                        .question(registQuizRequest.getQuestion())
-                                        .hint(registQuizRequest.getHint())
-                                        .answer(registQuizRequest.getAnswer())
+                                        .quizSetId(quizSetId)
+                                        .question(quiz.getQuestion())
+                                        .hint(quiz.getHint())
+                                        .answer(quiz.getAnswer())
                                         .build())
                 .toList();
     }
