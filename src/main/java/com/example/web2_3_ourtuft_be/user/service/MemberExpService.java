@@ -6,6 +6,7 @@ import com.example.web2_3_ourtuft_be.user.entity.MemberExp;
 import com.example.web2_3_ourtuft_be.user.repository.MemberExpRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +20,12 @@ public class MemberExpService {
                 .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
     }
 
-    public void increaseExp(Long userId, int exp) {
+    @Transactional
+    public int increaseExp(Long userId, int exp) {
         MemberExp memberExp = getMemberExp(userId);
         memberExp.increaseExp(exp);
         expRepository.save(memberExp);
+        return memberExp.getExp();
     }
 
     public void createExp(Long userId) {

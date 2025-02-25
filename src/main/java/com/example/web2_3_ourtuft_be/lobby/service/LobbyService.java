@@ -36,18 +36,14 @@ public class LobbyService {
         if (roomId != null) {
 
             Room room = roomRepository.findById(roomId).orElse(null);
-            if (room == null) {
-                throw new NotFoundException(NotFoundMessages.ROOM_ID);
+          
+            if (room != null) {
+                rooms.add(room);
             }
-            rooms.add(room);
 
         } else if (roomName != null) {
 
             rooms = roomRepository.findByRoomNameContaining(roomName);
-
-            if (rooms.isEmpty()) {
-                throw new NotFoundException(NotFoundMessages.ROOM_NAME);
-            }
 
         } else {
             throw new InvalidRequestException(InvalidRequestMessages.EMPTY_SEARCH_CONDITION);

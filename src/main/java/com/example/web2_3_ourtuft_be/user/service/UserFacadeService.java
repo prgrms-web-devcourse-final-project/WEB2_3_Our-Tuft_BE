@@ -19,6 +19,7 @@ public class UserFacadeService {
     private final MemberPointService memberPointService;
     private final MemberRecordService memberRecordService;
     private final InventoryService inventoryService;
+    private final MemberPointService pointService;
 
     @Transactional(readOnly = true)
     public UserInfoResponseDto getUserInfo(Long userId) {
@@ -108,5 +109,14 @@ public class UserFacadeService {
         memberRecordService.createRecord(userId);
         expService.createExp(userId);
         return newUser;
+
+    public RewardDto reward(RewardDto request) {
+        Long userId = 1L;
+        int exp = expService.increaseExp(userId, request.getExp());
+        // TODO: UserId 로직 변경하면서 points 가져오는 부분 중복 제거 예정
+        pointService.updatePoints(userId, request.getPoints());
+        int points = pointService.getPoint(userId).getPoints();
+
+        return new RewardDto(exp, points);
     }
 }
