@@ -114,7 +114,7 @@ class CouponServiceTest {
     }
 
     @Test
-    @DisplayName("쿠폰 조회 시 쿠폰이 없으면 실패")
+    @DisplayName("쿠폰 수정 시 쿠폰이 없으면 실패")
     void testGetCouponNotFound() {
         // given
         CouponRequest request =
