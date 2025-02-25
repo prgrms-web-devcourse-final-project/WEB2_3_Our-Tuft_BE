@@ -9,7 +9,6 @@ import lombok.*;
 @Table(name = "member_profiles")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 public class MemberProfile extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +22,18 @@ public class MemberProfile extends BaseTime {
     private String nickname;
 
     private String introduction;
-    private Long eyeItemId;
-    private Long mouseItemId;
-    private Long skinItemId;
-    private Long nicknameItemId;
+
+    private Long eyeItemId = 1L;
+
+    private Long mouseItemId = 1L;
+
+    private Long skinItemId = 1L;
+
+    private Long nicknameItemId = 1L;
+
+    public MemberProfile(Long userId) {
+        this.userId = userId;
+    }
 
     public void changeNickname(String nickname) {
         this.nickname = nickname;
