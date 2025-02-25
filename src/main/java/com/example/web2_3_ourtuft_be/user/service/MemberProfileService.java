@@ -62,7 +62,7 @@ public class MemberProfileService {
     }
 
     public void createProfile(Long userId) {
-        MemberProfile profile = MemberProfile.builder().userId(userId).build();
+        MemberProfile profile = new MemberProfile(userId);
 
         profileRepository.save(profile);
     }
