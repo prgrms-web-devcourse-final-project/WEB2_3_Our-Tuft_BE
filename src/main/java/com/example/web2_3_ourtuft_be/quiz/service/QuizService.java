@@ -50,7 +50,7 @@ public class QuizService {
         return RegistQuizSetAndQuizzesResponse.from(newQuizSet, quizResponses);
     }
 
-    private static List<QuizResponse> toQuizResponse(List<Quiz> newQuizzes) {
+    private List<QuizResponse> toQuizResponse(List<Quiz> newQuizzes) {
 
         return newQuizzes.stream().map(QuizResponse::from).toList();
     }
@@ -81,6 +81,7 @@ public class QuizService {
         return quizSetRepository.save(quizSet);
     }
 
+    @Transactional
     public List<Quiz> toQuizEntityList(Long quizSetId, List<QuizRequest> registQuizRequestList) {
         return registQuizRequestList.stream()
                 .map(
