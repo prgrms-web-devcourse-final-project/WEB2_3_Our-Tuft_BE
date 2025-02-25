@@ -123,10 +123,10 @@ public class UserController {
     }
 
     // 게임종료 후, 경험치와 포인트를 받아 올리는 api, 아마 게임 쪽에서 메서드를 호출해서 처리할 듯( 임시로 작성해뒀습니다. )
-    @PostMapping("/reward")
-    public ResponseEntity<GlobalResponse<RewardDto>> reward(@RequestBody RewardDto request) {
+        @PostMapping("/reward")
+        public ResponseEntity<GlobalResponse<RewardDto>> reward(@RequestBody RewardDto request) {
 
-        RewardDto response = userFacadeService.reward(request);
-        return ResponseEntity.ok(GlobalResponse.success(response));
-    }
+            RewardDto response = userFacadeService.reward(request);
+            return ResponseEntity.ok(GlobalResponse.success(response));
+        }
 }

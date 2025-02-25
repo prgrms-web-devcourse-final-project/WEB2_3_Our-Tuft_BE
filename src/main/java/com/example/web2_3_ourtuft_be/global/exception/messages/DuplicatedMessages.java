@@ -9,7 +9,8 @@ public enum DuplicatedMessages {
     NICKNAME("이미 등록된 닉네임입니다."),
     EMAIL("이미 등록된 이메일입니다."),
     UNIQUE("UNIQUE 제약 조건 위배"),
-    CONFLICT("충돌 발생, 다시 시도해주세요");
+    CONFLICT("충돌 발생, 다시 시도해주세요"),
+    MISMATCH_POINT("포인트 정보가 일치하지 않습니다.");
 
     private final String message;
 }

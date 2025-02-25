@@ -17,7 +17,11 @@ public class MemberPoint {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    private int points;
+    private int points = 0;
+
+    public MemberPoint(Long userId) {
+        this.userId = userId;
+    }
 
     public void updatePoints(int points) {
         if (points < 0) {
