@@ -1,4 +1,4 @@
-package com.example.web2_3_ourtuft_be.lobby.service;
+package com.example.web2_3_ourtuft_be.room.service;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;

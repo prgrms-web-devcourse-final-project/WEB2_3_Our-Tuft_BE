@@ -1,9 +1,9 @@
-package com.example.web2_3_ourtuft_be.lobby.controller;
+package com.example.web2_3_ourtuft_be.room.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
-import com.example.web2_3_ourtuft_be.lobby.service.LobbyService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
+import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
