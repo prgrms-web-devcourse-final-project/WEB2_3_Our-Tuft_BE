@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,9 +55,11 @@ public class lobbyController {
     @Operation(summary = "방 생성 API", description = "게임 방을 생성합니다.")
     @PostMapping("/rooms")
     public ResponseEntity<GlobalResponse<RoomResponseDto>> createRoom(
-            @RequestBody RoomRequestDto roomRequestDto) {
+            @Valid @RequestBody RoomRequestDto roomRequestDto
+            //            @AuthenticationPrincipal UserDetails user) {
+            ) {
 
-        roomRequestDto.validate();
+        // RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getUsername());
         RoomResponseDto response = lobbyService.createRoom(roomRequestDto);
 
         return ResponseEntity.ok(GlobalResponse.success(response));

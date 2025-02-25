@@ -1,9 +1,7 @@
 package com.example.web2_3_ourtuft_be.lobby.service;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidValueException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
-import com.example.web2_3_ourtuft_be.global.exception.messages.BadRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
@@ -57,10 +55,6 @@ public class LobbyService {
 
     public RoomResponseDto createRoom(RoomRequestDto roomRequestDto) {
 
-        if (roomRepository.existsByRoomName(roomRequestDto.getRoomName())) {
-            throw new InvalidValueException(BadRequestMessages.ROOM_DUPLICATED_NAME);
-        }
-
         Room room =
                 Room.builder()
                         .roomName(roomRequestDto.getRoomName())
@@ -69,6 +63,7 @@ public class LobbyService {
                         .peopleEntering(1)
                         .round(roomRequestDto.getRound())
                         .gameStatus("WAITING")
+                        // .host(userName)
                         .build();
 
         room = roomRepository.save(room);
