@@ -7,7 +7,6 @@ import com.example.web2_3_ourtuft_be.lobby.util.LobbyTestUtils;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
-import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
