@@ -36,7 +36,7 @@ public class LobbyService {
         if (roomId != null) {
 
             Room room = roomRepository.findById(roomId).orElse(null);
-          
+
             if (room != null) {
                 rooms.add(room);
             }

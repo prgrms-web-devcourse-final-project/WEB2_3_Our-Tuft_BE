@@ -9,7 +9,6 @@ import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
 import com.example.web2_3_ourtuft_be.user.repository.MemberPointRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +34,10 @@ public class MemberPointService {
     public void createPoint(Long userId) {
         MemberPoint point = new MemberPoint(userId);
         memberPointRepository.save(point);
+    }
 
-    public void updatePoints(
-            Long userId, int amount, PointChangeType type, PointChangeReason reason) {
+    public void updatePoints (
+            Long userId, int amount, PointChangeType type, PointChangeReason reason){
         MemberPoint memberPoint = getPoint(userId);
 
         int updatedPoints =
