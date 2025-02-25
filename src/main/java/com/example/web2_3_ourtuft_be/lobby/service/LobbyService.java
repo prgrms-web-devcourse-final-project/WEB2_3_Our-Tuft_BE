@@ -1,7 +1,9 @@
 package com.example.web2_3_ourtuft_be.lobby.service;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidValueException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
+import com.example.web2_3_ourtuft_be.global.exception.messages.BadRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
@@ -55,24 +57,21 @@ public class LobbyService {
 
     public RoomResponseDto createRoom(RoomRequestDto roomRequestDto) {
 
-        Integer password;
-        if (roomRequestDto.isDisclosure()) {
-            password = null;
-        } else {
-            password = roomRequestDto.getPassword();
+        if (roomRepository.existsByRoomName(roomRequestDto.getRoomName())) {
+            throw new InvalidValueException(BadRequestMessages.ROOM_DUPLICATED_NAME);
         }
 
         Room room =
                 Room.builder()
                         .roomName(roomRequestDto.getRoomName())
                         .disclosure(roomRequestDto.isDisclosure())
-                        .roomPassword(password)
+                        .roomPassword(roomRequestDto.getPassword())
                         .peopleEntering(1)
                         .round(roomRequestDto.getRound())
                         .gameStatus("WAITING")
                         .build();
 
-        roomRepository.save(room);
+        room = roomRepository.save(room);
 
         return new RoomResponseDto(room);
     }

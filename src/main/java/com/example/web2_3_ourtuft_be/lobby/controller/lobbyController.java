@@ -56,6 +56,7 @@ public class lobbyController {
     public ResponseEntity<GlobalResponse<RoomResponseDto>> createRoom(
             @RequestBody RoomRequestDto roomRequestDto) {
 
+        roomRequestDto.validate();
         RoomResponseDto response = lobbyService.createRoom(roomRequestDto);
 
         return ResponseEntity.ok(GlobalResponse.success(response));
