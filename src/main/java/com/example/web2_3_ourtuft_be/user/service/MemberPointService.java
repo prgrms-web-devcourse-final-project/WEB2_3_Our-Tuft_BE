@@ -32,7 +32,10 @@ public class MemberPointService {
         return new MyPointsResponseDto(getPoint(userId).getPoints());
     }
 
-    @Transactional
+    public void createPoint(Long userId) {
+        MemberPoint point = new MemberPoint(userId);
+        memberPointRepository.save(point);
+
     public void updatePoints(
             Long userId, int amount, PointChangeType type, PointChangeReason reason) {
         MemberPoint memberPoint = getPoint(userId);
