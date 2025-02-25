@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/lobbies")
 @Tag(name = "📬 Lobby", description = "로비 및 방 관련 API")
-public class lobbyController {
+public class LobbyController {
 
     private final LobbyService lobbyService;
 
