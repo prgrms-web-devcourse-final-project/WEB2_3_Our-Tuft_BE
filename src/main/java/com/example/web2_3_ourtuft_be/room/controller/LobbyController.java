@@ -1,19 +1,18 @@
-package com.example.web2_3_ourtuft_be.lobby.controller;
+package com.example.web2_3_ourtuft_be.room.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
-import com.example.web2_3_ourtuft_be.lobby.service.LobbyService;
+import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
+import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,5 +50,18 @@ public class LobbyController {
         List<RoomResponseDto> responseList = lobbyService.searchRoom(roomName, roomId);
 
         return ResponseEntity.ok(GlobalResponse.success(responseList));
+    }
+
+    @Operation(summary = "방 생성 API", description = "게임 방을 생성합니다.")
+    @PostMapping("/rooms")
+    public ResponseEntity<GlobalResponse<RoomResponseDto>> createRoom(
+            @Valid @RequestBody RoomRequestDto roomRequestDto
+            //            @AuthenticationPrincipal UserDetails user) {
+            ) {
+
+        // RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getUsername());
+        RoomResponseDto response = lobbyService.createRoom(roomRequestDto);
+
+        return ResponseEntity.ok(GlobalResponse.success(response));
     }
 }

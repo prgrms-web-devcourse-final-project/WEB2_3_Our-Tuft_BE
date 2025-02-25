@@ -9,6 +9,7 @@ import lombok.*;
 @Table(name = "member_levels")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class MemberExp extends BaseTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,11 +19,7 @@ public class MemberExp extends BaseTime {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    private int exp = 0;
-
-    public MemberExp(Long userId) {
-        this.userId = userId;
-    }
+    private int exp;
 
     public void increaseExp(int exp) {
         this.exp += exp;

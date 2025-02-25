@@ -42,9 +42,4 @@ public class MemberRecordService {
                 .findByUserId(userId)
                 .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
     }
-
-    public void createRecord(Long userId) {
-        MemberRecord record = new MemberRecord(userId);
-        memberRecordRepository.save(record);
-    }
 }

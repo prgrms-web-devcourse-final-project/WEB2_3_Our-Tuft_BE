@@ -1,12 +1,11 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
-import com.example.web2_3_ourtuft_be.auth.dto.OAuth2Response;
 import com.example.web2_3_ourtuft_be.item.service.ItemService;
 import com.example.web2_3_ourtuft_be.user.dto.*;
-import com.example.web2_3_ourtuft_be.user.entity.*;
-import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
-import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
-
+import com.example.web2_3_ourtuft_be.user.entity.MemberExp;
+import com.example.web2_3_ourtuft_be.user.entity.MemberProfile;
+import com.example.web2_3_ourtuft_be.user.entity.MemberRecord;
+import com.example.web2_3_ourtuft_be.user.entity.Nickname;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +17,6 @@ public class UserFacadeService {
     private final MemberRecordService recordService;
     private final ItemService itemService;
     private final MemberExpService expService;
-    private final UserService userService;
-    private final MemberPointService memberPointService;
-    private final MemberRecordService memberRecordService;
-    private final InventoryService inventoryService;
     private final MemberPointService pointService;
 
     @Transactional(readOnly = true)
@@ -94,31 +89,11 @@ public class UserFacadeService {
     }
 
     @Transactional
-    public User findOrCreateUser(OAuth2Response oAuth2Response) {
-        User user = userService.findUserBySocialId(oAuth2Response.getProviderId());
-
-        if (user == null) {
-            return registerUser(oAuth2Response);
-        }
-        return user;
-    }
-
-    @Transactional
-    public User registerUser(OAuth2Response userInfo) {
-        User newUser = userService.createUser(userInfo);
-        Long userId = newUser.getId();
-        profileService.createProfile(userId);
-        memberPointService.createPoint(userId);
-        memberRecordService.createRecord(userId);
-        expService.createExp(userId);
-        return newUser;
-    }
-
     public RewardDto reward(RewardDto request) {
         Long userId = 1L;
         int exp = expService.increaseExp(userId, request.getExp());
         // TODO: UserId 로직 변경하면서 points 가져오는 부분 중복 제거 예정
-        pointService.updatePoints(userId, request.getPoints(), PointChangeType.INCREASE, PointChangeReason.REWARD);
+        pointService.updatePoints(userId, request.getPoints());
         int points = pointService.getPoint(userId).getPoints();
 
         return new RewardDto(exp, points);
