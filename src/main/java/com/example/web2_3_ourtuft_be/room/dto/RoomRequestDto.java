@@ -25,17 +25,6 @@ public class RoomRequestDto {
 
     @Min(value = 2, message = "참가 인원은 최소 2명 이상이어야 합니다.") private int participant;
 
-    public void validate() {
-
-        if (!disclosure && password == null) {
-            throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD);
-        }
-
-        if (!disclosure && String.valueOf(password).length() != 4) {
-            throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_LENGTH);
-        }
-    }
-
     public RoomRequestDto(
             String roomName,
             boolean disclosure,
@@ -54,4 +43,16 @@ public class RoomRequestDto {
 
         validate();
     }
+
+    public void validate() {
+
+        if (!disclosure && password == null) {
+            throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD);
+        }
+
+        if (!disclosure && String.valueOf(password).length() != 4) {
+            throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_LENGTH);
+        }
+    }
+
 }
