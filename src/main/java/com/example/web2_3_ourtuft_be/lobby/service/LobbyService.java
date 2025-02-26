@@ -34,7 +34,6 @@ public class LobbyService {
         List<Room> rooms = new ArrayList<>();
 
         if (roomId != null) {
-
             Room room = roomRepository.findById(roomId).orElse(null);
             if (room == null) {
                 throw new NotFoundException(NotFoundMessages.ROOM_ID);
