@@ -9,6 +9,7 @@ import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -53,17 +54,18 @@ public class LobbyService {
         return rooms.stream().map(RoomResponseDto::new).collect(Collectors.toList());
     }
 
-    public RoomResponseDto createRoom(RoomRequestDto roomRequestDto) {
+    public RoomResponseDto createRoom(RoomRequestDto roomRequestDto, String userName) {
 
         Room room =
                 Room.builder()
                         .roomName(roomRequestDto.getRoomName())
                         .disclosure(roomRequestDto.isDisclosure())
                         .roomPassword(roomRequestDto.getPassword())
-                        .peopleEntering(1)
                         .round(roomRequestDto.getRound())
-                        .gameStatus("WAITING")
-                        // .host(userName)
+                        //                        .host(userName)
+                        .gameType(roomRequestDto.getGameType())
+                        .createdAt(new Date())
+                        .updatedAt(new Date())
                         .build();
 
         room = roomRepository.save(room);

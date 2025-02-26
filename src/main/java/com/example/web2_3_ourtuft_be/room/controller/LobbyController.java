@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -55,12 +57,10 @@ public class LobbyController {
     @Operation(summary = "방 생성 API", description = "게임 방을 생성합니다.")
     @PostMapping("/rooms")
     public ResponseEntity<GlobalResponse<RoomResponseDto>> createRoom(
-            @Valid @RequestBody RoomRequestDto roomRequestDto
-            //            @AuthenticationPrincipal UserDetails user) {
-            ) {
+            @Valid @RequestBody RoomRequestDto roomRequestDto,
+            @AuthenticationPrincipal UserDetails user) {
 
-        // RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getUsername());
-        RoomResponseDto response = lobbyService.createRoom(roomRequestDto);
+        RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getUsername());
 
         return ResponseEntity.ok(GlobalResponse.success(response));
     }

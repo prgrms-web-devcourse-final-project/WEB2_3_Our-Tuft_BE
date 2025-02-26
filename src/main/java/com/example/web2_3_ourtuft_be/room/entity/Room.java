@@ -1,8 +1,8 @@
 package com.example.web2_3_ourtuft_be.room.entity;
 
-import com.example.web2_3_ourtuft_be.item.game.entity.Game;
-import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
+import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import jakarta.persistence.*;
+import java.util.Date;
 import lombok.*;
 
 @Getter
@@ -17,21 +17,14 @@ public class Room {
     @Column(name = "room_id", nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "game_id")
-    private Game gameId;
-
-    @ManyToOne
-    @JoinColumn(name = "quiz_id")
-    private QuizSet quizId;
-
     @Column(nullable = false)
     private String roomName;
 
     private boolean disclosure;
-    private Integer roomPassword;
-    private int peopleEntering;
+    private String roomPassword;
     private int round;
     private String host;
-    private String gameStatus;
+    private QuizSetType gameType;
+    private Date createdAt;
+    private Date updatedAt;
 }
