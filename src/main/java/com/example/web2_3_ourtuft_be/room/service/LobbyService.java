@@ -62,10 +62,8 @@ public class LobbyService {
                         .disclosure(roomRequestDto.isDisclosure())
                         .roomPassword(roomRequestDto.getPassword())
                         .round(roomRequestDto.getRound())
-                        //                        .host(userName)
+                                                .host(userName)
                         .gameType(roomRequestDto.getGameType())
-                        .createdAt(new Date())
-                        .updatedAt(new Date())
                         .build();
 
         room = roomRepository.save(room);

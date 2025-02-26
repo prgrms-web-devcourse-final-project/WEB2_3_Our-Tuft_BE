@@ -1,5 +1,6 @@
 package com.example.web2_3_ourtuft_be.room.entity;
 
+import com.example.web2_3_ourtuft_be.common.BaseTime;
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import jakarta.persistence.*;
 import java.util.Date;
@@ -10,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class Room {
+public class Room extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +26,4 @@ public class Room {
     private int round;
     private String host;
     private QuizSetType gameType;
-    private Date createdAt;
-    private Date updatedAt;
 }

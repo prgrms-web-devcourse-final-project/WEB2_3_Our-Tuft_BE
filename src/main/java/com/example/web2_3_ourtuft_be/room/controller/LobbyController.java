@@ -13,6 +13,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,7 +59,7 @@ public class LobbyController {
     @PostMapping("/rooms")
     public ResponseEntity<GlobalResponse<RoomResponseDto>> createRoom(
             @Valid @RequestBody RoomRequestDto roomRequestDto,
-            @AuthenticationPrincipal UserDetails user) {
+            @AuthenticationPrincipal(expression = "user") User user) {
 
         RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getUsername());
 
