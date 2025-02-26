@@ -32,9 +32,8 @@ public class CustomRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String accessToken = request.getHeader("Authorization");
-        log.info(this.getClass().getName() + " access token: " + accessToken);
 
-        if (accessToken == null || request.getRequestURI().equals("/api/v1/auth/reissue")) {
+        if (accessToken == null || request.getRequestURI().contains("/api/v1/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -74,9 +73,10 @@ public class CustomRequestFilter extends OncePerRequestFilter {
     /** JWT 에서 사용자 정보를 추출하여 Spring Security 의 인증(Authentication) 객체를 설정. */
     private void authenticate(String accessToken) {
         Long id = jwtUtil.getUserId(accessToken);
+        String name = jwtUtil.getUserName(accessToken);
         String role = jwtUtil.getRole(accessToken);
 
-        UserDetailsImpl customUserDetails = new UserDetailsImpl(User.to(id, role));
+        UserDetailsImpl customUserDetails = new UserDetailsImpl(User.to(id, name, role));
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(
                         customUserDetails, null, customUserDetails.getAuthorities());
