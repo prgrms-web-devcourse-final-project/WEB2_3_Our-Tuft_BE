@@ -1,13 +1,16 @@
 package com.example.web2_3_ourtuft_be.user.entity;
 
-
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "wishlist_items")
+@Table(
+        name = "wishlist_items",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "item_id"})})
 public class WishlistItem {
 
     @Id
@@ -17,7 +20,7 @@ public class WishlistItem {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name= "item_id", nullable = false)
+    @Column(name = "item_id", nullable = false)
     private Long itemId;
 
     public WishlistItem(Long userId, Long itemId) {

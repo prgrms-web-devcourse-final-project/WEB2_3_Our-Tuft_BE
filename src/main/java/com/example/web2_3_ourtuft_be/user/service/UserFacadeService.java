@@ -6,7 +6,6 @@ import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.*;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +22,7 @@ public class UserFacadeService {
     private final MemberRecordService memberRecordService;
     private final InventoryService inventoryService;
     private final MemberPointService pointService;
+    private final WishlistItemService wishlistItemService;
 
     @Transactional(readOnly = true)
     public UserInfoResponseDto getUserInfo(Long userId) {
@@ -118,9 +118,22 @@ public class UserFacadeService {
         Long userId = 1L;
         int exp = expService.increaseExp(userId, request.getExp());
         // TODO: UserId 로직 변경하면서 points 가져오는 부분 중복 제거 예정
-        pointService.updatePoints(userId, request.getPoints(), PointChangeType.INCREASE, PointChangeReason.REWARD);
+        pointService.updatePoints(
+                userId, request.getPoints(), PointChangeType.INCREASE, PointChangeReason.REWARD);
         int points = pointService.getPoint(userId).getPoints();
 
         return new RewardDto(exp, points);
+    }
+
+    @Transactional
+    public void AddWishItem(Long userId, WishItemRequestDto request) {
+        itemService.validItemId(request.getItemId());
+        wishlistItemService.addItem(userId, request.getItemId());
+    }
+
+    //TODO : 찜 페이지에서 찜 아이템을 취소한다면 새로운 찜 목록을 반환해야 할 것 같음, 응답값 수정 필요한지 논의
+    @Transactional
+    public void deleteWishItem(Long userId, Long itemId) {
+        wishlistItemService.deleteWishItem(userId, itemId);
     }
 }
