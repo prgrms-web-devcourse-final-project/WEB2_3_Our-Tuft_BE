@@ -9,7 +9,6 @@ import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +61,7 @@ public class LobbyService {
                         .disclosure(roomRequestDto.isDisclosure())
                         .roomPassword(roomRequestDto.getPassword())
                         .round(roomRequestDto.getRound())
-                                                .host(userName)
+                        .host(userName)
                         .gameType(roomRequestDto.getGameType())
                         .build();
 

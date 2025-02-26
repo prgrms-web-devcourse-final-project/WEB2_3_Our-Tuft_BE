@@ -3,7 +3,6 @@ package com.example.web2_3_ourtuft_be.room.entity;
 import com.example.web2_3_ourtuft_be.common.BaseTime;
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import jakarta.persistence.*;
-import java.util.Date;
 import lombok.*;
 
 @Getter
