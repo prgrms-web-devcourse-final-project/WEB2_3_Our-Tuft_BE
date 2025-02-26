@@ -4,6 +4,7 @@ import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
+import com.example.web2_3_ourtuft_be.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -13,7 +14,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -60,7 +60,19 @@ public class LobbyController {
             @Valid @RequestBody RoomRequestDto roomRequestDto,
             @AuthenticationPrincipal(expression = "user") User user) {
 
-        RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getUsername());
+        //        System.out.println(user.getName());
+
+        RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getName());
+
+        return ResponseEntity.ok(GlobalResponse.success(response));
+    }
+
+    @Operation(summary = "방 설정 변경 API", description = "방 설정을 변경합니다.")
+    @PostMapping("/rooms/{roomId}/settings")
+    public ResponseEntity<GlobalResponse<RoomResponseDto>> updateRoomSettings(
+            @PathVariable Long roomId, @Valid @RequestBody RoomRequestDto roomRequestDto) {
+
+        RoomResponseDto response = lobbyService.updateRoomSettings(roomId, roomRequestDto);
 
         return ResponseEntity.ok(GlobalResponse.success(response));
     }

@@ -11,11 +11,13 @@ public class RoomResponseDto {
     private final String roomName;
     private final int round;
     private final String host;
+    private final boolean disclosure;
 
     public RoomResponseDto(Room room) {
         this.roomId = room.getId();
         this.roomName = room.getRoomName();
         this.round = room.getRound();
         this.host = room.getHost();
+        this.disclosure = room.isDisclosure();
     }
 }

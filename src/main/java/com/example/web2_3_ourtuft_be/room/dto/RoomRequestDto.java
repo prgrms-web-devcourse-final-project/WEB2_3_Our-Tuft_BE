@@ -31,15 +31,13 @@ public class RoomRequestDto {
             String password,
             int round,
             QuizSetType gameType,
-            int time,
-            int participant) {
+            int time) {
         this.roomName = roomName;
         this.disclosure = disclosure;
         this.password = password;
         this.round = round;
         this.gameType = gameType;
         this.time = time;
-        this.participant = participant;
 
         validate();
     }

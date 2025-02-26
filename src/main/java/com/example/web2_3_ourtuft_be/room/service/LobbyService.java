@@ -69,4 +69,26 @@ public class LobbyService {
 
         return new RoomResponseDto(room);
     }
+
+    public RoomResponseDto updateRoomSettings(Long roomId, RoomRequestDto roomRequestDto) {
+
+        Room room =
+                roomRepository
+                        .findById(roomId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+
+        room =
+                Room.builder()
+                        .id(room.getId())
+                        .roomName(roomRequestDto.getRoomName())
+                        .disclosure(roomRequestDto.isDisclosure())
+                        .roomPassword(roomRequestDto.getPassword())
+                        .round(roomRequestDto.getRound())
+                        .gameType(roomRequestDto.getGameType())
+                        .build();
+
+        room = roomRepository.save(room);
+
+        return new RoomResponseDto(room);
+    }
 }
