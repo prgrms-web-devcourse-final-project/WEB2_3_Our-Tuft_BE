@@ -2,6 +2,7 @@ package com.example.web2_3_ourtuft_be.user.entity;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
+import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,16 +18,20 @@ public class MemberPoint {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    private int points = 0;
+//    private int points = 0;
+    @Embedded
+    private Point point;
 
     public MemberPoint(Long userId) {
         this.userId = userId;
+        point = new Point(0);
     }
 
-    public void updatePoints(int points) {
-        if (points < 0) {
-            throw new InvalidRequestException(InvalidRequestMessages.INSUFFICIENT_POINTS);
-        }
-        this.points = points;
+    public int getPoints() {
+        return point.getValue();
+    }
+
+    public void updatePoints(PointChangeType type, int value) {
+        this.point = point.updatePoint(value, type);
     }
 }
