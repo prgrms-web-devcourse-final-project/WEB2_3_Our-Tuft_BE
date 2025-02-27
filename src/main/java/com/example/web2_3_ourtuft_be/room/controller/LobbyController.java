@@ -4,21 +4,17 @@ import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,8 +25,8 @@ public class LobbyController {
 
     @Operation(summary = "방 전체 조회 API", description = "로비에서 생성된 방을 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "404", description = "방이 존재하지 않습니다."),
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "404", description = "방이 존재하지 않습니다."),
     })
     @GetMapping("/rooms")
     public ResponseEntity<GlobalResponse<List<RoomResponseDto>>> viewAllRooms() {
@@ -40,10 +36,10 @@ public class LobbyController {
 
     @Operation(summary = "방 검색 API", description = "방 제목과 방ID 로 방을 검색합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "400", description = "검색 조건을 입력하세요."),
-            @ApiResponse(responseCode = "404", description = "해당 ID의 방을 찾을 수 없습니다."),
-            @ApiResponse(responseCode = "404", description = "해당 이름을 포함하는 방을 찾을 수 없습니다.")
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "400", description = "검색 조건을 입력하세요."),
+        @ApiResponse(responseCode = "404", description = "해당 ID의 방을 찾을 수 없습니다."),
+        @ApiResponse(responseCode = "404", description = "해당 이름을 포함하는 방을 찾을 수 없습니다.")
     })
     @GetMapping("/rooms/search")
     public ResponseEntity<GlobalResponse<List<RoomResponseDto>>> searchRoom(

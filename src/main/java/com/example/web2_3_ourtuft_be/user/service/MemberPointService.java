@@ -36,8 +36,8 @@ public class MemberPointService {
         memberPointRepository.save(point);
     }
 
-    public void updatePoints (
-            Long userId, int amount, PointChangeType type, PointChangeReason reason){
+    public void updatePoints(
+            Long userId, int amount, PointChangeType type, PointChangeReason reason) {
         MemberPoint memberPoint = getPoint(userId);
 
         int updatedPoints =

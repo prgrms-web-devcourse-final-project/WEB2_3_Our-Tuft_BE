@@ -119,4 +119,11 @@ public class ItemService {
                 .findById(itemId)
                 .orElseThrow(() -> new NotFoundException(NotFoundMessages.ITEM));
     }
+
+    public void validItemId(Long itemId) {
+        boolean exists = itemRepository.existsById(itemId);
+        if (!exists) {
+            throw new NotFoundException(NotFoundMessages.ITEM);
+        }
+    }
 }
