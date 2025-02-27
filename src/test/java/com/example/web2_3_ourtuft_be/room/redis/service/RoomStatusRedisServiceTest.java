@@ -5,23 +5,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.example.web2_3_ourtuft_be.room.redis.entity.RoomStatus;
 import com.example.web2_3_ourtuft_be.room.redis.repository.RoomStatusRedisRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 class RoomStatusRedisServiceTest {
 
     @Autowired private RoomStatusRedisRepository roomStatusRedisRepository;
-
-    private RoomStatusRedisService roomStatusRedisService;
-
-    @BeforeEach
-    void setUp() {
-        roomStatusRedisService = new RoomStatusRedisService(roomStatusRedisRepository);
-    }
+    @Autowired private RoomStatusRedisService roomStatusRedisService;
 
     @AfterEach
     void tearDown() {
@@ -41,12 +37,12 @@ class RoomStatusRedisServiceTest {
 
         // then
         assertThat(status).isNotNull();
-        assertThat(status).extracting("roomStatus").isEqualTo(roomStatus);
+        assertThat(status).extracting("status").isEqualTo(roomStatus);
     }
 
     @DisplayName("게임시작, 종료 시 RoomStatus를 변경한다. ")
     @Test
-    void test() {
+    void testUpdateRoomStatus() {
         // given
         Long roomId = 20L;
         String roomStatus = "IN_PROGRESS";
