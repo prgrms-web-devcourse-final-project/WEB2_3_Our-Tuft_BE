@@ -22,7 +22,7 @@ public class QuizController {
 
     @Operation(summary = "퀴즈 등록 API", description = "퀴즈를 등록합니다.")
     @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
-    @PostMapping("/registration")
+    @PostMapping()
     public GlobalResponse<RegistQuizSetAndQuizzesResponse> registQuizset(
             @AuthenticationPrincipal(expression = "user") User user,
             @Valid @RequestBody RegistQuizSetAndQuizzesRequest registQuizSetAndQuizzesRequest) {

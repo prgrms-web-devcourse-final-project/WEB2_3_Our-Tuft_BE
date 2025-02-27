@@ -6,16 +6,12 @@ import lombok.Getter;
 
 @Getter
 public class QuizResponse {
-    private Long quizSetId;
-    private Long quizId;
-    private String question;
-    private String hint;
-    private String answer;
+    private final String question;
+    private final String hint;
+    private final String answer;
 
     @Builder
-    public QuizResponse(Long quizSetId, Long quizId, String question, String hint, String answer) {
-        this.quizSetId = quizSetId;
-        this.quizId = quizId;
+    public QuizResponse(String question, String hint, String answer) {
         this.question = question;
         this.hint = hint;
         this.answer = answer;
@@ -23,8 +19,6 @@ public class QuizResponse {
 
     public static QuizResponse from(Quiz quiz) {
         return QuizResponse.builder()
-                .quizSetId(quiz.getQuizSetId())
-                .quizId(quiz.getQuizSetId())
                 .question(quiz.getQuestion())
                 .hint(quiz.getHint())
                 .answer(quiz.getAnswer())
