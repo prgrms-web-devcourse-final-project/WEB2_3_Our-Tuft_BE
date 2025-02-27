@@ -1,12 +1,16 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
 import com.example.web2_3_ourtuft_be.auth.dto.OAuth2Response;
+import com.example.web2_3_ourtuft_be.common.PageResponse;
+import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
 import com.example.web2_3_ourtuft_be.item.service.ItemService;
 import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.*;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +24,6 @@ public class UserFacadeService {
     private final UserService userService;
     private final MemberPointService memberPointService;
     private final MemberRecordService memberRecordService;
-    private final InventoryService inventoryService;
     private final MemberPointService pointService;
     private final WishlistItemService wishlistItemService;
 
@@ -131,9 +134,14 @@ public class UserFacadeService {
         wishlistItemService.addItem(userId, request.getItemId());
     }
 
-    //TODO : 찜 페이지에서 찜 아이템을 취소한다면 새로운 찜 목록을 반환해야 할 것 같음, 응답값 수정 필요한지 논의
+    // TODO : 찜 페이지에서 찜 아이템을 취소한다면 새로운 찜 목록을 반환해야 할 것 같음, 응답값 수정 필요한지 논의
     @Transactional
     public void deleteWishItem(Long userId, Long itemId) {
         wishlistItemService.deleteWishItem(userId, itemId);
+    }
+
+    public PageResponse<ItemResponse> getWishItems(Long userId, Pageable pageable) {
+        List<Long> wishItemsId = wishlistItemService.getWishItemIds(userId);
+        return itemService.getItemInfoByWishlist(wishItemsId, pageable);
     }
 }

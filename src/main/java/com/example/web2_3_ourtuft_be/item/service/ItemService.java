@@ -10,6 +10,7 @@ import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
 import com.example.web2_3_ourtuft_be.item.entity.Item;
 import com.example.web2_3_ourtuft_be.item.entity.enums.Category;
 import com.example.web2_3_ourtuft_be.item.repository.ItemRepository;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -125,5 +126,27 @@ public class ItemService {
         if (!exists) {
             throw new NotFoundException(NotFoundMessages.ITEM);
         }
+    }
+
+    public PageResponse<ItemResponse> getItemInfoByWishlist(List<Long> itemIds, Pageable pageable) {
+        // itemIds가 비어있으면 빈 페이지 반환
+        if (itemIds == null || itemIds.isEmpty()) {
+            return new PageResponse<>(Collections.emptyList(), false, true, true, true, 0);
+        }
+
+        // itemIds를 사용해 Item 조회
+        Slice<Item> items = itemRepository.findAllByIdIn(itemIds, pageable);
+
+        // Item -> ItemResponse 변환
+        List<ItemResponse> itemResponses =
+                items.stream().map(ItemResponse::from).collect(Collectors.toList());
+
+        return new PageResponse<>(
+                itemResponses,
+                items.hasNext(),
+                items.isFirst(),
+                items.isLast(),
+                items.isEmpty(),
+                items.getNumberOfElements());
     }
 }
