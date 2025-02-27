@@ -24,7 +24,7 @@ public class RoomStatusRedisService {
         RoomStatus roomStatus =
                 roomStatusRedisRepository
                         .findById(roomId)
-                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.COUPON));
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
 
         roomStatus.updateStatus(newStatus);
 
