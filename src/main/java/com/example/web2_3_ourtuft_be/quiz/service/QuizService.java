@@ -1,15 +1,18 @@
 package com.example.web2_3_ourtuft_be.quiz.service;
 
-import com.example.web2_3_ourtuft_be.quiz.QuizSetRepository;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizRequest;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetRequest;
+import static com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages.INVALID_QUIZ_COUNT;
+
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
+import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
+import com.example.web2_3_ourtuft_be.quiz.dto.*;
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
-import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizType;
+import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
+import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
+import com.example.web2_3_ourtuft_be.quiz.repository.QuizSetRepository;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,42 +21,95 @@ import org.springframework.stereotype.Service;
 public class QuizService {
 
     private final QuizSetRepository quizSetRepository;
+    private final QuizRepository quizRepository;
 
     @Transactional
-    public QuizSet createQuizSet(QuizSetRequest dto) {
-        List<Quiz> quizzes =
-                dto.getQuizzes().stream()
-                        .map(q -> Quiz.of(q.getQuestion(), q.getHint(), q.getAnswer()))
+    public List<QuizSetSummaryResponse> getQuizSetList(QuizSetType quizSetType) {
+
+        List<QuizSet> quizSets = quizSetRepository.findAllByQuizSetType(quizSetType.name());
+
+        return quizSets.stream().map(QuizSetSummaryResponse::from).toList();
+    }
+
+    @Transactional
+    public void deleteQuizSetAndQuizzes(Long quizSetId) {
+
+        boolean existsByQuizSetId = quizRepository.existsByQuizSetId(quizSetId);
+
+        if (existsByQuizSetId) {
+            quizRepository.deleteByQuizSetId(quizSetId);
+
+            quizSetRepository.deleteById(quizSetId);
+        } else {
+            throw new NotFoundException(NotFoundMessages.NOT_FOUND_QUIZ_SET);
+        }
+    }
+
+    @Transactional
+    public RegistQuizSetResponse registQuizSet(RegistQuizSetRequest request) {
+
+        QuizSet newQuizSet = createQuizSet(request);
+
+        List<RegistQuizRequest> quizzes = request.getQuizzes();
+
+        List<QuizzesWithQuizSetId> quizzesWithQuizSetId =
+                bindQuizSetId(newQuizSet.getId(), quizzes);
+
+        List<Quiz> newQuizzes = createQuizList(quizzesWithQuizSetId);
+
+        List<QuizResponse> quizResponses = toQuizResponse(newQuizzes);
+
+        return RegistQuizSetResponse.from(newQuizSet, quizResponses);
+    }
+
+    private static List<QuizResponse> toQuizResponse(List<Quiz> newQuizzes) {
+        return newQuizzes.stream().map(QuizResponse::from).toList();
+    }
+
+    public List<QuizzesWithQuizSetId> bindQuizSetId(
+            Long quizSetId, List<RegistQuizRequest> requestQuizzes) {
+
+        List<QuizzesWithQuizSetId> quizzesWithQuizSetId =
+                requestQuizzes.stream()
+                        .map(quiz -> QuizzesWithQuizSetId.from(quizSetId, quiz))
                         .toList();
 
-        QuizSet quizSet =
-                QuizSet.of(quizzes, dto.getQuizSetName(), dto.getQuizSetType().toString(), 0);
+        return quizzesWithQuizSetId;
+    }
 
+    public List<Quiz> createQuizList(List<QuizzesWithQuizSetId> requestQuizzes) {
+        if (requestQuizzes.isEmpty()) {
+            throw new InvalidRequestException(INVALID_QUIZ_COUNT);
+        }
+
+        List<Quiz> quizzes = toQuizEntityList(requestQuizzes);
+
+        return quizRepository.saveAll(quizzes);
+    }
+
+    // QuizSet 객체생성
+    public QuizSet createQuizSet(RegistQuizSetRequest request) {
+
+        QuizSet quizSet =
+                QuizSet.builder()
+                        .creatorId(request.getCreatorId())
+                        .quizSetName(request.getQuizSetName())
+                        .quizSetType(request.getQuizSetType().name())
+                        .quizSetRunCnt(0)
+                        .build();
         return quizSetRepository.save(quizSet);
     }
 
-    public static QuizSetRequest createTestData() {
-        Random random = new Random();
-        int randomInt = random.nextInt(100);
-        List<QuizRequest> quizzes = new ArrayList<>();
-        String quizSetName = "문제" + randomInt;
-        String question;
-        String hint;
-        String answer;
-
-        for (int i = 0; i < 30; i++) {
-            question = "문제" + i;
-            hint = i + "번 문제 힌트";
-            answer = i + "번 문제 답";
-            QuizRequest quizRequest =
-                    QuizRequest.builder().question(question).hint(hint).answer(answer).build();
-            quizzes.add(quizRequest);
-        }
-
-        return QuizSetRequest.builder()
-                .quizzes(quizzes)
-                .quizSetName(quizSetName)
-                .quizSetType(QuizType.OX)
-                .build();
+    public List<Quiz> toQuizEntityList(List<QuizzesWithQuizSetId> registQuizRequestList) {
+        return registQuizRequestList.stream()
+                .map(
+                        registQuizRequest ->
+                                Quiz.builder()
+                                        .quizSetId(registQuizRequest.getQuizSetId())
+                                        .question(registQuizRequest.getQuestion())
+                                        .hint(registQuizRequest.getHint())
+                                        .answer(registQuizRequest.getAnswer())
+                                        .build())
+                .toList();
     }
 }

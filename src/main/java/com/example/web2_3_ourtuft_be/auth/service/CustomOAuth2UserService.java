@@ -5,8 +5,9 @@ import com.example.web2_3_ourtuft_be.auth.dto.GoogleResponse;
 import com.example.web2_3_ourtuft_be.auth.dto.KakaoResponse;
 import com.example.web2_3_ourtuft_be.auth.dto.OAuth2Response;
 import com.example.web2_3_ourtuft_be.user.entity.User;
-import com.example.web2_3_ourtuft_be.user.entity.enums.Role;
 import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
+import com.example.web2_3_ourtuft_be.user.service.UserFacadeService;
+import com.example.web2_3_ourtuft_be.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final UserFacadeService userFacadeService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -36,26 +39,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return null;
         }
 
-        User user = findOrCreateUser(oAuth2Response);
+        User user = userFacadeService.findOrCreateUser(oAuth2Response);
 
         return new CustomOAuth2User(user, oAuth2User.getAttributes());
-    }
-
-    private User findOrCreateUser(OAuth2Response oAuth2Response) {
-        User user = userRepository.findBySocialId(oAuth2Response.getProviderId()).orElse(null);
-
-        if (user == null) {
-            user =
-                    User.builder()
-                            .email(oAuth2Response.getEmail())
-                            .name(oAuth2Response.getName())
-                            .socialId(oAuth2Response.getProviderId())
-                            .provider(oAuth2Response.getProvider().toString())
-                            .role(Role.ROLE_USER.toString())
-                            .build();
-            userRepository.save(user);
-        }
-
-        return user;
     }
 }

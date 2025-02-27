@@ -27,4 +27,9 @@ public class MemberExpService {
         expRepository.save(memberExp);
         return memberExp.getExp();
     }
+
+    public void createExp(Long userId) {
+        MemberExp memberExp = new MemberExp(userId);
+        expRepository.save(memberExp);
+    }
 }
