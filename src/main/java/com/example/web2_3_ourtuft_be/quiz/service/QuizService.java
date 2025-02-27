@@ -22,6 +22,33 @@ public class QuizService {
     private final QuizSetRepository quizSetRepository;
     private final QuizRepository quizRepository;
 
+    public void updateQuizSetAndQuizzes(Long quizSetId, UpdateQuizSetandQuizzesRequest request) {
+
+        QuizSet quizSet =
+                quizSetRepository
+                        .findById(quizSetId)
+                        .orElseThrow(
+                                () -> new NotFoundException(NotFoundMessages.NOT_FOUND_QUIZ_SET));
+
+        quizSet.updateQuizSetName(request.getQuizSetName());
+        quizSet.updateQuizSetType(request.getQuizSetType().name());
+
+        for (UpdateQuizRequest updatedQuiz : request.getQuizzes()) {
+            Quiz quiz =
+                    quizRepository
+                            .findById(updatedQuiz.getQuizId())
+                            .orElseThrow(() -> new NotFoundException(NotFoundMessages.QUIZ));
+
+            quiz.updateQuestion(updatedQuiz.getQuestion());
+            quiz.updateAnswer(updatedQuiz.getAnswer());
+            quiz.updateHint(updatedQuiz.getHint());
+
+            quizRepository.save(quiz);
+        }
+
+        quizSetRepository.save(quizSet);
+    }
+
     @Transactional
     public void deleteQuizSetAndQuizzes(Long quizSetId) {
 
@@ -45,18 +72,18 @@ public class QuizService {
         List<Quiz> newQuizzes =
                 createQuizList(newQuizSet.getId(), registQuizSetAndQuizzesRequest.getQuizzes());
 
-        List<QuizResponse> quizResponses = toQuizResponse(newQuizzes);
+        List<RegistQuizResponse> registQuizRespons = toQuizResponse(newQuizzes);
 
-        return RegistQuizSetAndQuizzesResponse.from(newQuizSet, quizResponses);
+        return RegistQuizSetAndQuizzesResponse.from(newQuizSet, registQuizRespons);
     }
 
-    private List<QuizResponse> toQuizResponse(List<Quiz> newQuizzes) {
+    private List<RegistQuizResponse> toQuizResponse(List<Quiz> newQuizzes) {
 
-        return newQuizzes.stream().map(QuizResponse::from).toList();
+        return newQuizzes.stream().map(RegistQuizResponse::from).toList();
     }
 
     @Transactional
-    public List<Quiz> createQuizList(Long quizSetId, List<QuizRequest> requestQuizzes) {
+    public List<Quiz> createQuizList(Long quizSetId, List<RegistQuizRequest> requestQuizzes) {
         if (requestQuizzes.isEmpty()) {
             throw new InvalidRequestException(INVALID_QUIZ_COUNT);
         }
@@ -82,8 +109,9 @@ public class QuizService {
     }
 
     @Transactional
-    public List<Quiz> toQuizEntityList(Long quizSetId, List<QuizRequest> registQuizRequestList) {
-        return registQuizRequestList.stream()
+    public List<Quiz> toQuizEntityList(
+            Long quizSetId, List<RegistQuizRequest> registRegistQuizRequestList) {
+        return registRegistQuizRequestList.stream()
                 .map(
                         quiz ->
                                 Quiz.builder()

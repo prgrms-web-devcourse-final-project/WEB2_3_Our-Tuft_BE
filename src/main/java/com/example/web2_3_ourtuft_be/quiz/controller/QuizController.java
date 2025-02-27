@@ -3,6 +3,7 @@ package com.example.web2_3_ourtuft_be.quiz.controller;
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetAndQuizzesRequest;
 import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetAndQuizzesResponse;
+import com.example.web2_3_ourtuft_be.quiz.dto.UpdateQuizSetandQuizzesRequest;
 import com.example.web2_3_ourtuft_be.quiz.service.QuizService;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,5 +44,16 @@ public class QuizController {
         quizService.deleteQuizSetAndQuizzes(quizSetId);
 
         return GlobalResponse.success("퀴즈세트를 삭제 했습니다.");
+    }
+
+    @Operation(summary = "퀴즈세트, 퀴즈 수정 API", description = "전달받은 퀴즈,퀴즈세트 데이터로 수정 합니다.")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
+    @PutMapping("/{quizsetid}")
+    public GlobalResponse<String> updateQuizSetAndQuizzes(
+            @PathVariable("quizsetid") Long quizSetId, @RequestBody UpdateQuizSetandQuizzesRequest request) {
+
+        quizService.updateQuizSetAndQuizzes(quizSetId, request);
+
+        return GlobalResponse.success("성공적으로 수정 했습니다.");
     }
 }
