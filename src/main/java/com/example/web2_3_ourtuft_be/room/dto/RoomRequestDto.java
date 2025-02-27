@@ -17,31 +17,25 @@ public class RoomRequestDto {
 
     private String password;
 
-    // 공개방 일때 Null 들어가야해서 Integer
-
     @Min(value = 5, message = "라운드는 최소 5 이상이어야 합니다.") private int round;
 
-    private QuizSetType quizType;
+    private QuizSetType gameType;
 
     @Min(value = 5, message = "진행 시간은 최소 5초 이상이어야 합니다.") private int time;
-
-    @Min(value = 2, message = "참가 인원은 최소 2명 이상이어야 합니다.") private int participant;
 
     public RoomRequestDto(
             String roomName,
             boolean disclosure,
             String password,
             int round,
-            QuizSetType quizType,
-            int time,
-            int participant) {
+            QuizSetType gameType,
+            int time) {
         this.roomName = roomName;
         this.disclosure = disclosure;
         this.password = password;
         this.round = round;
-        this.quizType = quizType;
+        this.gameType = gameType;
         this.time = time;
-        this.participant = participant;
 
         validate();
     }
@@ -53,14 +47,16 @@ public class RoomRequestDto {
             throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD);
         }
 
+        if (disclosure && !password.isEmpty()) {
+            throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_DISCLOSURE);
+        }
+
         if (!disclosure && password.length() != 4) {
             throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_LENGTH);
         }
 
-        if (disclosure && password != null)
-            ;
-        {
-            password = null;
+        if (!disclosure && !password.matches("^[0-9]+$")) {
+            throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_FORMAT);
         }
     }
 }

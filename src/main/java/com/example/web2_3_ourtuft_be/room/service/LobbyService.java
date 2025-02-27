@@ -1,7 +1,9 @@
 package com.example.web2_3_ourtuft_be.room.service;
 
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.AccessDeniedException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
+import com.example.web2_3_ourtuft_be.global.exception.messages.AccessDeniedMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
@@ -53,16 +55,42 @@ public class LobbyService {
         return rooms.stream().map(RoomResponseDto::new).collect(Collectors.toList());
     }
 
-    public RoomResponseDto createRoom(RoomRequestDto roomRequestDto, String userName) {
+    public RoomResponseDto createRoom(RoomRequestDto roomRequestDto, Long userId) {
+
         Room room =
                 Room.builder()
                         .roomName(roomRequestDto.getRoomName())
                         .disclosure(roomRequestDto.isDisclosure())
                         .roomPassword(roomRequestDto.getPassword())
-                        .peopleEntering(1)
                         .round(roomRequestDto.getRound())
-                        .gameStatus("WAITING")
-                        .host(userName)
+                        .hostId(userId)
+                        .gameType(roomRequestDto.getGameType())
+                        .build();
+
+        room = roomRepository.save(room);
+
+        return new RoomResponseDto(room);
+    }
+
+    public RoomResponseDto updateRoomSettings(Long roomId, Long userId, RoomRequestDto roomRequestDto) {
+
+        Room room =
+                roomRepository
+                        .findById(roomId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+
+        if(!room.getHostId().equals(userId)) {
+            throw new AccessDeniedException(AccessDeniedMessages.ROOM_SETTING);
+        }
+
+        room =
+                Room.builder()
+                        .id(room.getId())
+                        .roomName(roomRequestDto.getRoomName())
+                        .disclosure(roomRequestDto.isDisclosure())
+                        .roomPassword(roomRequestDto.getPassword())
+                        .round(roomRequestDto.getRound())
+                        .gameType(roomRequestDto.getGameType())
                         .build();
 
         room = roomRepository.save(room);
