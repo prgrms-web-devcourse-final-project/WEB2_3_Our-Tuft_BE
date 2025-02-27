@@ -1,5 +1,6 @@
 package com.example.web2_3_ourtuft_be.room.dto;
 
+import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +13,7 @@ public class RoomResponseDto {
     private final int round;
     private final Long hostId;
     private final boolean disclosure;
+    private final QuizSetType gameType;
 
     public RoomResponseDto(Room room) {
         this.roomId = room.getId();
@@ -19,5 +21,6 @@ public class RoomResponseDto {
         this.round = room.getRound();
         this.hostId = room.getHostId();
         this.disclosure = room.isDisclosure();
+        this.gameType = room.getGameType();
     }
 }
