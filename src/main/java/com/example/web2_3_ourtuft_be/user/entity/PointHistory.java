@@ -23,5 +23,5 @@ public class PointHistory {
 
     private String reason;
 
-    private LocalDateTime usageTime;
+    private LocalDateTime pointChangeTime;
 }

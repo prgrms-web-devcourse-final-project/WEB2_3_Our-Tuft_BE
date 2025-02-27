@@ -14,7 +14,8 @@ public enum NotFoundMessages {
     NOT_FOUND_QUIZ_SET("해당 퀴즈세트를 찾을 수 없습니다."),
     COUPON("쿠폰이 존재하지 않습니다."),
     DISCOUNT("해당 할인이 존재하지 않습니다."),
-    WISH_ITEM("찜한 상품이 존재하지 않습니다.");
+    WISH_ITEM("찜한 상품이 존재하지 않습니다."),
+    POINT("포인트가 존재하지 않습니다.");
 
     private final String message;
 }

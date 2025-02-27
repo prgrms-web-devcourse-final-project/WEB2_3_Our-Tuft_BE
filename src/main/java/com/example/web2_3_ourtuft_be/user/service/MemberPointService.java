@@ -26,8 +26,6 @@ public class MemberPointService {
     public MyPointsResponseDto getMyPoints() {
         Long userId = 1L;
 
-        pointHistoryService.validateUserPoints();
-
         return new MyPointsResponseDto(getPoint(userId).getPoints());
     }
 

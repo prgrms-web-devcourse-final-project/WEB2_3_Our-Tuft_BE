@@ -131,7 +131,7 @@ public class UserFacadeService {
         wishlistItemService.addItem(userId, request.getItemId());
     }
 
-    //TODO : 찜 페이지에서 찜 아이템을 취소한다면 새로운 찜 목록을 반환해야 할 것 같음, 응답값 수정 필요한지 논의
+    // TODO : 찜 페이지에서 찜 아이템을 취소한다면 새로운 찜 목록을 반환해야 할 것 같음, 응답값 수정 필요한지 논의
     @Transactional
     public void deleteWishItem(Long userId, Long itemId) {
         wishlistItemService.deleteWishItem(userId, itemId);

@@ -32,7 +32,8 @@ public class PurchaseController {
 
     @Operation(summary = "아이템 찜 API", description = "상점에서 아이템을 찜합니다.")
     @PostMapping("/wishlist")
-    public ResponseEntity<GlobalResponse<String>> addWishItem(@RequestBody WishItemRequestDto request,
+    public ResponseEntity<GlobalResponse<String>> addWishItem(
+            @RequestBody WishItemRequestDto request,
             @AuthenticationPrincipal(expression = "user") User user) {
         userFacadeService.AddWishItem(user.getId(), request);
         return ResponseEntity.ok(GlobalResponse.success("상품을 위시리스트에 추가했습니다."));
@@ -40,8 +41,8 @@ public class PurchaseController {
 
     @Operation(summary = "아이템 찜 취소 API", description = "상점 찜 목록에서 아이템을 찜 취소합니다.")
     @DeleteMapping("/wishlist/{itemId}")
-    public ResponseEntity<GlobalResponse<String>> deleteWishItem(@PathVariable Long itemId,
-            @AuthenticationPrincipal(expression = "user") User user) {
+    public ResponseEntity<GlobalResponse<String>> deleteWishItem(
+            @PathVariable Long itemId, @AuthenticationPrincipal(expression = "user") User user) {
         userFacadeService.deleteWishItem(user.getId(), itemId);
         return ResponseEntity.ok(GlobalResponse.success("상품을 위시리스트에 추가했습니다."));
     }
