@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.item.repository;
 
 import com.example.web2_3_ourtuft_be.item.entity.Item;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Slice<Item> findByNameContaining(String keyword, Pageable pageable);
 
     Slice<Item> findAllBy(Pageable pageable);
+
+    Slice<Item> findAllByIdIn(List<Long> itemIds, Pageable pageable);
 }

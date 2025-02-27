@@ -6,6 +6,7 @@ import com.example.web2_3_ourtuft_be.global.exception.messages.DuplicatedMessage
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.user.entity.WishlistItem;
 import com.example.web2_3_ourtuft_be.user.repository.WishlistItemRepository;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,5 +37,9 @@ public class WishlistItemService {
                         .orElseThrow(() -> new NotFoundException(NotFoundMessages.WISH_ITEM));
 
         wishlistItemRepository.delete(item);
+    }
+
+    public List<Long> getWishItemIds(Long userId) {
+        return wishlistItemRepository.findItemIdByUserId(userId);
     }
 }
