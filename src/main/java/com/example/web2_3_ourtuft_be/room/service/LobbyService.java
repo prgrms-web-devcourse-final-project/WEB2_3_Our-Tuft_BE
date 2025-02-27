@@ -56,14 +56,14 @@ public class LobbyService {
     public RoomResponseDto createRoom(RoomRequestDto roomRequestDto, String userName) {
         Room room =
                 Room.builder()
-                    .roomName(roomRequestDto.getRoomName())
-                    .disclosure(roomRequestDto.isDisclosure())
-                    .roomPassword(roomRequestDto.getPassword())
-                    .peopleEntering(1)
-                    .round(roomRequestDto.getRound())
-                    .gameStatus("WAITING")
-                    .host(userName)
-                    .build();
+                        .roomName(roomRequestDto.getRoomName())
+                        .disclosure(roomRequestDto.isDisclosure())
+                        .roomPassword(roomRequestDto.getPassword())
+                        .peopleEntering(1)
+                        .round(roomRequestDto.getRound())
+                        .gameStatus("WAITING")
+                        .host(userName)
+                        .build();
 
         room = roomRepository.save(room);
 
