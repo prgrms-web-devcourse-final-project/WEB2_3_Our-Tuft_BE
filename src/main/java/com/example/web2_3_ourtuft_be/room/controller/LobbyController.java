@@ -62,7 +62,7 @@ public class LobbyController {
 
         //        System.out.println(user.getName());
 
-        RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getName());
+        RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getId());
 
         return ResponseEntity.ok(GlobalResponse.success(response));
     }

@@ -53,7 +53,7 @@ public class LobbyService {
         return rooms.stream().map(RoomResponseDto::new).collect(Collectors.toList());
     }
 
-    public RoomResponseDto createRoom(RoomRequestDto roomRequestDto, String userName) {
+    public RoomResponseDto createRoom(RoomRequestDto roomRequestDto, Long userId) {
 
         Room room =
                 Room.builder()
@@ -61,7 +61,7 @@ public class LobbyService {
                         .disclosure(roomRequestDto.isDisclosure())
                         .roomPassword(roomRequestDto.getPassword())
                         .round(roomRequestDto.getRound())
-                        .host(userName)
+                        .hostId(userId)
                         .gameType(roomRequestDto.getGameType())
                         .build();
 

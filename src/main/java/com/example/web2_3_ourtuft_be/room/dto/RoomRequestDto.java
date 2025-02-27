@@ -23,8 +23,6 @@ public class RoomRequestDto {
 
     @Min(value = 5, message = "진행 시간은 최소 5초 이상이어야 합니다.") private int time;
 
-    @Min(value = 2, message = "참가 인원은 최소 2명 이상이어야 합니다.") private int participant;
-
     public RoomRequestDto(
             String roomName,
             boolean disclosure,

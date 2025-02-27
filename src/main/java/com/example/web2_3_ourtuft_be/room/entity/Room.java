@@ -23,6 +23,6 @@ public class Room extends BaseTime {
     private boolean disclosure;
     private String roomPassword;
     private int round;
-    private String host;
+    private Long hostId;
     private QuizSetType gameType;
 }
