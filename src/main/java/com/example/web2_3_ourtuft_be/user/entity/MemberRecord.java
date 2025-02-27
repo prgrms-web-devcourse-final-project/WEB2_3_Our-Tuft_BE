@@ -5,7 +5,6 @@ import lombok.*;
 
 @Getter
 @Entity
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member_records")
@@ -22,6 +21,10 @@ public class MemberRecord {
     private int winCount = 0;
 
     @Version private int version;
+
+    public MemberRecord(Long userId) {
+        this.userId = userId;
+    }
 
     public void increaseTotalGames() {
         this.totalGames++;

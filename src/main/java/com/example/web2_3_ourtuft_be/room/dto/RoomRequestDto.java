@@ -40,8 +40,9 @@ public class RoomRequestDto {
         validate();
     }
 
+    // 최소한의 검증 ?? -> 정책이 바뀔수도 있는 검증들은 서비스나, 다른 곳에서 책임
+    //    Room 생성 신청서에 대한 검증은 있지만 , Room 생성할때는 검증이 들어가지 않음
     public void validate() {
-
         if (!disclosure && password == null) {
             throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD);
         }
