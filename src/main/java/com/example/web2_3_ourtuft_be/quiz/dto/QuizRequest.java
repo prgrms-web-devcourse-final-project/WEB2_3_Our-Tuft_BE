@@ -13,10 +13,5 @@ public class QuizRequest {
 
     @NotBlank(message = "정답은 필수입니다.") private String answer;
 
-    @Builder
-    public QuizRequest(String question, String hint, String answer) {
-        this.question = question;
-        this.hint = hint;
-        this.answer = answer;
-    }
+
 }
