@@ -1,9 +1,8 @@
 package com.example.web2_3_ourtuft_be.websocket.service;
 
+import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -36,7 +35,8 @@ public class WebSocketService {
         }
 
         messagingTemplate.convertAndSend(
-                "/topic/room/" + roomId, WebSocketResponse.Send.of("SYSTEM", username + "님이 입장하였습니다"));
+                "/topic/room/" + roomId,
+                WebSocketResponse.Send.of("SYSTEM", username + "님이 입장하였습니다"));
     }
 
     // 핸드셰이크에서 Principal 객체에 회원 정보를 담으려고 했지만 Null 값이 넘어오는 문제를 아직 해결 X
