@@ -28,7 +28,7 @@ public class UserController {
     private final MemberPointService memberPointService;
 
     /*
-     *    @AuthenticationPrincipal(expression = "user") User user => id, name, role 존재
+     *    @AuthenticationPrincipal(expression = "user") User user => Id, Role 존재
      */
 
     @Operation(summary = "내 정보 조회 API", description = "내 정보, 레벨, 승률, 아바타를 조회합니다.")
@@ -98,7 +98,10 @@ public class UserController {
     }
 
     @Operation(summary = "내 포인트 조회", description = "로그인 한 회원의 정보를 조회합니다.")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "404", description = "포인트가 존재하지 않습니다.")
+    })
     @GetMapping("/myInfo/points")
     public ResponseEntity<GlobalResponse<MyPointsResponseDto>> getMyPoints() {
         MyPointsResponseDto response = memberPointService.getMyPoints();
@@ -117,7 +120,6 @@ public class UserController {
     @GetMapping("/user")
     public ResponseEntity<GlobalResponse<UserResponse.GetUserByContext>> getUserByContext(
             @AuthenticationPrincipal(expression = "user") User user) {
-
         return ResponseEntity.ok(
                 GlobalResponse.success(
                         new UserResponse.GetUserByContext(
@@ -125,6 +127,11 @@ public class UserController {
     }
 
     // 게임종료 후, 경험치와 포인트를 받아 올리는 api, 아마 게임 쪽에서 메서드를 호출해서 처리할 듯( 임시로 작성해뒀습니다. )
+    @Operation(summary = "보상 획득 API", description = "게임 후 얻은 경험치와 포인트를 올려줍니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "404", description = "포인트가 존재하지 않습니다.")
+    })
     @PostMapping("/reward")
     public ResponseEntity<GlobalResponse<RewardDto>> reward(@RequestBody RewardDto request) {
 
