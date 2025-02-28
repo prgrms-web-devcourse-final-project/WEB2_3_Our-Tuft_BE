@@ -4,10 +4,8 @@ import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestE
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
 import jakarta.persistence.Embeddable;
-import lombok.NoArgsConstructor;
 
 @Embeddable
-@NoArgsConstructor
 public class Point {
     private int point;
 
