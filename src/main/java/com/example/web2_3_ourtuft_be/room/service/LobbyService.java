@@ -72,14 +72,15 @@ public class LobbyService {
         return new RoomResponseDto(room);
     }
 
-    public RoomResponseDto updateRoomSettings(Long roomId, Long userId, RoomRequestDto roomRequestDto) {
+    public RoomResponseDto updateRoomSettings(
+            Long roomId, Long userId, RoomRequestDto roomRequestDto) {
 
         Room room =
                 roomRepository
                         .findById(roomId)
                         .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
 
-        if(!room.getHostId().equals(userId)) {
+        if (!room.getHostId().equals(userId)) {
             throw new AccessDeniedException(AccessDeniedMessages.ROOM_SETTING);
         }
 
@@ -96,5 +97,15 @@ public class LobbyService {
         room = roomRepository.save(room);
 
         return new RoomResponseDto(room);
+    }
+
+    public void deleteRoom(Long roomId) {
+
+        Room room =
+                roomRepository
+                        .findById(roomId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+
+        roomRepository.delete(room);
     }
 }
