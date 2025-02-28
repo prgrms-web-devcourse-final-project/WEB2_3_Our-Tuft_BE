@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrderItemService {
 
-    private OrderItemRepository orderItemRepository;
+    private final OrderItemRepository orderItemRepository;
 
     public List<OrderItemDto> createOrderItems(Order orderHistory, List<Item> items) {
 

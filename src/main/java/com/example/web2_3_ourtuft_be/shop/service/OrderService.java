@@ -1,7 +1,7 @@
 package com.example.web2_3_ourtuft_be.shop.service;
 
 import com.example.web2_3_ourtuft_be.shop.entity.Order;
-import com.example.web2_3_ourtuft_be.shop.repository.OrderHistoryRepository;
+import com.example.web2_3_ourtuft_be.shop.repository.OrderRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,13 +10,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrderService {
 
-    private final OrderHistoryRepository orderHistoryRepository;
+    private final OrderRepository orderRepository;
 
-    public Order createOrderHistory(Long userId) {
+    public Order createOrder(Long userId, int totalQuantity) {
 
         Order orderHistory =
-                Order.builder().userId(userId).purchasedAt(LocalDateTime.now()).build();
+                Order.builder()
+                        .userId(userId)
+                        .totalQuantity(totalQuantity)
+                        .orderAt(LocalDateTime.now())
+                        .build();
 
-        return orderHistoryRepository.save(orderHistory);
+        return orderRepository.save(orderHistory);
     }
 }

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/shop")
 @Tag(name = "Shop", description = "상점 관련 API")
 public class OrderController {
 
@@ -29,8 +29,9 @@ public class OrderController {
 
     @Operation(summary = "아이템 구매 API", description = "상점에서 아이템을 구매합니다.")
     @PostMapping("/order")
-    public ResponseEntity<GlobalResponse<OrderListResponse>> purchase(
-            @RequestBody OrderRequest request, @AuthenticationPrincipal User user) {
+    public ResponseEntity<GlobalResponse<OrderListResponse>> order(
+            @RequestBody OrderRequest request,
+            @AuthenticationPrincipal(expression = "user") User user) {
 
         OrderListResponse response = orderFacadeService.order(user.getId(), request.getItems());
         return ResponseEntity.ok(GlobalResponse.success(response));
