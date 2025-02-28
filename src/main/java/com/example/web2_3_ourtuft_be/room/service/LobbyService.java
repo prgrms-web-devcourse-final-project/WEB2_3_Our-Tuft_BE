@@ -10,10 +10,13 @@ import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
-import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
+import com.example.web2_3_ourtuft_be.user.entity.User;
+import com.example.web2_3_ourtuft_be.user.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +25,7 @@ import org.springframework.stereotype.Service;
 public class LobbyService {
 
     private final RoomRepository roomRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     public List<RoomResponseDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
@@ -102,16 +105,13 @@ public class LobbyService {
         return responseDto;
     }
 
+    @Transactional
     public void changeRoomHost(Long roomId, Long newHostId) {
 
         Room room = findByRoomId(roomId);
+        User newHost = userService.getUser(newHostId);
 
-        boolean existUser = userRepository.existsById(newHostId);
-        if (!existUser) {
-            throw new NotFoundException(NotFoundMessages.USER);
-        }
-
-        room.changeHost(newHostId);
+        room.changeHost(newHost.getId());
 
         roomRepository.save(room);
 
