@@ -85,4 +85,13 @@ public class LobbyController {
 
         return ResponseEntity.ok(GlobalResponse.success("방장 변경 성공"));
     }
+  
+    @Operation(summary = "방 삭제 API", description = "방을 삭제합니다.")
+    @DeleteMapping("/rooms/{roomId}")
+    public GlobalResponse<String> deleteRoom(@PathVariable Long roomId) {
+
+        lobbyService.deleteRoom(roomId);
+
+        return GlobalResponse.success("방이 삭제되었습니다.");
+    }
 }

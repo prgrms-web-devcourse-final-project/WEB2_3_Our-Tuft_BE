@@ -12,7 +12,9 @@ public class ItemResponse {
     private String category;
     private String imageUrl;
     private String nickColor;
-    private int price;
+    private int originalPrice;
+    private int discountPrice;
+    private int finalPrice;
 
     public static ItemResponse from(Item item) {
         return ItemResponse.builder()
@@ -21,7 +23,9 @@ public class ItemResponse {
                 .category(item.getCategory())
                 .imageUrl(item.getImageUrl())
                 .nickColor(item.getNickColor())
-                .price(item.getPrice())
+                .originalPrice(item.getOriginalPrice())
+                .discountPrice(item.getDiscountPrice())
+                .finalPrice(item.getOriginalPrice() - item.getDiscountPrice())
                 .build();
     }
 }

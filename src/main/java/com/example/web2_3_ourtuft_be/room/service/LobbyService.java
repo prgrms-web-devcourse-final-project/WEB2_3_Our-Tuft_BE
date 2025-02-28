@@ -129,4 +129,14 @@ public class LobbyService {
                 .findById(roomId)
                 .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
     }
+
+    public void deleteRoom(Long roomId) {
+
+        Room room =
+                roomRepository
+                        .findById(roomId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+
+        roomRepository.delete(room);
+    }
 }

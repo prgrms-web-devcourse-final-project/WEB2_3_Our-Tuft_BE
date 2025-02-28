@@ -3,8 +3,9 @@ package com.example.web2_3_ourtuft_be.shop.controller;
 import com.example.web2_3_ourtuft_be.common.PageResponse;
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
-import com.example.web2_3_ourtuft_be.shop.dto.PurchaseRequest;
-import com.example.web2_3_ourtuft_be.shop.service.PurchaseService;
+import com.example.web2_3_ourtuft_be.shop.dto.OrderListResponse;
+import com.example.web2_3_ourtuft_be.shop.dto.OrderRequest;
+import com.example.web2_3_ourtuft_be.shop.service.OrderFacadeService;
 import com.example.web2_3_ourtuft_be.user.dto.WishItemRequestDto;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.service.UserFacadeService;
@@ -21,17 +22,18 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 @Tag(name = "Shop", description = "상점 관련 API")
-public class PurchaseController {
+public class OrderController {
 
-    private final PurchaseService purchaseService;
+    private final OrderFacadeService orderFacadeService;
     private final UserFacadeService userFacadeService;
 
     @Operation(summary = "아이템 구매 API", description = "상점에서 아이템을 구매합니다.")
-    @PostMapping("/purchase")
-    public ResponseEntity<GlobalResponse<String>> purchase(@RequestBody PurchaseRequest request) {
+    @PostMapping("/order")
+    public ResponseEntity<GlobalResponse<OrderListResponse>> purchase(
+            @RequestBody OrderRequest request, @AuthenticationPrincipal User user) {
 
-        purchaseService.purchase(request.getItems());
-        return ResponseEntity.ok(GlobalResponse.success("구매 성공"));
+        OrderListResponse response = orderFacadeService.order(user.getId(), request.getItems());
+        return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
     @Operation(summary = "아이템 찜 API", description = "상점에서 아이템을 찜합니다.")
