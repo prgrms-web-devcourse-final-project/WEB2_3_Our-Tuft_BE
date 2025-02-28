@@ -6,7 +6,6 @@ import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.*;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,7 +117,8 @@ public class UserFacadeService {
         Long userId = 1L;
         int exp = expService.increaseExp(userId, request.getExp());
         // TODO: UserId 로직 변경하면서 points 가져오는 부분 중복 제거 예정
-        pointService.updatePoints(userId, request.getPoints(), PointChangeType.INCREASE, PointChangeReason.REWARD);
+        pointService.updatePoints(
+                userId, request.getPoints(), PointChangeType.INCREASE, PointChangeReason.REWARD);
         int points = pointService.getPoint(userId).getPoints();
 
         return new RewardDto(exp, points);

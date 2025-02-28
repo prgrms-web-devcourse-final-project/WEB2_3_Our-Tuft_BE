@@ -1,4 +1,4 @@
-package com.example.web2_3_ourtuft_be.global.config;
+package com.example.web2_3_ourtuft_be.websocket.config;
 
 import com.example.web2_3_ourtuft_be.security.util.JwtUtil;
 import com.example.web2_3_ourtuft_be.websocket.interceptor.StompChannelInterceptor;
@@ -21,8 +21,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/server");
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/topic");
+        registry.setApplicationDestinationPrefixes("/app", "/topic");
     }
 
     @Override
