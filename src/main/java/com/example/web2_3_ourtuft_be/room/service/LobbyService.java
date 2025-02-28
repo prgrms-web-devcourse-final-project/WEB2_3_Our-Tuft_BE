@@ -98,7 +98,11 @@ public class LobbyService {
 
         room = roomRepository.save(room);
 
-        return new RoomResponseDto(room);
+        RoomResponseDto responseDto = new RoomResponseDto(room);
+
+        //messagingTemplate.converAndSend("/topin/room" + roomId, responseDto);
+
+        return responseDto;
     }
 
     public void changeRoomHost(Long roomId, Long newHostId) {
