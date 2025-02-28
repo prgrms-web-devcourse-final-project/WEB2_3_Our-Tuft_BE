@@ -58,22 +58,40 @@ public class LobbyController {
             @Valid @RequestBody RoomRequestDto roomRequestDto,
             @AuthenticationPrincipal(expression = "user") User user) {
 
-        //        System.out.println(user.getName());
-
         RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getId());
 
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
     @Operation(summary = "방 설정 변경 API", description = "방 설정을 변경합니다.")
-    @PostMapping("/rooms/{roomId}/settings")
+    @PutMapping("/rooms/{roomId}")
     public ResponseEntity<GlobalResponse<RoomResponseDto>> updateRoomSettings(
-            @PathVariable Long roomId, @Valid @RequestBody RoomRequestDto roomRequestDto,
+            @PathVariable Long roomId,
+            @Valid @RequestBody RoomRequestDto roomRequestDto,
             @AuthenticationPrincipal(expression = "user") User user) {
 
-        RoomResponseDto response = lobbyService.updateRoomSettings(roomId, user.getId(),roomRequestDto);
+        RoomResponseDto response =
+                lobbyService.updateRoomSettings(roomId, user.getId(), roomRequestDto);
 
-            return ResponseEntity.ok(GlobalResponse.success(response));
-        }
+        return ResponseEntity.ok(GlobalResponse.success(response));
+    }
+
+    @Operation(summary = "방장 변경 API", description = "방장을 변경합니다.")
+    @PutMapping("/rooms/{roomId}/host")
+    public ResponseEntity<GlobalResponse<String>> changeRoomHost(
+            @PathVariable Long roomId, @RequestParam Long newHostId) {
+
+        lobbyService.changeRoomHost(roomId, newHostId);
+
+        return ResponseEntity.ok(GlobalResponse.success("방장 변경 성공"));
+    }
+  
+    @Operation(summary = "방 삭제 API", description = "방을 삭제합니다.")
+    @DeleteMapping("/rooms/{roomId}")
+    public GlobalResponse<String> deleteRoom(@PathVariable Long roomId) {
+
+        lobbyService.deleteRoom(roomId);
+
+        return GlobalResponse.success("방이 삭제되었습니다.");
     }
 }

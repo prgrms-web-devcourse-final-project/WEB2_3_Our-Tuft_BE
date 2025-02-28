@@ -25,4 +25,8 @@ public class Room extends BaseTime {
     private int round;
     private Long hostId;
     private QuizSetType gameType;
+
+    public void changeHost(Long newHostId) {
+        this.hostId = newHostId;
+    }
 }
