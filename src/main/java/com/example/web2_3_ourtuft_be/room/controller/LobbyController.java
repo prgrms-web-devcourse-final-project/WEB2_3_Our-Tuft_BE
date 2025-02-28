@@ -4,6 +4,7 @@ import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
+import com.example.web2_3_ourtuft_be.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -13,9 +14,10 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/lobbies")
@@ -54,11 +56,42 @@ public class LobbyController {
     @PostMapping("/rooms")
     public ResponseEntity<GlobalResponse<RoomResponseDto>> createRoom(
             @Valid @RequestBody RoomRequestDto roomRequestDto,
-            @AuthenticationPrincipal UserDetails user) {
-        {
-            RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getUsername());
+            @AuthenticationPrincipal(expression = "user") User user) {
 
-            return ResponseEntity.ok(GlobalResponse.success(response));
-        }
+        RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getId());
+
+        return ResponseEntity.ok(GlobalResponse.success(response));
+    }
+
+    @Operation(summary = "방 설정 변경 API", description = "방 설정을 변경합니다.")
+    @PutMapping("/rooms/{roomId}")
+    public ResponseEntity<GlobalResponse<RoomResponseDto>> updateRoomSettings(
+            @PathVariable Long roomId,
+            @Valid @RequestBody RoomRequestDto roomRequestDto,
+            @AuthenticationPrincipal(expression = "user") User user) {
+
+        RoomResponseDto response =
+                lobbyService.updateRoomSettings(roomId, user.getId(), roomRequestDto);
+
+        return ResponseEntity.ok(GlobalResponse.success(response));
+    }
+
+    @Operation(summary = "방장 변경 API", description = "방장을 변경합니다.")
+    @PutMapping("/rooms/{roomId}/host")
+    public ResponseEntity<GlobalResponse<String>> changeRoomHost(
+            @PathVariable Long roomId, @RequestParam Long newHostId) {
+
+        lobbyService.changeRoomHost(roomId, newHostId);
+
+        return ResponseEntity.ok(GlobalResponse.success("방장 변경 성공"));
+    }
+
+    @Operation(summary = "방 삭제 API", description = "방을 삭제합니다.")
+    @DeleteMapping("/rooms/{roomId}")
+    public GlobalResponse<String> deleteRoom(@PathVariable Long roomId) {
+
+        lobbyService.deleteRoom(roomId);
+
+        return GlobalResponse.success("방이 삭제되었습니다.");
     }
 }
