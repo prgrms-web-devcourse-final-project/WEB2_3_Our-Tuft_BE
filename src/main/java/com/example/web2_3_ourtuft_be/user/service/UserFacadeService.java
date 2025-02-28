@@ -1,12 +1,16 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
 import com.example.web2_3_ourtuft_be.auth.dto.OAuth2Response;
+import com.example.web2_3_ourtuft_be.common.PageResponse;
+import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
 import com.example.web2_3_ourtuft_be.item.service.ItemService;
 import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.*;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +24,8 @@ public class UserFacadeService {
     private final UserService userService;
     private final MemberPointService memberPointService;
     private final MemberRecordService memberRecordService;
-    private final InventoryService inventoryService;
     private final MemberPointService pointService;
+    private final WishlistItemService wishlistItemService;
 
     @Transactional(readOnly = true)
     public UserInfoResponseDto getUserInfo(Long userId) {
@@ -123,6 +127,7 @@ public class UserFacadeService {
 
         return new RewardDto(exp, points);
     }
+
 
     @Transactional
     public void AddWishItem(Long userId, WishItemRequestDto request) {
