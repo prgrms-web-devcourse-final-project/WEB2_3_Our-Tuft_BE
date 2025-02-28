@@ -10,6 +10,7 @@ import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
+import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class LobbyService {
 
     private final RoomRepository roomRepository;
+    private final UserRepository userRepository;
 
     public List<RoomResponseDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
@@ -72,14 +74,15 @@ public class LobbyService {
         return new RoomResponseDto(room);
     }
 
-    public RoomResponseDto updateRoomSettings(Long roomId, Long userId, RoomRequestDto roomRequestDto) {
+    public RoomResponseDto updateRoomSettings(
+            Long roomId, Long userId, RoomRequestDto roomRequestDto) {
 
         Room room =
                 roomRepository
                         .findById(roomId)
                         .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
 
-        if(!room.getHostId().equals(userId)) {
+        if (!room.getHostId().equals(userId)) {
             throw new AccessDeniedException(AccessDeniedMessages.ROOM_SETTING);
         }
 
@@ -96,5 +99,30 @@ public class LobbyService {
         room = roomRepository.save(room);
 
         return new RoomResponseDto(room);
+    }
+
+    public void changeRoomHost(Long roomId, Long newHostId) {
+
+        Room room =
+                roomRepository
+                        .findById(roomId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+
+        boolean existUser = userRepository.existsById(newHostId);
+        if (!existUser) {
+            throw new NotFoundException(NotFoundMessages.USER);
+        }
+
+        room.changeHost(newHostId);
+
+        roomRepository.save(room);
+
+        /* 방장 변경 시 방 안에 있는 유저들에게 즉시 반영..
+        Map<String, Object> hostChangeInfo = new HashMap<>();
+        hostChangeInfo.put("roomID", roomId);
+        hostChangeInfo.put("newHostID", newHostId);
+
+        messagingTemplate.convertAndSend("/topin/room/" + roomId, hostChangeInfo);
+         */
     }
 }
