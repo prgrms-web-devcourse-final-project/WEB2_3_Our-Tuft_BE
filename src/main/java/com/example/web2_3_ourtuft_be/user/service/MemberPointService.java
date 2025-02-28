@@ -26,8 +26,6 @@ public class MemberPointService {
     public MyPointsResponseDto getMyPoints() {
         Long userId = 1L;
 
-        pointHistoryService.validateUserPoints();
-
         return new MyPointsResponseDto(getPoint(userId).getPoints());
     }
 
@@ -40,12 +38,7 @@ public class MemberPointService {
             Long userId, int amount, PointChangeType type, PointChangeReason reason) {
         MemberPoint memberPoint = getPoint(userId);
 
-        int updatedPoints =
-                (type == PointChangeType.INCREASE)
-                        ? memberPoint.getPoints() + amount
-                        : memberPoint.getPoints() - amount;
-
-        memberPoint.updatePoints(updatedPoints);
+        memberPoint.updatePoints(type, amount);
 
         pointHistoryService.savePointHistory(memberPoint.getId(), amount, type, reason);
     }

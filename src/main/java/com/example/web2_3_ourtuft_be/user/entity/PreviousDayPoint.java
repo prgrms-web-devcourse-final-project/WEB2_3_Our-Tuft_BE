@@ -1,22 +1,29 @@
-package com.example.web2_3_ourtuft_be.shop.entity;
+package com.example.web2_3_ourtuft_be.user.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 import lombok.*;
 
 @Entity
-@Getter
 @Builder
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class PurchaseItem {
+public class PreviousDayPoint {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long purchaseHistoryId;
+    private Long userId;
 
-    private Long itemId;
+    private int points;
+    private LocalDateTime recordDate;
+
+    public void updatePoints(int points) {
+        this.points = points;
+    }
 }

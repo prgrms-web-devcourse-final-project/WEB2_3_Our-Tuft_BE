@@ -1,16 +1,16 @@
 package com.example.web2_3_ourtuft_be.quiz.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
-import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetSummaryResponse;
-import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetRequest;
-import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetResponse;
-import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
+import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetAndQuizzesRequest;
+import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetAndQuizzesResponse;
 import com.example.web2_3_ourtuft_be.quiz.service.QuizService;
+import com.example.web2_3_ourtuft_be.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.List;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,12 +22,17 @@ public class QuizController {
 
     @Operation(summary = "퀴즈 등록 API", description = "퀴즈를 등록합니다.")
     @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
-    @PostMapping("/registration")
-    public GlobalResponse<RegistQuizSetResponse> registQuizset(
-            @RequestBody RegistQuizSetRequest quizeSetRequest) {
+    @PostMapping()
+    public GlobalResponse<RegistQuizSetAndQuizzesResponse> registQuizset(
+            @AuthenticationPrincipal(expression = "user") User user,
+            @Valid @RequestBody RegistQuizSetAndQuizzesRequest registQuizSetAndQuizzesRequest) {
 
-        RegistQuizSetResponse resultData = quizService.registQuizSet(quizeSetRequest);
-        return GlobalResponse.created(resultData);
+        Long creatorId = user.getId();
+
+        RegistQuizSetAndQuizzesResponse registQuizSetAndQuizzesResponse =
+                quizService.registQuizSet(creatorId, registQuizSetAndQuizzesRequest);
+
+        return GlobalResponse.created(registQuizSetAndQuizzesResponse);
     }
 
     @Operation(summary = "퀴즈세트 삭제 API", description = "등록된 퀴즈세트를 삭제합니다.")
@@ -36,16 +41,7 @@ public class QuizController {
     public GlobalResponse<String> deleteQuizset(@PathVariable("quizsetid") Long quizSetId) {
 
         quizService.deleteQuizSetAndQuizzes(quizSetId);
+
         return GlobalResponse.success("퀴즈세트를 삭제 했습니다.");
-    }
-
-    @Operation(summary = "퀴즈세트 조회 API", description = "선택한 퀴즈타입으로 퀴즈세트목록을 조회합니다.")
-    @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
-    @DeleteMapping("/quizsets/{quizType}")
-    public GlobalResponse<List<QuizSetSummaryResponse>> getQuizSetList(
-            @PathVariable("quizType") QuizSetType quizSetType) {
-
-        List<QuizSetSummaryResponse> quizSetList = quizService.getQuizSetList(quizSetType);
-        return GlobalResponse.success(quizSetList);
     }
 }

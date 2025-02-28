@@ -128,7 +128,6 @@ public class UserFacadeService {
         return new RewardDto(exp, points);
     }
 
-
     @Transactional
     public void AddWishItem(Long userId, WishItemRequestDto request) {
         itemService.validItemId(request.getItemId());

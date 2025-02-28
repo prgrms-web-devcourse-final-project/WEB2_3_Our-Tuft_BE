@@ -12,10 +12,11 @@ import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
-import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

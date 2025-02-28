@@ -6,9 +6,9 @@ import lombok.Getter;
 
 @Getter
 public class QuizResponse {
-    private String question;
-    private String hint;
-    private String answer;
+    private final String question;
+    private final String hint;
+    private final String answer;
 
     @Builder
     public QuizResponse(String question, String hint, String answer) {

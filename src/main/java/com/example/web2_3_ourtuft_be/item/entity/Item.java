@@ -20,14 +20,22 @@ public class Item {
     private String imageUrl;
     private String nickColor;
 
-    private int price;
+    private int originalPrice;
+    private int discountPrice;
     private int stock;
 
+    private Long discountId;
+
     public void update(
-            String name, String category, String imageUrl, String nickColor, int price, int stock) {
+            String name,
+            String category,
+            String imageUrl,
+            String nickColor,
+            int originalPrice,
+            int stock) {
         this.name = name;
         this.category = category;
-        this.price = price;
+        this.originalPrice = originalPrice;
         this.stock = stock;
 
         if (Category.NICKNAME.name().equals(category)) {
@@ -37,5 +45,9 @@ public class Item {
             this.imageUrl = imageUrl;
             this.nickColor = null;
         }
+    }
+
+    public void updateDiscountPrice(int discountPrice) {
+        this.discountPrice = discountPrice;
     }
 }

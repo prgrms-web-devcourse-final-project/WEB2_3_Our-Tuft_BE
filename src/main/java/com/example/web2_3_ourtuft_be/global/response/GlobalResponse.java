@@ -35,4 +35,8 @@ public class GlobalResponse<T> {
         return new GlobalResponse<>(
                 false, String.valueOf(e.getStatus().value()), e.getMessage(), null);
     }
+
+    public static <T> GlobalResponse<T> fail(String message) {
+        return new GlobalResponse<>(false, "400", message, null);
+    }
 }
