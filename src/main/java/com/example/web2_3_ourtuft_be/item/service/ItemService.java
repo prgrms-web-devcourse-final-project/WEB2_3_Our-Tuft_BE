@@ -61,7 +61,7 @@ public class ItemService {
                         .category(request.getCategory().name())
                         .imageUrl(request.getImageUrl())
                         .nickColor(request.getNickColor())
-                        .price(request.getPrice())
+                        .originalPrice(request.getPrice())
                         .build();
 
         itemRepository.save(item);
@@ -148,5 +148,9 @@ public class ItemService {
                 items.isLast(),
                 items.isEmpty(),
                 items.getNumberOfElements());
+    }
+
+    public List<Item> getItemsByIds(List<Long> itemIds) {
+        return itemRepository.findAllById(itemIds);
     }
 }

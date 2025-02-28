@@ -1,7 +1,5 @@
 package com.example.web2_3_ourtuft_be.user.entity;
 
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
-import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,9 +16,7 @@ public class MemberPoint {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-//    private int points = 0;
-    @Embedded
-    private Point point;
+    @Embedded private Point point;
 
     public MemberPoint(Long userId) {
         this.userId = userId;
@@ -35,3 +31,10 @@ public class MemberPoint {
         this.point = point.updatePoint(value, type);
     }
 }
+
+// 포인트가 바뀔때 값을 바꾸는 것이 아니라 포인트를 새로 생성해서 할당
+// MemberPoint 자체를 새로 생성해서 업데이트
+// public MemberPoint update(PointChangeType type, int value) {
+//    Point point = this.point.updatePoint(value, type);
+//    return new MemberPoint(this.id, this.userId, point)
+// }
