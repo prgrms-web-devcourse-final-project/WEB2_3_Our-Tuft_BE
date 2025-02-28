@@ -47,7 +47,7 @@ public class ItemServiceTest {
                         .category("EYE")
                         .imageUrl("eye.jpg")
                         .nickColor(null)
-                        .price(100)
+                        .originalPrice(100)
                         .stock(10)
                         .build();
 
@@ -58,7 +58,7 @@ public class ItemServiceTest {
                         .category("NICKNAME")
                         .imageUrl(null)
                         .nickColor("red")
-                        .price(100)
+                        .originalPrice(100)
                         .stock(10)
                         .build();
     }
