@@ -3,7 +3,6 @@ package com.example.web2_3_ourtuft_be.user.entity;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
-
 import jakarta.persistence.Embeddable;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Point {
     private int point;
+
+    public Point() {
+        this.point = 0;
+    }
 
     public Point(int point) {
         checkMinus(point);

@@ -19,19 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class OrderFacadeService {
     private final ItemService itemService;
-    private final OrderService orderHistoryService;
     private final OrderService orderService;
     private final OrderItemService orderItemService;
     private final MemberPointService memberPointService;
 
     public OrderFacadeService(
             ItemService itemService,
-            OrderService orderHistoryService,
             OrderService orderService,
             OrderItemService orderItemService,
             MemberPointService memberPointService) {
         this.itemService = itemService;
-        this.orderHistoryService = orderHistoryService;
         this.orderService = orderService;
         this.orderItemService = orderItemService;
         this.memberPointService = memberPointService;
@@ -41,7 +38,7 @@ public class OrderFacadeService {
     public OrderListResponse order(Long userId, List<Long> itemIds) {
         List<Item> items = itemService.getItemsByIds(itemIds);
         validateItemIds(items, itemIds);
-        Order newOrder = orderHistoryService.createOrderHistory(userId);
+        Order newOrder = orderService.createOrder(userId, items.size());
         List<OrderItemDto> orderItemDtoList = orderItemService.createOrderItems(newOrder, items);
         memberPointService.updatePoints(
                 userId,

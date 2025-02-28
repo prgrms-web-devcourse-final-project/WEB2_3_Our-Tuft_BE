@@ -47,7 +47,7 @@ public class Item {
         }
     }
 
-    public void updateDiscount(int discountPrice) {
+    public void updateDiscountPrice(int discountPrice) {
         this.discountPrice = discountPrice;
     }
 }

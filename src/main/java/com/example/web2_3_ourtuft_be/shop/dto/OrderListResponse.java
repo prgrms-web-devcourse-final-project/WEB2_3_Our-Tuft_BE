@@ -5,12 +5,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 @AllArgsConstructor
 public class OrderListResponse {
-    private final Long purchaseId;
-    private final LocalDateTime purchasedAt;
+    private final Long orderId;
+    private final LocalDateTime orderAt;
     private final int quantity;
     private final int totalOriginalPrice;
     private final int totalDiscountPrice;
@@ -19,8 +21,8 @@ public class OrderListResponse {
 
     public static OrderListResponse from(Order order, List<OrderItemDto> items) {
         return OrderListResponse.builder()
-                .purchaseId(order.getId())
-                .purchasedAt(order.getPurchasedAt())
+                .orderId(order.getId())
+                .orderAt(order.getOrderAt())
                 .quantity(order.getTotalQuantity())
                 .totalDiscountPrice(order.getTotalDiscountPrice())
                 .totalOriginalPrice(order.getTotalOriginalPrice())

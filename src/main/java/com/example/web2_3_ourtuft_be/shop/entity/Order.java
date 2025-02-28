@@ -21,7 +21,7 @@ public class Order {
     private int totalDiscountPrice;
     private int totalFinalPrice;
     private int totalQuantity;
-    private LocalDateTime purchasedAt;
+    private LocalDateTime orderAt;
 
     public void recordPrice(int totalOriginalPrice, int totalDiscountPrice, int totalFinalPrice) {
         this.totalOriginalPrice = totalOriginalPrice;
