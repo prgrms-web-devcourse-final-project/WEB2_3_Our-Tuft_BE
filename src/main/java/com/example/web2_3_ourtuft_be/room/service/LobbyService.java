@@ -77,10 +77,7 @@ public class LobbyService {
     public RoomResponseDto updateRoomSettings(
             Long roomId, Long userId, RoomRequestDto roomRequestDto) {
 
-        Room room =
-                roomRepository
-                        .findById(roomId)
-                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+        Room room = findByRoomId(roomId);
 
         if (!room.getHostId().equals(userId)) {
             throw new AccessDeniedException(AccessDeniedMessages.ROOM_SETTING);
@@ -100,17 +97,14 @@ public class LobbyService {
 
         RoomResponseDto responseDto = new RoomResponseDto(room);
 
-        //messagingTemplate.converAndSend("/topin/room" + roomId, responseDto);
+        // messagingTemplate.converAndSend("/topin/room" + roomId, responseDto);
 
         return responseDto;
     }
 
     public void changeRoomHost(Long roomId, Long newHostId) {
 
-        Room room =
-                roomRepository
-                        .findById(roomId)
-                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+        Room room = findByRoomId(roomId);
 
         boolean existUser = userRepository.existsById(newHostId);
         if (!existUser) {
@@ -126,7 +120,13 @@ public class LobbyService {
         hostChangeInfo.put("roomID", roomId);
         hostChangeInfo.put("newHostID", newHostId);
 
-        messagingTemplate.convertAndSend("/topin/room/" + roomId, hostChangeInfo);
+        messagingTemplate.convertAndSend("/topic/room/" + roomId, hostChangeInfo);
          */
+    }
+
+    private Room findByRoomId(Long roomId) {
+        return roomRepository
+                .findById(roomId)
+                .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
     }
 }

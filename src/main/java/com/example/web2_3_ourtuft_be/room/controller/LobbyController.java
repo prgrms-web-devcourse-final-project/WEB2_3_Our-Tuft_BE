@@ -58,15 +58,13 @@ public class LobbyController {
             @Valid @RequestBody RoomRequestDto roomRequestDto,
             @AuthenticationPrincipal(expression = "user") User user) {
 
-        //        System.out.println(user.getName());
-
         RoomResponseDto response = lobbyService.createRoom(roomRequestDto, user.getId());
 
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
     @Operation(summary = "방 설정 변경 API", description = "방 설정을 변경합니다.")
-    @PostMapping("/rooms/{roomId}/settings")
+    @PutMapping("/rooms/{roomId}")
     public ResponseEntity<GlobalResponse<RoomResponseDto>> updateRoomSettings(
             @PathVariable Long roomId,
             @Valid @RequestBody RoomRequestDto roomRequestDto,
@@ -80,11 +78,11 @@ public class LobbyController {
 
     @Operation(summary = "방장 변경 API", description = "방장을 변경합니다.")
     @PutMapping("/rooms/{roomId}/host")
-    public ResponseEntity<GlobalResponse<Void>> changeRoomHost(
+    public ResponseEntity<GlobalResponse<String>> changeRoomHost(
             @PathVariable Long roomId, @RequestParam Long newHostId) {
 
         lobbyService.changeRoomHost(roomId, newHostId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(GlobalResponse.success("방장 변경 성공"));
     }
 }
