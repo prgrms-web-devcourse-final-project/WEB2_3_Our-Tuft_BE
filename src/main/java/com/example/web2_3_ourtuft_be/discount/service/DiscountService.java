@@ -9,6 +9,7 @@ import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestE
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -74,5 +75,13 @@ public class DiscountService {
                         .orElseThrow(() -> new NotFoundException(NotFoundMessages.DISCOUNT));
 
         discountRepository.delete(discount);
+    }
+
+    public List<Discount> getDiscountByStartDate(LocalDate today) {
+        return discountRepository.findByStartDate(today);
+    }
+
+    public List<Discount> getDiscountByEndDate(LocalDate today) {
+        return discountRepository.findByEndDate(today);
     }
 }

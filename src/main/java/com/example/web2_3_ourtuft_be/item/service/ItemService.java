@@ -153,4 +153,8 @@ public class ItemService {
     public List<Item> getItemsByIds(List<Long> itemIds) {
         return itemRepository.findAllById(itemIds);
     }
+
+    public List<Item> getItemsByDiscountId(Long discountId) {
+        return itemRepository.findByDiscountId(discountId);
+    }
 }
