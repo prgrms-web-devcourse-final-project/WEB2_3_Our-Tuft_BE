@@ -1,5 +1,6 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
+import com.example.web2_3_ourtuft_be.auth.dto.CreateUserDto;
 import com.example.web2_3_ourtuft_be.auth.dto.OAuth2Response;
 import com.example.web2_3_ourtuft_be.common.PageResponse;
 import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
@@ -143,5 +144,17 @@ public class UserFacadeService {
     public PageResponse<ItemResponse> getWishItems(Long userId, Pageable pageable) {
         List<Long> wishItemsId = wishlistItemService.getWishItemIds(userId);
         return itemService.getItemInfoByWishlist(wishItemsId, pageable);
+    }
+
+    // 프론트엔드 개발용 (소셜 구현되면 삭제 예정)
+    @Transactional
+    public User registerUserForFE(CreateUserDto userInfo) {
+        User newUser = userService.createUserForFE(userInfo);
+        Long userId = newUser.getId();
+        profileService.createProfile(userId);
+        memberPointService.createPoint(userId);
+        memberRecordService.createRecord(userId);
+        expService.createExp(userId);
+        return newUser;
     }
 }
