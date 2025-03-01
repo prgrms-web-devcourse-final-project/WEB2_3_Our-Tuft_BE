@@ -43,6 +43,15 @@ public class JwtUtil {
                 .get("userId", Long.class);
     }
 
+    public String getUserName(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("name", String.class);
+    }
+
     public String getRole(String token) {
         return Jwts.parser()
                 .verifyWith(key)
@@ -72,11 +81,13 @@ public class JwtUtil {
                 .before(new Date());
     }
 
-    public String createJwt(String category, Long userId, String role, Long expiredMs) {
+    public String createJwt(
+            String category, Long userId, String name, String role, Long expiredMs) {
 
         return Jwts.builder()
                 .claim("category", category)
                 .claim("userId", userId)
+                .claim("name", name)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))
@@ -92,6 +103,10 @@ public class JwtUtil {
                         refreshToken,
                         refreshTokenExpiration,
                         TimeUnit.SECONDS);
+    }
+
+    public void deleteRefreshTokenInRedis(String key) {
+        redisTemplate.delete(key);
     }
 
     public String getRefreshTokenInRedis(Long userId) {

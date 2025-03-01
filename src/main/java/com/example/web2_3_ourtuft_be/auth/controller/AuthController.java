@@ -31,15 +31,15 @@ public class AuthController {
                             """)
     @ApiResponses({
         @ApiResponse(responseCode = "201", description = "성공"),
-        @ApiResponse(responseCode = "404", description = "리프레쉬 토큰을 찾을 수 없습니다."),
+        @ApiResponse(responseCode = "401", description = "리프레쉬 토큰을 찾을 수 없습니다."),
         @ApiResponse(responseCode = "401", description = "리프레쉬 토큰이 만료되었습니다."),
         @ApiResponse(responseCode = "401", description = "유효하지 않은 리프레쉬 토큰입니다.")
     })
     @PostMapping("/reissue")
     public ResponseEntity<GlobalResponse<Void>> reissue(
             HttpServletRequest request, HttpServletResponse response) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(GlobalResponse.created(authService.reissue(request, response)));
+        authService.reissue(request, response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(GlobalResponse.created(null));
     }
 
     @Operation(
@@ -64,5 +64,19 @@ public class AuthController {
     @GetMapping("/google/이거 진짜 경로 아임니다")
     public String googleLogin() {
         return "http://localhost:8080/oauth2/authorization/google";
+    }
+
+    @Operation(summary = "로그아웃 API", description = "레디스의 리프레쉬 토큰과 쿠키를 삭제합니다.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "401", description = "리프레쉬 토큰을 찾을 수 없습니다."),
+        @ApiResponse(responseCode = "401", description = "쿠키를 찾을 수 없습니다."),
+        @ApiResponse(responseCode = "401", description = "유효하지 않은 리프레쉬 토큰입니다.")
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<GlobalResponse<Void>> logout(
+            HttpServletRequest request, HttpServletResponse response) {
+        authService.logout(request, response);
+        return ResponseEntity.ok(GlobalResponse.success(null));
     }
 }
