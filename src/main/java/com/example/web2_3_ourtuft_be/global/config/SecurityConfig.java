@@ -32,7 +32,8 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private static final String[] authUrls = {"/api/v1/auth/**"};
+    //프론트엔드 개발용 로그인 관련 경로 추가
+    private static final String[] authUrls = {"/api/v1/auth/**", "/api/v1/test/**"};
     private static final String[] allowUrls = {"/api/v1/admin/**"};
 
     @Bean
