@@ -50,7 +50,8 @@ public class QuizController {
     @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
     @PutMapping("/{quizsetid}")
     public GlobalResponse<String> updateQuizSetAndQuizzes(
-            @PathVariable("quizsetid") Long quizSetId, @RequestBody UpdateQuizSetandQuizzesRequest request) {
+            @PathVariable("quizsetid") Long quizSetId,
+            @RequestBody UpdateQuizSetandQuizzesRequest request) {
 
         quizService.updateQuizSetAndQuizzes(quizSetId, request);
 
