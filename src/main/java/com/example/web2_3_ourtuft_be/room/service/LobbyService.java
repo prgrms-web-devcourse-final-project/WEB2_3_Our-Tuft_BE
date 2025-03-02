@@ -10,6 +10,9 @@ import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
+import com.example.web2_3_ourtuft_be.user.entity.User;
+import com.example.web2_3_ourtuft_be.user.service.UserService;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 public class LobbyService {
 
     private final RoomRepository roomRepository;
+    private final UserService userService;
 
     public List<RoomResponseDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
@@ -72,14 +76,12 @@ public class LobbyService {
         return new RoomResponseDto(room);
     }
 
-    public RoomResponseDto updateRoomSettings(Long roomId, Long userId, RoomRequestDto roomRequestDto) {
+    public RoomResponseDto updateRoomSettings(
+            Long roomId, Long userId, RoomRequestDto roomRequestDto) {
 
-        Room room =
-                roomRepository
-                        .findById(roomId)
-                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+        Room room = findByRoomId(roomId);
 
-        if(!room.getHostId().equals(userId)) {
+        if (!room.getHostId().equals(userId)) {
             throw new AccessDeniedException(AccessDeniedMessages.ROOM_SETTING);
         }
 
@@ -95,6 +97,45 @@ public class LobbyService {
 
         room = roomRepository.save(room);
 
-        return new RoomResponseDto(room);
+        RoomResponseDto responseDto = new RoomResponseDto(room);
+
+        // messagingTemplate.converAndSend("/topin/room" + roomId, responseDto);
+
+        return responseDto;
+    }
+
+    @Transactional
+    public void changeRoomHost(Long roomId, Long newHostId) {
+
+        Room room = findByRoomId(roomId);
+        User newHost = userService.getUser(newHostId);
+
+        room.changeHost(newHost.getId());
+
+        roomRepository.save(room);
+
+        /* 방장 변경 시 방 안에 있는 유저들에게 즉시 반영..
+        Map<String, Object> hostChangeInfo = new HashMap<>();
+        hostChangeInfo.put("roomID", roomId);
+        hostChangeInfo.put("newHostID", newHostId);
+
+        messagingTemplate.convertAndSend("/topic/room/" + roomId, hostChangeInfo);
+         */
+    }
+
+    private Room findByRoomId(Long roomId) {
+        return roomRepository
+                .findById(roomId)
+                .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+    }
+
+    public void deleteRoom(Long roomId) {
+
+        Room room =
+                roomRepository
+                        .findById(roomId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+
+        roomRepository.delete(room);
     }
 }

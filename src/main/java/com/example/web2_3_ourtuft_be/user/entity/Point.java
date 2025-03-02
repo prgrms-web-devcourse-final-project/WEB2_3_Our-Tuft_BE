@@ -3,16 +3,22 @@ package com.example.web2_3_ourtuft_be.user.entity;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
+import jakarta.persistence.Embeddable;
 
+@Embeddable
 public class Point {
-    private final int point;
+    private int point;
+
+    public Point() {
+        this.point = 0;
+    }
 
     public Point(int point) {
         checkMinus(point);
         this.point = point;
     }
 
-    public void checkMinus(int value) {
+    private void checkMinus(int value) {
         if (value < 0) {
             throw new InvalidRequestException(InvalidRequestMessages.INSUFFICIENT_POINTS);
         }

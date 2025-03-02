@@ -12,7 +12,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -32,10 +31,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
-    private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private static final String[] authUrls = {"/api/v1/auth/**"};
-    private static final String[] allowUrls = {"api/v1/admin/**"};
+    //프론트엔드 개발용 로그인 관련 경로 추가
+    private static final String[] authUrls = {"/api/v1/auth/**", "/api/v1/test/**"};
+    private static final String[] allowUrls = {"/api/v1/admin/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -85,7 +84,8 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**"))
                         .requestMatchers(new AntPathRequestMatcher("/test"))
                         .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**"))
-                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui.html"));
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui.html"))
+                        .requestMatchers(new AntPathRequestMatcher("/ws/**"));
     }
 
     @Bean

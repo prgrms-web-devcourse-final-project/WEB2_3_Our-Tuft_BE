@@ -4,6 +4,6 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class PurchaseRequest {
+public class OrderRequest {
     List<Long> items;
 }

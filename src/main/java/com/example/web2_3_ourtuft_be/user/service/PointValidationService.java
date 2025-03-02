@@ -1,15 +1,15 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.DuplicatedException;
-import com.example.web2_3_ourtuft_be.global.exception.messages.DuplicatedMessages;
 import com.example.web2_3_ourtuft_be.user.entity.MemberPoint;
 import com.example.web2_3_ourtuft_be.user.entity.PointHistory;
 import com.example.web2_3_ourtuft_be.user.entity.PreviousDayPoint;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PointValidationService {
@@ -30,7 +30,7 @@ public class PointValidationService {
         int calculatedPoints = calculateTodayPoints(memberPoint);
 
         // 포인트 일치 여부
-        verifyPoints(calculatedPoints, previousPoints, storedPoints);
+        verifyPoints(calculatedPoints, previousPoints, storedPoints, memberPoint.getUserId());
 
         // 검증된 포인트로 갱신
         updatePreviousDayPoints(storedPoints, memberPoint.getUserId());
@@ -58,9 +58,15 @@ public class PointValidationService {
                 .sum();
     }
 
-    private void verifyPoints(int calculatedPoints, int previousPoints, int storedPoints) {
+    private void verifyPoints(
+            int calculatedPoints, int previousPoints, int storedPoints, Long userId) {
         if (calculatedPoints + previousPoints != storedPoints) {
-            throw new DuplicatedException(DuplicatedMessages.MISMATCH_POINT);
+            log.error(
+                    "해당 사용자 포인트 매치 실패 {}: calculated {}, previous {}, stored {}",
+                    userId,
+                    calculatedPoints,
+                    previousPoints,
+                    storedPoints);
         }
     }
 

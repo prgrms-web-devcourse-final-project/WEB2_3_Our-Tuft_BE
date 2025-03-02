@@ -28,8 +28,11 @@ public class CustomOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         User user = oAuth2User.getUser();
 
-        String accessToken = jwtUtil.createJwt("access", user.getId(), user.getRole(), 100000L);
-        String refreshToken = jwtUtil.createJwt("refresh", user.getId(), user.getRole(), 86400000L);
+        String accessToken =
+                jwtUtil.createJwt("access", user.getId(), user.getName(), user.getRole(), 900000L);
+        String refreshToken =
+                jwtUtil.createJwt(
+                        "refresh", user.getId(), user.getName(), user.getRole(), 86400000L);
 
         response.addCookie(jwtUtil.createCookie("refresh", refreshToken));
 

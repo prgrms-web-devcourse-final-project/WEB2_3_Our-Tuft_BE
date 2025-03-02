@@ -25,6 +25,7 @@ public class CustomOAuthFailureHandler extends SimpleUrlAuthenticationFailureHan
             AuthenticationException exception)
             throws IOException, ServletException {
 
+        // 실패 경로 리다이렉트로 수정할 예정
         response.setContentType("application/json; charset=UTF-8");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
