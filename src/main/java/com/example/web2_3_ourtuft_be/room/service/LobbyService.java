@@ -123,7 +123,7 @@ public class LobbyService {
          */
     }
 
-    private Room findByRoomId(Long roomId) {
+    public Room findByRoomId(Long roomId) {
         return roomRepository
                 .findById(roomId)
                 .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));

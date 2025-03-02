@@ -4,4 +4,5 @@ public enum QuizSetCategoryType {
     ANIMAL,
     SCIENCE,
     MATH,
+    MUSIC,
 }
