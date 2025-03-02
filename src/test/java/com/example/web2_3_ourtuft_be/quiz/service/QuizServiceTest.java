@@ -137,4 +137,26 @@ class QuizServiceTest {
                     quizService.deleteQuizSetAndQuizzes(noneExistId);
                 });
     }
+
+    @DisplayName("퀴즈세트 주제목록을 가져온다.")
+    @Test
+    void testGetQuizSets() {
+        // given
+
+        QuizSet quizSet =
+                QuizSet.builder()
+                        .creatorId(10L)
+                        .quizSetName("New QuizSet")
+                        .quizSetCategoryType("ANIMAL")
+                        .quizSetType("OX")
+                        .quizSetRunCnt(0)
+                        .build();
+
+        // when
+        List<QuizSetTopicResponse> quizSets = quizService.getQuizSets(QuizSetType.OX);
+
+        // then
+        assertThat(quizSets).isNotNull();
+        assertThat(quizSets.get(0).getQuizSetName()).isEqualTo("New QuizSet");
+    }
 }
