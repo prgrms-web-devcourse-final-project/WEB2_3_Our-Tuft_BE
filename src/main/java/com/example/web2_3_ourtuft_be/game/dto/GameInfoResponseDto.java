@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GameInfoResponseDto {
     private QuizSetType gameType;
-    // private String gameTopic;
+    private String gameTopic;
     private int round;
 }

@@ -28,11 +28,10 @@ public class GameService {
 
     public GameInfoResponseDto getGameInfo(Long gameId) {
         QuizSetType gameType = roomService.getGameTypeByRoomId(gameId);
-        // String gameTopic = 레디스 통해서 가져오기.
+        String gameTopic = "2010년 가수 맞추기"; // redis에서 가져오기
         int round = roomService.getRoundByRoomId(gameId); // 진행할 퀴즈의 총 라운드 수.
 
-        // return new GameInfoResponse(gameType.name(), gameTopic);
-        return new GameInfoResponseDto(gameType, round);
+        return new GameInfoResponseDto(gameType, gameTopic, round);
     }
 
     @Transactional
@@ -40,6 +39,8 @@ public class GameService {
         Room room = lobbyService.findByRoomId(roomId);
 
         // redis에 상태 저장...
+
+        System.out.println("게임 시작 : " + topic);
     }
 
     // 특정 방에서 다음 문제 가져오기
@@ -48,14 +49,21 @@ public class GameService {
     public Quiz getNextQuestion(Long roomId) {
         GameInfoResponseDto gameInfo = getGameInfo(roomId);
 
+        // int currentRound redis에서 가져오기
+        int currentRound = 1;
+
         List<Quiz> quizzes =
                 quizRepository
                         .findAllByQuizSetId(roomId)
                         .orElseThrow(
                                 () -> new NotFoundException(NotFoundMessages.NOT_FOUND_QUIZ_SET));
 
+        if (currentRound >= quizzes.size()) {
+            throw new InvalidRequestException(InvalidRequestMessages.NO_MORE_QUIZ);
+        }
 
-        Quiz nextQuiz = quizzes.get(gameInfo.getRound() - 1);
+        Quiz nextQuiz = quizzes.get(currentRound);
+        // currentRound +1 시킴
 
         return nextQuiz;
     }
