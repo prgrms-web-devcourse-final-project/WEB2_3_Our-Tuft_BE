@@ -31,4 +31,12 @@ public class WebSocketController {
             @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {
         webSocketService.handleRoomSubscribe(headerAccessor, roomId);
     }
+
+    // /app/lobby 로 메세지 보내면, /topic/lobby 구독중인 모든 클라이언트에게 전달
+    @MessageMapping("/lobby")
+    @SendTo("/topic/lobby")
+    public WebSocketResponse.Send sendMessageToLobby(
+            SimpMessageHeaderAccessor headerAccessor, String message) {
+        return webSocketService.sendMessageToRoom(headerAccessor, message);
+    }
 }

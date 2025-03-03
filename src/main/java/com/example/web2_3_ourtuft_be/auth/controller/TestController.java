@@ -4,7 +4,6 @@ import com.example.web2_3_ourtuft_be.auth.dto.*;
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.security.util.JwtUtil;
 import com.example.web2_3_ourtuft_be.user.entity.User;
-import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
 import com.example.web2_3_ourtuft_be.user.service.UserFacadeService;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +22,7 @@ public class TestController {
     private final JwtUtil jwtUtil;
 
     public TestController(
-            UserFacadeService userFacadeService,
-            UserService userService,
-            JwtUtil jwtUtil) {
+            UserFacadeService userFacadeService, UserService userService, JwtUtil jwtUtil) {
         this.userFacadeService = userFacadeService;
         this.userService = userService;
         this.jwtUtil = jwtUtil;
