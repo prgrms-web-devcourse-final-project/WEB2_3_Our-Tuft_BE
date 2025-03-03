@@ -3,6 +3,8 @@ package com.example.web2_3_ourtuft_be.user.service;
 import com.example.web2_3_ourtuft_be.auth.dto.CreateUserDto;
 import com.example.web2_3_ourtuft_be.auth.dto.OAuth2Response;
 import com.example.web2_3_ourtuft_be.common.PageResponse;
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.DuplicatedException;
+import com.example.web2_3_ourtuft_be.global.exception.messages.DuplicatedMessages;
 import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
 import com.example.web2_3_ourtuft_be.item.service.ItemService;
 import com.example.web2_3_ourtuft_be.user.dto.*;
@@ -149,6 +151,10 @@ public class UserFacadeService {
     // 프론트엔드 개발용 (소셜 구현되면 삭제 예정)
     @Transactional
     public User registerUserForFE(CreateUserDto userInfo) {
+        User exist = userService.findUserBySocialId(userInfo.getProviderId());
+        if (exist != null) {
+            throw new DuplicatedException(DuplicatedMessages.EMAIL);
+        }
         User newUser = userService.createUserForFE(userInfo);
         Long userId = newUser.getId();
         profileService.createProfile(userId);
