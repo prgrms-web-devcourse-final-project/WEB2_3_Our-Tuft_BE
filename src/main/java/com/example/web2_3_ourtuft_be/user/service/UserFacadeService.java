@@ -154,7 +154,7 @@ public class UserFacadeService {
         User exist = userService.findUserBySocialId(userInfo.getProviderId());
         if (exist != null) {
             throw new DuplicatedException(DuplicatedMessages.EMAIL);
-        }
+
         User newUser = userService.createUserForFE(userInfo);
         Long userId = newUser.getId();
         profileService.createProfile(userId);
