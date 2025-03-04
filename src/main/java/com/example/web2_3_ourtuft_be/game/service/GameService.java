@@ -21,6 +21,11 @@ public class GameService {
     private final QuizRepository quizRepository;
     private final LobbyService lobbyService;
 
+    //TODO: roomId로 redis에서 quiz 가져오기
+//    public List<Quiz> getQuizList(Long roomId){
+//
+//    }
+
     @Transactional
     public void startGame(Long roomId, Long quizSetId) {
 
