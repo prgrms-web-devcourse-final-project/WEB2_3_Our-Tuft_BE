@@ -39,6 +39,7 @@ public class MemberPointService {
         MemberPoint memberPoint = getPoint(userId);
 
         memberPoint.updatePoints(type, amount);
+        memberPointRepository.save(memberPoint);
 
         pointHistoryService.savePointHistory(memberPoint.getId(), amount, type, reason);
     }
