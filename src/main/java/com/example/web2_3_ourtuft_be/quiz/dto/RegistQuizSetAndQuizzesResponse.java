@@ -12,7 +12,7 @@ public class RegistQuizSetAndQuizzesResponse {
     private final String quizSetName;
     private final String quizSetType;
     private final String quizSetCategoryType;
-    private final List<QuizResponse> quizzes;
+    private final List<RegistQuizResponse> quizzes;
 
     @Builder
     public RegistQuizSetAndQuizzesResponse(
@@ -21,7 +21,7 @@ public class RegistQuizSetAndQuizzesResponse {
             String quizSetCategoryType,
             String quizSetName,
             String quizSetType,
-            List<QuizResponse> quizzes) {
+            List<RegistQuizResponse> quizzes) {
         this.quizSetId = quizSetId;
         this.creatorId = creatorId;
         this.quizSetName = quizSetName;
@@ -31,7 +31,7 @@ public class RegistQuizSetAndQuizzesResponse {
     }
 
     public static RegistQuizSetAndQuizzesResponse from(
-            QuizSet quizSet, List<QuizResponse> quizzes) {
+            QuizSet quizSet, List<RegistQuizResponse> quizzes) {
         return RegistQuizSetAndQuizzesResponse.builder()
                 .quizSetId(quizSet.getId())
                 .creatorId(quizSet.getCreatorId())

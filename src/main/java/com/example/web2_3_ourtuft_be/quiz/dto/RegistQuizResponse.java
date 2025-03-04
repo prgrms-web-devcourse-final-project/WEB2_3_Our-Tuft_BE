@@ -5,20 +5,20 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class QuizResponse {
+public class RegistQuizResponse {
     private final String question;
     private final String hint;
     private final String answer;
 
     @Builder
-    public QuizResponse(String question, String hint, String answer) {
+    public RegistQuizResponse(String question, String hint, String answer) {
         this.question = question;
         this.hint = hint;
         this.answer = answer;
     }
 
-    public static QuizResponse from(Quiz quiz) {
-        return QuizResponse.builder()
+    public static RegistQuizResponse from(Quiz quiz) {
+        return RegistQuizResponse.builder()
                 .question(quiz.getQuestion())
                 .hint(quiz.getHint())
                 .answer(quiz.getAnswer())
