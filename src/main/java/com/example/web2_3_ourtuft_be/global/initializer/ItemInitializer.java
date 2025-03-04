@@ -25,8 +25,15 @@ public class ItemInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         for (int i = 0; i < 3; i++) {
             Category category = Category.values()[i];
-            saveItem(createDefaultItem(category));
-            saveItems(createCategoryItems(category));
+            // 기본 아이템이 없는 경우에만 추가
+            if (!itemRepository.existsByName(DEFAULT_PREFIX + category.name())) {
+                saveItem(createDefaultItem(category));
+            }
+
+            // 해당 카테고리 아이템이 없을 경우에만 추가
+            if (itemRepository.countByCategory(category.name()) == 0) {
+                saveItems(createCategoryItems(category));
+            }
         }
     }
 
