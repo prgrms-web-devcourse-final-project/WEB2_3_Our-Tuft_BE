@@ -28,12 +28,13 @@ public class TestController {
         this.jwtUtil = jwtUtil;
     }
 
-    @PostMapping("/user")
-    public ResponseEntity<GlobalResponse<User>> creatUser(@RequestBody CreateUserDto userDto) {
-
-        User user = userFacadeService.registerUserForFE(userDto);
-        return ResponseEntity.ok(GlobalResponse.success(user));
-    }
+    //    @PostMapping("/user")
+    //    public ResponseEntity<GlobalResponse<User>> creatUser(@RequestBody CreateUserDto userDto)
+    // {
+    //
+    //        User user = userFacadeService.registerUserForFE(userDto);
+    //        return ResponseEntity.ok(GlobalResponse.success(user));
+    //    }
 
     @PostMapping("/login")
     public ResponseEntity<GlobalResponse<String>> login(@RequestBody LoginDto loginDto) {

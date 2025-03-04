@@ -65,6 +65,12 @@ public class WebSocketService {
                 WebSocketResponse.Send.of("SYSTEM", username + "님이 입장하였습니다"));
     }
 
+    public WebSocketResponse.Send sendMessageToRoom(
+            SimpMessageHeaderAccessor headerAccessor, String message) {
+        String username = getUsernameFromSession(headerAccessor);
+        return WebSocketResponse.Send.of(username, message);
+    }
+
     // 핸드셰이크에서 Principal 객체에 회원 정보를 담으려고 했지만 Null 값이 넘어오는 문제를 아직 해결 X
     // 핸드셰이크 JWT 인증단계에서 attributes 에 키벨류로 담아뒀다
     private String getUserIdFromSession(SimpMessageHeaderAccessor headerAccessor) {
