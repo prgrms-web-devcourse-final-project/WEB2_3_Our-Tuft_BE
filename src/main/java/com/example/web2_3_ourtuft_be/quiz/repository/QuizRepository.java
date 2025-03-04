@@ -18,4 +18,6 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
     Optional<List<Quiz>> findAllByQuizSetId(Long quizSetId);
 
     boolean existsByQuizSetId(Long quizSetId);
+
+    List<Quiz> findByQuizSetId(Long quizSetId);
 }

@@ -32,4 +32,16 @@ public class Quiz {
         this.hint = hint;
         this.answer = answer;
     }
+
+    public void updateQuestion(String question) {
+        this.question = question;
+    }
+
+    public void updateAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    public void updateHint(String hint) {
+        this.hint = hint;
+    }
 }

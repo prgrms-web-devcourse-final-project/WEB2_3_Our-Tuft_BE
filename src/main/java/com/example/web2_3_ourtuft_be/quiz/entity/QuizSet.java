@@ -42,4 +42,12 @@ public class QuizSet extends BaseTime {
         this.quizSetType = quizSetType;
         this.quizSetRunCnt = quizSetRunCnt;
     }
+
+    public void updateQuizSetName(String quizSetName) {
+        this.quizSetName = quizSetName;
+    }
+
+    public void updateQuizSetType(String quizSetType) {
+        this.quizSetType = quizSetType;
+    }
 }
