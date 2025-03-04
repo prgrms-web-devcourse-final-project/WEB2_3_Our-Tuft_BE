@@ -56,6 +56,6 @@ public class QuizController {
 
         quizService.updateQuizSetAndQuizzes(quizSetId, request);
 
-        return ResponseEntity.ok( GlobalResponse.success("퀴즈세트 수정 성공"));
+        return ResponseEntity.ok( GlobalResponse.success(null));
     }
 }
