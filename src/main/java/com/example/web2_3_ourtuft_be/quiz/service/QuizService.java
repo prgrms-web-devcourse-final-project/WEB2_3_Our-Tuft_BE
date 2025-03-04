@@ -113,7 +113,6 @@ public class QuizService {
         return newQuizzes.stream().map(RegistQuizResponse::from).toList();
     }
 
-    @Transactional
     public List<Quiz> createQuizList(Long quizSetId, List<RegistQuizRequest> requestQuizzes) {
         if (requestQuizzes.isEmpty()) {
             throw new InvalidRequestException(INVALID_QUIZ_COUNT);
@@ -125,7 +124,6 @@ public class QuizService {
     }
 
     // QuizSet 객체생성
-    @Transactional
     public QuizSet createQuizSet(Long creatorId, RegistQuizSetAndQuizzesRequest request) {
 
         QuizSet quizSet =
@@ -138,6 +136,7 @@ public class QuizService {
                         .build();
         return quizSetRepository.save(quizSet);
     }
+
 
     public List<Quiz> toQuizEntityList(
             Long quizSetId, List<RegistQuizRequest> registRegistQuizRequestList) {
