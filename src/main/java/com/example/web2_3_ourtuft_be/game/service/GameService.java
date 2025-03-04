@@ -1,70 +1,70 @@
 package com.example.web2_3_ourtuft_be.game.service;
 
-import com.example.web2_3_ourtuft_be.game.dto.GameInfoResponseDto;
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
-import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
-import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
-import com.example.web2_3_ourtuft_be.room.service.RoomService;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class GameService {
+
+    private final SimpMessagingTemplate messagingTemplate;
     private final QuizRepository quizRepository;
-    private final RoomService roomService;
     private final LobbyService lobbyService;
 
-    // 플레이 할 게임 정보 가져오기.
-    // gameType, round -> DB에서 가져오고, gameTopic은 redis에서 가져오는게 좋을 것 같습니다.
-
-    public GameInfoResponseDto getGameInfo(Long gameId) {
-        QuizSetType gameType = roomService.getGameTypeByRoomId(gameId);
-        String gameTopic = "2010년 가수 맞추기"; // redis에서 가져오기
-        int round = roomService.getRoundByRoomId(gameId); // 진행할 퀴즈의 총 라운드 수.
-
-        return new GameInfoResponseDto(gameType, gameTopic, round);
-    }
-
     @Transactional
-    public void startGame(Long roomId, String topic) {
+    public void startGame(Long roomId, Long quizSetId) {
+
         Room room = lobbyService.findByRoomId(roomId);
 
-        // redis에 상태 저장...
-
-        System.out.println("게임 시작 : " + topic);
-    }
-
-    // 특정 방에서 다음 문제 가져오기
-    // 미완성..
-    @Transactional
-    public Quiz getNextQuestion(Long roomId) {
-        GameInfoResponseDto gameInfo = getGameInfo(roomId);
-
-        // int currentRound redis에서 가져오기
-        int currentRound = 1;
-
+        // 레디스에서 List 가져옴
         List<Quiz> quizzes =
                 quizRepository
-                        .findAllByQuizSetId(roomId)
-                        .orElseThrow(
-                                () -> new NotFoundException(NotFoundMessages.NOT_FOUND_QUIZ_SET));
+                        .findAllByQuizSetId(quizSetId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.NOT_FOUND_QUIZ));
 
-        if (currentRound >= quizzes.size()) {
-            throw new InvalidRequestException(InvalidRequestMessages.NO_MORE_QUIZ);
-        }
+        room.startGame();
 
-        Quiz nextQuiz = quizzes.get(currentRound);
-        // currentRound +1 시킴
+        // TODO: redis에 상태, topic 저장...
 
-        return nextQuiz;
+        System.out.println("게임 시작 : ");
+        sendQuiz();
     }
+
+    @Scheduled(fixedRate = 30000)
+    public void sendQuiz() {
+
+        //        if (room.isGameRunning() || quizzes == null) return;
+        //
+        //        if (room.getCurrentRound() >= quizzes.size()) {
+        //            messagingTemplate.convertAndSend("/topic/room/" + room.getId(), "GAME_OVER");
+        //            stopGame(room);
+        //            return;
+        //        }
+        //
+        //        Quiz nextQuiz = quizzes.get(room.getCurrentRound()); // TODO: 예외처리
+        //        messagingTemplate.convertAndSend("/topic/room/" + room.getId(), nextQuiz);
+        //
+        //        System.out.println("출제된 문제: " + nextQuiz);
+        //        room.nextRound();
+    }
+
+    public void stopGame(Room room) {
+
+        room.endGame();
+        System.out.println("게임 종료!");
+    }
+
+    // TODO: 정답 확인하는 함수
+
+    // TODO: 응답자 확인 - 누가 몇문제 맞췄는지
 }

@@ -19,11 +19,11 @@ public class WebSocketController {
     // 보내는 경로 예시) /app/room/1
     @MessageMapping("/room/{roomId}")
     @SendTo("/topic/room/{roomId}")
-    public WebSocketResponse.Send sendMessageToRoom(
+    public WebSocketResponse.Send processMessage(
             @DestinationVariable String roomId,
             SimpMessageHeaderAccessor headerAccessor,
             String message) {
-        return webSocketService.sendMessageToRoom(headerAccessor, message);
+        return webSocketService.processMessage(headerAccessor, roomId, message);
     }
 
     @SubscribeMapping("/room/{roomId}")
