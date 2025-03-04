@@ -40,7 +40,7 @@ public class QuizController {
     }
 
     @Operation(summary = "퀴즈세트 삭제 API", description = "등록된 퀴즈세트를 삭제합니다.")
-    @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
     @DeleteMapping("/{quizsetid}")
     public GlobalResponse<String> deleteQuizset(@PathVariable("quizsetid") Long quizSetId) {
 
@@ -50,7 +50,7 @@ public class QuizController {
     }
 
     @Operation(summary = "퀴즈세트 조회 API", description = "게임별 등록된 퀴즈세트를 조회합니다.")
-    @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
     @GetMapping("/{quizsettype}")
     public GlobalResponse<List<QuizSetTopicResponse>> getQuizSets(
             @PathVariable("quizsettype") QuizSetType quizSetType) {
