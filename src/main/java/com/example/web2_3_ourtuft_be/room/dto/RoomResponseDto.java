@@ -14,6 +14,8 @@ public class RoomResponseDto {
     private final Long hostId;
     private final boolean disclosure;
     private final QuizSetType gameType;
+    private final int time;
+    private final int maxUsers;
 
     public RoomResponseDto(Room room) {
         this.roomId = room.getId();
@@ -22,5 +24,7 @@ public class RoomResponseDto {
         this.hostId = room.getHostId();
         this.disclosure = room.isDisclosure();
         this.gameType = room.getGameType();
+        this.time = room.getTime();
+        this.maxUsers = room.getMaxUsers();
     }
 }

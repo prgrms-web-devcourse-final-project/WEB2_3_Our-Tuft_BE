@@ -69,6 +69,8 @@ public class LobbyService {
                         .round(roomRequestDto.getRound())
                         .hostId(userId)
                         .gameType(roomRequestDto.getGameType())
+                        .maxUsers(roomRequestDto.getMaxUsers())
+                        .time(roomRequestDto.getTime())
                         .build();
 
         room = roomRepository.save(room);
@@ -93,6 +95,8 @@ public class LobbyService {
                         .roomPassword(roomRequestDto.getPassword())
                         .round(roomRequestDto.getRound())
                         .gameType(roomRequestDto.getGameType())
+                        .time(roomRequestDto.getTime())
+                        .maxUsers(roomRequestDto.getMaxUsers())
                         .build();
 
         room = roomRepository.save(room);
