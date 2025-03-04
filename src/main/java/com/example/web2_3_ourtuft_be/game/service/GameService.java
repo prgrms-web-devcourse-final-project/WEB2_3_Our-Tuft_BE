@@ -64,7 +64,5 @@ public class GameService {
         System.out.println("게임 종료!");
     }
 
-    // TODO: 정답 확인하는 함수
-
     // TODO: 응답자 확인 - 누가 몇문제 맞췄는지
 }
