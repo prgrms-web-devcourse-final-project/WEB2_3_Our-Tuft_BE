@@ -29,10 +29,6 @@ public class LobbyService {
     public List<RoomResponseDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
 
-        if (rooms.isEmpty()) {
-            throw new NotFoundException(NotFoundMessages.ROOM);
-        }
-
         return rooms.stream().map(RoomResponseDto::new).collect(Collectors.toList());
     }
 
