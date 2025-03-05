@@ -91,8 +91,9 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "아이템이 존재하지 않습니다.")
     })
     @GetMapping("/myInfo/items")
-    public ResponseEntity<GlobalResponse<InventoryItemDto>> getMyItems() {
-        InventoryItemDto response = inventoryService.getMyItems();
+    public ResponseEntity<GlobalResponse<InventoryItemDto>> getMyItems(
+            @AuthenticationPrincipal(expression = "user") User user) {
+        InventoryItemDto response = inventoryService.getMyItems(user.getId());
 
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
