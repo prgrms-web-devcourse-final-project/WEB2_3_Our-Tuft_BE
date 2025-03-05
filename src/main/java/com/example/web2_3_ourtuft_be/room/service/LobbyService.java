@@ -14,9 +14,12 @@ import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,6 +28,7 @@ public class LobbyService {
 
     private final RoomRepository roomRepository;
     private final UserService userService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public List<RoomResponseDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
@@ -99,7 +103,8 @@ public class LobbyService {
 
         RoomResponseDto responseDto = new RoomResponseDto(room);
 
-        // messagingTemplate.converAndSend("/topin/room" + roomId, responseDto);
+        messagingTemplate.convertAndSend("/topic/lobby/", responseDto);
+        messagingTemplate.convertAndSend("/topic/room/" + roomId, responseDto);
 
         return responseDto;
     }
@@ -114,16 +119,14 @@ public class LobbyService {
 
         roomRepository.save(room);
 
-        /* 방장 변경 시 방 안에 있는 유저들에게 즉시 반영..
         Map<String, Object> hostChangeInfo = new HashMap<>();
         hostChangeInfo.put("roomID", roomId);
         hostChangeInfo.put("newHostID", newHostId);
 
         messagingTemplate.convertAndSend("/topic/room/" + roomId, hostChangeInfo);
-         */
     }
 
-    private Room findByRoomId(Long roomId) {
+    public Room findByRoomId(Long roomId) {
         return roomRepository
                 .findById(roomId)
                 .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
@@ -131,11 +134,10 @@ public class LobbyService {
 
     public void deleteRoom(Long roomId) {
 
-        Room room =
-                roomRepository
-                        .findById(roomId)
-                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+        Room room = findByRoomId(roomId);
 
         roomRepository.delete(room);
+
+        messagingTemplate.convertAndSend("/topic/lobby/", "deleted:" + roomId);
     }
 }

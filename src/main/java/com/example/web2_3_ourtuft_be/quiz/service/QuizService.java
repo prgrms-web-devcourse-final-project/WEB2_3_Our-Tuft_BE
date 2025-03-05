@@ -52,8 +52,6 @@ public class QuizService {
 
         // 각 Quiz 변경내용 업데이트
         updateQuizzes(request);
-
-
     }
 
     private void updateQuizzes(UpdateQuizSetandQuizzesRequest request) {
@@ -70,7 +68,7 @@ public class QuizService {
     }
 
     private void deleteQuizzesNotInUpdatedList(
-        List<Quiz> existingQuizzes, Set<Long> updatedQuizIds) {
+            List<Quiz> existingQuizzes, Set<Long> updatedQuizIds) {
 
         for (Quiz quiz : existingQuizzes) {
 
@@ -136,7 +134,6 @@ public class QuizService {
                         .build();
         return quizSetRepository.save(quizSet);
     }
-
 
     public List<Quiz> toQuizEntityList(
             Long quizSetId, List<RegistQuizRequest> registRegistQuizRequestList) {

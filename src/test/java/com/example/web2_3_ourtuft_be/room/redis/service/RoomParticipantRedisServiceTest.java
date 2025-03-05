@@ -97,7 +97,5 @@ class RoomParticipantRedisServiceTest {
         // then
         Set<Object> range = redisTemplate.opsForZSet().range(key, 0, -1);
         assertThat(range).size().isEqualTo(2);
-
-
     }
 }

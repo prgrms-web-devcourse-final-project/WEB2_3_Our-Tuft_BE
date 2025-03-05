@@ -16,11 +16,44 @@ public class WebSocketService {
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisTemplate<String, String> redisTemplate;
 
-    public WebSocketResponse.Send sendMessageToRoom(
-            SimpMessageHeaderAccessor headerAccessor, String message) {
+    public WebSocketResponse.Send processMessage(
+            SimpMessageHeaderAccessor headerAccessor, Long roomId, String message) {
         String username = getUsernameFromSession(headerAccessor);
+        String userId = getUserIdFromSession(headerAccessor);
+
+        // TODO: redis에서 방 상태 불러오기
+        // RoomStatus roomStatus = roomStatusRedisService.getRoomStatus(roomId);
+        boolean isGameRunning = true;
+        if (isGameRunning) {
+            String correctAnswer = getCorrectAnswerFromRedis(roomId);
+
+            if (correctAnswer.equalsIgnoreCase(message.trim())) { // 정답 맞췄을 때 - 대소문자 구분없이 비교
+                increaseUserScore(roomId, userId);
+
+                // 정답자에게만 "정답입니다!" 전송
+                messagingTemplate.convertAndSendToUser(
+                        userId,
+                        "/topic/room/" + roomId,
+                        WebSocketResponse.Send.of("SYSTEM", "정답입니다!"));
+
+                // 모든 게임방 인원에게 "@@님이 정답을 맞췄습니다!" 전송
+                messagingTemplate.convertAndSend(
+                        "/topic/room/" + roomId,
+                        WebSocketResponse.Send.of("SYSTEM", username + "님이 정답을 맞췄습니다!"));
+
+                return null; // 정답 메세지는 숨기기
+            }
+        }
+
         return WebSocketResponse.Send.of(username, message);
     }
+
+    public String getCorrectAnswerFromRedis(Long roomId) {
+        String key = "room_" + roomId + ":correctAnswer";
+        return redisTemplate.opsForValue().get(key);
+    }
+
+    public void increaseUserScore(Long roomId, String userId) {}
 
     // 구독을 하면 방 정보에 유저가 추가
     // 로비는 세부 정보를 로비에 추가 X
@@ -37,6 +70,12 @@ public class WebSocketService {
         messagingTemplate.convertAndSend(
                 "/topic/room/" + roomId,
                 WebSocketResponse.Send.of("SYSTEM", username + "님이 입장하였습니다"));
+    }
+
+    public WebSocketResponse.Send sendMessageToRoom(
+            SimpMessageHeaderAccessor headerAccessor, String message) {
+        String username = getUsernameFromSession(headerAccessor);
+        return WebSocketResponse.Send.of(username, message);
     }
 
     // 핸드셰이크에서 Principal 객체에 회원 정보를 담으려고 했지만 Null 값이 넘어오는 문제를 아직 해결 X

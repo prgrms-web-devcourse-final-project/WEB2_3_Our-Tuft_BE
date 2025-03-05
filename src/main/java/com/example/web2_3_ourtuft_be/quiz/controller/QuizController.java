@@ -25,7 +25,7 @@ public class QuizController {
     @Operation(summary = "퀴즈 등록 API", description = "퀴즈를 등록합니다.")
     @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
     @PostMapping()
-    public ResponseEntity< GlobalResponse<RegistQuizSetAndQuizzesResponse> >registQuizset(
+    public ResponseEntity<GlobalResponse<RegistQuizSetAndQuizzesResponse>> registQuizset(
             @AuthenticationPrincipal(expression = "user") User user,
             @Valid @RequestBody RegistQuizSetAndQuizzesRequest registQuizSetAndQuizzesRequest) {
 
@@ -34,17 +34,18 @@ public class QuizController {
         RegistQuizSetAndQuizzesResponse registQuizSetAndQuizzesResponse =
                 quizService.registQuizSet(creatorId, registQuizSetAndQuizzesRequest);
 
-        return ResponseEntity.ok( GlobalResponse.created(registQuizSetAndQuizzesResponse) );
+        return ResponseEntity.ok(GlobalResponse.created(registQuizSetAndQuizzesResponse));
     }
 
     @Operation(summary = "퀴즈세트 삭제 API", description = "등록된 퀴즈세트를 삭제합니다.")
     @ApiResponses({@ApiResponse(responseCode = "201", description = "성공")})
     @DeleteMapping("/{quizsetid}")
-    public ResponseEntity<GlobalResponse<String>> deleteQuizset(@PathVariable("quizsetid") Long quizSetId) {
+    public ResponseEntity<GlobalResponse<String>> deleteQuizset(
+            @PathVariable("quizsetid") Long quizSetId) {
 
         quizService.deleteQuizSetAndQuizzes(quizSetId);
 
-        return ResponseEntity.ok(GlobalResponse.success("퀴즈세트를 삭제 했습니다.")) ;
+        return ResponseEntity.ok(GlobalResponse.success("퀴즈세트를 삭제 했습니다."));
     }
 
     @Operation(summary = "퀴즈세트, 퀴즈 수정 API", description = "전달받은 퀴즈,퀴즈세트 데이터로 수정 합니다.")
@@ -56,6 +57,6 @@ public class QuizController {
 
         quizService.updateQuizSetAndQuizzes(quizSetId, request);
 
-        return ResponseEntity.ok( GlobalResponse.success(null));
+        return ResponseEntity.ok(GlobalResponse.success("수정이 완료되었습니다."));
     }
 }
