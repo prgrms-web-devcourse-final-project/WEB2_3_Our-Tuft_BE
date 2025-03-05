@@ -31,7 +31,7 @@ public class ItemInitializer implements CommandLineRunner {
             }
 
             // 해당 카테고리 아이템이 없을 경우에만 추가
-            if (itemRepository.countByCategory(category.name()) == 0) {
+            if (itemRepository.countByCategory(category.name()) <= 0) {
                 saveItems(createCategoryItems(category));
             }
         }
