@@ -21,21 +21,25 @@ public class WebSocketService {
         String username = getUsernameFromSession(headerAccessor);
         String userId = getUserIdFromSession(headerAccessor);
 
-        String correctAnswer = getCorrectAnswerFromRedis(roomId);
+        //TODO: redis에서 방 상태 불러오기
+        boolean isGameRunning = true;
+        if(isGameRunning) {
+            String correctAnswer = getCorrectAnswerFromRedis(roomId);
 
-        if (correctAnswer.equalsIgnoreCase(message.trim())) { // 정답 맞췄을 때 - 대소문자 구분없이 비교
-            increaseUserScore(roomId, userId);
+            if (correctAnswer.equalsIgnoreCase(message.trim())) { // 정답 맞췄을 때 - 대소문자 구분없이 비교
+                increaseUserScore(roomId, userId);
 
-            // 정답자에게만 "정답입니다!" 전송
-            messagingTemplate.convertAndSendToUser(
-                    userId, "/topic/room/" + roomId, WebSocketResponse.Send.of("SYSTEM", "정답입니다!"));
+                // 정답자에게만 "정답입니다!" 전송
+                messagingTemplate.convertAndSendToUser(
+                        userId, "/topic/room/" + roomId, WebSocketResponse.Send.of("SYSTEM", "정답입니다!"));
 
-            // 모든 게임방 인원에게 "@@님이 정답을 맞췄습니다!" 전송
-            messagingTemplate.convertAndSend(
-                    "/topic/room/" + roomId,
-                    WebSocketResponse.Send.of("SYSTEM", username + "님이 정답을 맞췄습니다!"));
+                // 모든 게임방 인원에게 "@@님이 정답을 맞췄습니다!" 전송
+                messagingTemplate.convertAndSend(
+                        "/topic/room/" + roomId,
+                        WebSocketResponse.Send.of("SYSTEM", username + "님이 정답을 맞췄습니다!"));
 
-            return null; // 정답 메세지는 숨기기
+                return null; // 정답 메세지는 숨기기
+            }
         }
 
         return WebSocketResponse.Send.of(username, message);
