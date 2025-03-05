@@ -21,4 +21,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Slice<Item> findAllByIdIn(List<Long> itemIds, Pageable pageable);
 
     List<Item> findByDiscountId(Long discountId);
+
+    boolean existsByName(String name);
+
+    long countByCategory(String category);
 }
