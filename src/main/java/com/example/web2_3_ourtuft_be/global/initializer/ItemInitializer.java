@@ -35,6 +35,17 @@ public class ItemInitializer implements CommandLineRunner {
                 saveItems(createCategoryItems(category));
             }
         }
+        createNickItem();
+    }
+
+    private void createNickItem() {
+        Item item =
+                Item.builder()
+                        .name("black")
+                        .category(Category.NICKNAME.name())
+                        .nickColor("#000000")
+                        .build();
+        itemRepository.save(item);
     }
 
     private List<Item> createCategoryItems(Category category) {
