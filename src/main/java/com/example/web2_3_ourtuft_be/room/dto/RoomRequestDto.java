@@ -3,6 +3,7 @@ package com.example.web2_3_ourtuft_be.room.dto;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidValueException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.BadRequestMessages;
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -23,19 +24,23 @@ public class RoomRequestDto {
 
     @Min(value = 5, message = "진행 시간은 최소 5초 이상이어야 합니다.") private int time;
 
+    @Min(value = 2, message = "최소 2명 이상 설정해야 합니다.") @Max(value = 8, message = "최대 8명까지만 가능합니다.") private int maxUsers;
+
     public RoomRequestDto(
             String roomName,
             boolean disclosure,
             String password,
             int round,
             QuizSetType gameType,
-            int time) {
+            int time,
+            int maxUsers) {
         this.roomName = roomName;
         this.disclosure = disclosure;
         this.password = password;
         this.round = round;
         this.gameType = gameType;
         this.time = time;
+        this.maxUsers = maxUsers;
 
         validate();
     }
