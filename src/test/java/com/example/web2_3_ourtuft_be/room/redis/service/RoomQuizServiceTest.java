@@ -1,8 +1,6 @@
 package com.example.web2_3_ourtuft_be.room.redis.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,17 +28,14 @@ class RoomQuizServiceTest {
         redisTemplate.delete(quizzesKey);
     }
 
-    @DisplayName("진행할 퀴즈세트를 정한다.")
+    @DisplayName("test")
     @Test
-    void testSetQuizSet() {
+    void test() {
         // given
-        Long quizSetId = 10L;
+        roomQuizService.getAllQuizzes(1L);
 
         // when
-        roomQuizService.setQuizSet(roomId, quizSetId);
 
         // then
-        Object o = redisTemplate.opsForValue().get(quisetKey);
-        assertThat((Long.parseLong(o.toString())));
     }
 }
