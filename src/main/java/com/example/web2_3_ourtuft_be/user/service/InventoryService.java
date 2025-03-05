@@ -20,8 +20,7 @@ public class InventoryService {
     private final ItemService itemService;
     private final InventoryRepository inventoryRepository;
 
-    public InventoryItemDto getMyItems() {
-        Long userId = 1L;
+    public InventoryItemDto getMyItems(Long userId) {
 
         List<Inventory> inventories = inventoryRepository.findByUserId(userId);
 
