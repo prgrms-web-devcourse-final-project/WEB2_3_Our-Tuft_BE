@@ -1,5 +1,6 @@
 package com.example.web2_3_ourtuft_be.websocket.service;
 
+import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,8 @@ public class WebSocketService {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisTemplate<String, String> redisTemplate;
+    private final ParticipantService participantService;
+    private final RoomSocketService roomSocketService;
 
     public WebSocketResponse.Send sendMessageToRoom(
             SimpMessageHeaderAccessor headerAccessor, String message) {
@@ -22,32 +25,16 @@ public class WebSocketService {
         return WebSocketResponse.Send.of(username, message);
     }
 
-    // 구독을 하면 방 정보에 유저가 추가
-    // 로비는 세부 정보를 로비에 추가 X
-    public void handleRoomSubscribe(SimpMessageHeaderAccessor headerAccessor, String roomId) {
-        String username = getUsernameFromSession(headerAccessor);
-        String userId = getUserIdFromSession(headerAccessor);
-
-        addParticipantToRoom(roomId, userId);
-
-        if (!"lobby".equals(roomId)) {
-            addParticipantDetailToRoom(roomId, userId, username);
-        }
-
-        messagingTemplate.convertAndSend(
-                "/topic/room/" + roomId,
-                WebSocketResponse.Send.of("SYSTEM", username + "님이 입장하였습니다"));
-    }
 
     // 핸드셰이크에서 Principal 객체에 회원 정보를 담으려고 했지만 Null 값이 넘어오는 문제를 아직 해결 X
     // 핸드셰이크 JWT 인증단계에서 attributes 에 키벨류로 담아뒀다
-    private String getUserIdFromSession(SimpMessageHeaderAccessor headerAccessor) {
+    public String getUserIdFromSession(SimpMessageHeaderAccessor headerAccessor) {
         return (String) headerAccessor.getSessionAttributes().get("userId");
     }
 
     // 핸드셰이크에서 Principal 객체에 회원 정보를 담으려고 했지만 Null 값이 넘어오는 문제를 아직 해결 X
     // 핸드셰이크 JWT 인증단계에서 attributes 에 키벨류로 담아뒀다
-    private String getUsernameFromSession(SimpMessageHeaderAccessor headerAccessor) {
+    public String getUsernameFromSession(SimpMessageHeaderAccessor headerAccessor) {
         return (String) headerAccessor.getSessionAttributes().get("username");
     }
 

@@ -2,8 +2,9 @@ package com.example.web2_3_ourtuft_be.room.redis.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.example.web2_3_ourtuft_be.room.redis.entity.RoomStatus;
-import com.example.web2_3_ourtuft_be.room.redis.repository.RoomStatusRedisRepository;
+import com.example.web2_3_ourtuft_be.redis.entity.RoomStatus;
+import com.example.web2_3_ourtuft_be.redis.repository.RoomStatusRedisRepository;
+import com.example.web2_3_ourtuft_be.redis.service.RoomSettingService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,10 +15,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class RoomStatusRedisServiceTest {
+class RoomSettingServiceTest {
 
     @Autowired private RoomStatusRedisRepository roomStatusRedisRepository;
-    @Autowired private RoomStatusRedisService roomStatusRedisService;
+    @Autowired private RoomSettingService roomStatusRedisService;
 
     @AfterEach
     void tearDown() {

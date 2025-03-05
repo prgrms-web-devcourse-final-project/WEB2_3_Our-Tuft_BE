@@ -1,15 +1,15 @@
-package com.example.web2_3_ourtuft_be.room.redis.service;
+package com.example.web2_3_ourtuft_be.redis.service;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
-import com.example.web2_3_ourtuft_be.room.redis.entity.RoomStatus;
-import com.example.web2_3_ourtuft_be.room.redis.repository.RoomStatusRedisRepository;
+import com.example.web2_3_ourtuft_be.redis.entity.RoomStatus;
+import com.example.web2_3_ourtuft_be.redis.repository.RoomStatusRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class RoomStatusRedisService {
+public class RoomSettingService {
 
     private final RoomStatusRedisRepository roomStatusRedisRepository;
 

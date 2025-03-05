@@ -1,4 +1,4 @@
-package com.example.web2_3_ourtuft_be.room.redis.entity;
+package com.example.web2_3_ourtuft_be.redis.entity;
 
 import lombok.Builder;
 import lombok.Getter;
