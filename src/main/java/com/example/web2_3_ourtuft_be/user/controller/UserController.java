@@ -133,9 +133,11 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "포인트가 존재하지 않습니다.")
     })
     @PostMapping("/reward")
-    public ResponseEntity<GlobalResponse<RewardDto>> reward(@RequestBody RewardDto request) {
+    public ResponseEntity<GlobalResponse<RewardDto>> reward(
+            @RequestBody RewardDto request,
+            @AuthenticationPrincipal(expression = "user") User user) {
 
-        RewardDto response = userFacadeService.reward(request);
+        RewardDto response = userFacadeService.reward(user.getId(), request);
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 }

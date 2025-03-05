@@ -25,6 +25,8 @@ public class Room extends BaseTime {
     private int round;
     private Long hostId;
     private QuizSetType gameType;
+    private int maxUsers;
+    private int time;
 
     private boolean isGameRunning;
     private int currentRound;
