@@ -56,6 +56,7 @@ public class UserFacadeService {
                         profile.getNicknameItemId(),
                         itemService.getItem(profile.getNicknameItemId()).getNickColor());
 
+        //TODO : 빌더패턴 도입 검토 (아이템이 없을시 Response 생성 오류 발생)
         return new UserInfoResponseDto(profile, record, exp, eye, mouse, skin, nickColor);
     }
 

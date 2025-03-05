@@ -29,7 +29,7 @@ public class MemberProfile extends BaseTime {
 
     private Long skinItemId = 7L;
 
-    private Long nicknameItemId;
+    private Long nicknameItemId = 10L;
 
     public MemberProfile(Long userId) {
         this.userId = userId;
