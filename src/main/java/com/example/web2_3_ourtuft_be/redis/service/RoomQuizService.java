@@ -1,12 +1,11 @@
 package com.example.web2_3_ourtuft_be.redis.service;
 
-import java.time.Duration;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizSetRepository;
+import java.time.Duration;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class RoomQuizService {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final QuizRepository quizRepository ;
+    private final QuizRepository quizRepository;
     private final QuizSetRepository quizSetRepository;
 
     private String getRoomQuizSetKey(String roomId) {
@@ -32,12 +31,11 @@ public class RoomQuizService {
         redisTemplate.opsForValue().set(getRoomQuizSetKey(roomId), quizSetId);
     }
 
-
     // 퀴즈 세트 가져오기
     public Long getQuizSet(String roomId) {
-        return Long.parseLong(redisTemplate.opsForValue().get(getRoomQuizSetKey(roomId)).toString());
+        return Long.parseLong(
+                redisTemplate.opsForValue().get(getRoomQuizSetKey(roomId)).toString());
     }
-
 
     public List<Map<String, String>> getAllQuizzes(String quizSetId) {
         List<Map<String, String>> quizzes = new ArrayList<>();
@@ -48,8 +46,12 @@ public class RoomQuizService {
         if (quizKeys != null && !quizKeys.isEmpty()) {
             for (String quizKey : quizKeys) {
                 Map<Object, Object> quizData = redisTemplate.opsForHash().entries(quizKey);
-                quizzes.add(quizData.entrySet().stream()
-                        .collect(Collectors.toMap(e -> (String) e.getKey(), e -> (String) e.getValue())));
+                quizzes.add(
+                        quizData.entrySet().stream()
+                                .collect(
+                                        Collectors.toMap(
+                                                e -> (String) e.getKey(),
+                                                e -> (String) e.getValue())));
             }
             return quizzes;
         }
@@ -74,5 +76,4 @@ public class RoomQuizService {
 
         return quizzes;
     }
-
 }

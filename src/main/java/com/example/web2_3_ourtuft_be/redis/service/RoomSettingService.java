@@ -1,33 +1,56 @@
 package com.example.web2_3_ourtuft_be.redis.service;
 
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
-import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
-import com.example.web2_3_ourtuft_be.redis.entity.RoomStatus;
-import com.example.web2_3_ourtuft_be.redis.repository.RoomStatusRedisRepository;
+import com.example.web2_3_ourtuft_be.redis.dto.RoomSettingsDto;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class RoomSettingService {
 
-    private final RoomStatusRedisRepository roomStatusRedisRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    // 방생성시 RoomStatus를 Redis에 저장
-    public void saveRoomStatus(Long roomId, String status) {
-        RoomStatus roomStatus = RoomStatus.builder().roomId(roomId).status(status).build();
-        roomStatusRedisRepository.save(roomStatus);
+    private String getRoomQuizSetKey(String roomId) {
+        return "room:settings:" + roomId;
     }
 
-    // 게임 시작, 종료시 RoomStatus 변경
-    public RoomStatus updateRoomStatus(Long roomId, String newStatus) {
-        RoomStatus roomStatus =
-                roomStatusRedisRepository
-                        .findById(roomId)
-                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+    public void saveRoomSettings(String roomId, RoomSettingsDto roomSettingsDto) {
+        String roomSettingsKey = getRoomQuizSetKey(roomId);
 
-        roomStatus.updateStatus(newStatus);
+        redisTemplate.opsForHash().put(roomSettingsKey, "title", roomSettingsDto.getTitle());
+        redisTemplate
+                .opsForHash()
+                .put(roomSettingsKey, "isPublic", String.valueOf(roomSettingsDto.isPublic()));
+        redisTemplate.opsForHash().put(roomSettingsKey, "password", roomSettingsDto.getPassword());
+        redisTemplate
+                .opsForHash()
+                .put(
+                        roomSettingsKey,
+                        "maxPlayers",
+                        String.valueOf(roomSettingsDto.getMaxPlayers()));
+        redisTemplate
+                .opsForHash()
+                .put(roomSettingsKey, "rounds", String.valueOf(roomSettingsDto.getRounds()));
+        redisTemplate
+                .opsForHash()
+                .put(roomSettingsKey, "timeLimit", String.valueOf(roomSettingsDto.getTimeLimit()));
+    }
 
-        return roomStatusRedisRepository.save(roomStatus);
+    public RoomSettingsDto getRoomSettings(String roomId) {
+        String roomSettingsKey = getRoomQuizSetKey(roomId);
+
+        // Redis에서 방 설정을 가져옵니다.
+        Map<Object, Object> settingsMap = redisTemplate.opsForHash().entries(roomSettingsKey);
+
+        // Redis에서 가져온 데이터를 RoomSettingsDto로 변환하여 반환
+        return RoomSettingsDto.of(
+                (String) settingsMap.get("title"),
+                Boolean.parseBoolean((String) settingsMap.get("isPublic")),
+                (String) settingsMap.get("password"),
+                Integer.parseInt((String) settingsMap.get("maxPlayers")),
+                Integer.parseInt((String) settingsMap.get("rounds")),
+                Integer.parseInt((String) settingsMap.get("timeLimit")));
     }
 }

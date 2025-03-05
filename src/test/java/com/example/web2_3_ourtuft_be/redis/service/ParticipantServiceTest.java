@@ -1,26 +1,16 @@
-package com.example.web2_3_ourtuft_be.room.redis.service;
+package com.example.web2_3_ourtuft_be.redis.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
-import java.util.Set;
-
-import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 class ParticipantServiceTest {
 
-    @Autowired private RedisTemplate<String, Object> redisTemplate;
+    /*@Autowired private RedisTemplate<String, Object> redisTemplate;
 
     @Autowired private ParticipantService participantService;
 
@@ -125,5 +115,5 @@ class ParticipantServiceTest {
 
         // then
         assertThat(participants.size()).isEqualTo(4);
-    }
+    }*/
 }

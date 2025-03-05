@@ -1,10 +1,8 @@
 package com.example.web2_3_ourtuft_be.redis.service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -45,16 +43,16 @@ public class ParticipantService {
         String participantsInfoKey = getParticipantsInfoKey(roomId);
         String readyStatusKey = getReadyStatusKey(roomId);
 
-
         redisTemplate
                 .opsForZSet()
                 .add(participantsOrderKey, playerId, getTimeStamp()); // 타임스탬프로 입장 순서 관리
         redisTemplate
                 .opsForHash()
-                .put(participantsInfoKey, playerId, username); // playerId를 field, username을 value로 저장
-        redisTemplate
-                .opsForHash()
-                .put(readyStatusKey, playerId, false); // 입장시 준비 상태 false
+                .put(
+                        participantsInfoKey,
+                        playerId,
+                        username); // playerId를 field, username을 value로 저장
+        redisTemplate.opsForHash().put(readyStatusKey, playerId, false); // 입장시 준비 상태 false
     }
 
     // 플레이어 추가
@@ -69,9 +67,7 @@ public class ParticipantService {
         redisTemplate
                 .opsForHash()
                 .put(playerInfoKey, playerId, username); // playerId를 field, username을 value로 저장
-
     }
-
 
     // 플레이어 준비 상태 토글
     public void togglePlayerReady(String roomId, String playerId) {
@@ -93,12 +89,12 @@ public class ParticipantService {
 
         // playerId와 username을 Map 형태로 변환하여 반환
         return entries.entrySet().stream()
-                .collect(Collectors.toMap(
-                        entry -> (String) entry.getKey(),  // playerId (key)
-                        entry -> (String) entry.getValue()  // username (value)
-                ));
+                .collect(
+                        Collectors.toMap(
+                                entry -> (String) entry.getKey(), // playerId (key)
+                                entry -> (String) entry.getValue() // username (value)
+                                ));
     }
-
 
     // 방장이 권한 위임 없이 나갔을 경우 권한 위임 (입장순)
     public String getNextHost(String roomId) {
@@ -116,6 +112,4 @@ public class ParticipantService {
 
         redisTemplate.opsForZSet().remove(key, userId);
     }
-
-
 }

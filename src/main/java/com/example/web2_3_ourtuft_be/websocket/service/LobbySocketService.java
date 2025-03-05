@@ -5,13 +5,12 @@ import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import com.example.web2_3_ourtuft_be.websocket.dto.LobbySubscribeResponse;
 import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,16 +33,15 @@ public class LobbySocketService {
         // 개설된 방 목록을 가져온다
         List<RoomResponseDto> roomList = lobbyService.getAllRooms();
 
-        LobbySubscribeResponse lobbySubscribeResponse = LobbySubscribeResponse.of(participants,roomList );
+        LobbySubscribeResponse lobbySubscribeResponse =
+                LobbySubscribeResponse.of(participants, roomList);
 
         // lobby 구독자들 화면에 새로운 입장자를 포함한 목록 전달
-        simpMessagingTemplate.convertAndSend("/topic/room/lobby",participants );
+        simpMessagingTemplate.convertAndSend("/topic/room/lobby", participants);
         // Lobby 구독자들에게 입장 알림 전송
         simpMessagingTemplate.convertAndSend(
-                "/topic/room/lobby",
-                WebSocketResponse.Send.of("SYSTEM", username + "님이 입장하였습니다"));
+                "/topic/room/lobby", WebSocketResponse.Send.of("SYSTEM", username + "님이 입장하였습니다"));
 
         return lobbySubscribeResponse;
-
     }
 }

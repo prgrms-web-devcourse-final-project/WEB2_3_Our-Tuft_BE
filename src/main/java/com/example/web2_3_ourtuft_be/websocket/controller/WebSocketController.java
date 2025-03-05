@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.websocket.controller;
 
 import com.example.web2_3_ourtuft_be.websocket.dto.LobbySubscribeResponse;
+import com.example.web2_3_ourtuft_be.websocket.dto.RoomSubscribeResponse;
 import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
 import com.example.web2_3_ourtuft_be.websocket.service.LobbySocketService;
 import com.example.web2_3_ourtuft_be.websocket.service.RoomSocketService;
@@ -21,7 +22,6 @@ public class WebSocketController {
     private final RoomSocketService roomSocketService;
     private final LobbySocketService lobbySocketService;
 
-
     // 보내는 경로 예시) /app/room/1
     @MessageMapping("/room/{roomId}")
     @SendTo("/topic/room/{roomId}")
@@ -37,14 +37,11 @@ public class WebSocketController {
             @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {
 
         return lobbySocketService.enterLobby(headerAccessor);
-
     }
 
     @SubscribeMapping("/room/{roomId}")
-    public void handleRoomSubscribe(
+    public RoomSubscribeResponse handleRoomSubscribe(
             @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {
-        RoomSocketService.enterRoom(headerAccessor, roomId);
+        return roomSocketService.enterRoom(headerAccessor, roomId);
     }
-
-
 }
