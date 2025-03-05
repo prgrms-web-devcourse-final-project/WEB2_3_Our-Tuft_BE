@@ -20,7 +20,7 @@ public class WebSocketController {
     @MessageMapping("/room/{roomId}")
     @SendTo("/topic/room/{roomId}")
     public WebSocketResponse.Send processMessage(
-            @DestinationVariable String roomId,
+            @DestinationVariable Long roomId,
             SimpMessageHeaderAccessor headerAccessor,
             String message) {
         return webSocketService.processMessage(headerAccessor, roomId, message);

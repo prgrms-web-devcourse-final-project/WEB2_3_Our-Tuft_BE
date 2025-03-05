@@ -17,11 +17,12 @@ public class WebSocketService {
     private final RedisTemplate<String, String> redisTemplate;
 
     public WebSocketResponse.Send processMessage(
-            SimpMessageHeaderAccessor headerAccessor, String roomId, String message) {
+            SimpMessageHeaderAccessor headerAccessor, Long roomId, String message) {
         String username = getUsernameFromSession(headerAccessor);
         String userId = getUserIdFromSession(headerAccessor);
 
         //TODO: redis에서 방 상태 불러오기
+//        RoomStatus roomStatus = roomStatusRedisService.getRoomStatus(roomId);
         boolean isGameRunning = true;
         if(isGameRunning) {
             String correctAnswer = getCorrectAnswerFromRedis(roomId);
@@ -45,12 +46,12 @@ public class WebSocketService {
         return WebSocketResponse.Send.of(username, message);
     }
 
-    public String getCorrectAnswerFromRedis(String roomId) {
+    public String getCorrectAnswerFromRedis(Long roomId) {
         String key = "room_" + roomId + ":correctAnswer";
         return redisTemplate.opsForValue().get(key);
     }
 
-    public void increaseUserScore(String roomId, String userId) {}
+    public void increaseUserScore(Long roomId, String userId) {}
 
     // 구독을 하면 방 정보에 유저가 추가
     // 로비는 세부 정보를 로비에 추가 X
