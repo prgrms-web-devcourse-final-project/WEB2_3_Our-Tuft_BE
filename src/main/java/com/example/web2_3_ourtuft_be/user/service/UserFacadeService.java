@@ -56,21 +56,18 @@ public class UserFacadeService {
                         profile.getNicknameItemId(),
                         itemService.getItem(profile.getNicknameItemId()).getNickColor());
 
+        //TODO : 빌더패턴 도입 검토 (아이템이 없을시 Response 생성 오류 발생)
         return new UserInfoResponseDto(profile, record, exp, eye, mouse, skin, nickColor);
     }
 
     @Transactional(readOnly = true)
-    public UserInfoResponseDto getMyInfo() {
-        // TODO: userId SecurityHolder 에서 가져옴
-        Long userId = 1L;
+    public UserInfoResponseDto getMyInfo(Long userId) {
         return getUserInfo(userId);
     }
 
     @Transactional
-    public UserInfoResponseDto updateProfile(UserInfoRequestDto request) {
+    public UserInfoResponseDto updateProfile(Long userId, UserInfoRequestDto request) {
 
-        // TODO: userId SecurityHolder 에서 가져옴
-        Long userId = 1L;
         // TODO: Item 로직 생성 후 ItemService 에서 처리 예정
         ItemImageUrlDto eye =
                 new ItemImageUrlDto(
@@ -89,13 +86,11 @@ public class UserFacadeService {
 
         profileService.updateMemberProfile(userId, request.getIntroduction(), equipItems);
 
-        return getMyInfo();
+        return getMyInfo(userId);
     }
 
     @Transactional
-    public NickNameResponseDto changeNickName(NickNameRequestDto request) {
-        // TODO: userId SecurityHolder 에서 가져옴
-        Long userId = 1L;
+    public NickNameResponseDto changeNickName(Long userId, NickNameRequestDto request) {
         Nickname nickname = new Nickname(request.getNickName());
         return profileService.changeNickname(userId, nickname.getNickname());
     }

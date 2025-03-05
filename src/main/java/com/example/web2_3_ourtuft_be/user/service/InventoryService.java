@@ -54,7 +54,8 @@ public class InventoryService {
                 List.of(
                         Inventory.create(userId, 1L, Category.EYE),
                         Inventory.create(userId, 4L, Category.MOUTH),
-                        Inventory.create(userId, 7L, Category.SKIN));
+                        Inventory.create(userId, 7L, Category.SKIN),
+                        Inventory.create(userId, 10L, Category.NICKNAME));
 
         inventoryRepository.saveAll(defaultItems);
     }
