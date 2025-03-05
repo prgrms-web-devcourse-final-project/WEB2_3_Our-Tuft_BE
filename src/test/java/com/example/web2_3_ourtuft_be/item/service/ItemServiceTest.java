@@ -15,6 +15,7 @@ import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
 import com.example.web2_3_ourtuft_be.item.entity.Item;
 import com.example.web2_3_ourtuft_be.item.entity.enums.Category;
 import com.example.web2_3_ourtuft_be.item.repository.ItemRepository;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceTest {
@@ -68,7 +70,7 @@ public class ItemServiceTest {
     public void getItemsSuccess() {
         // given
         PageRequest pageable = PageRequest.of(0, 6);
-        Slice<Item> items = new PageImpl<>(List.of(item1, item2), pageable, 2);
+        Slice<Item> items = new SliceImpl<>(List.of(item1, item2), pageable, false);
 
         when(itemRepository.findAllBy(eq(pageable))).thenReturn(items);
 
@@ -118,7 +120,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    @DisplayName("아이템 등록 실패 - 카테고리별 항목 존재X")
+    @DisplayName("아이템 등록 실패 - imageUrl 존재X")
     void registerItemFailMissingImage() {
         // given
         ItemRequest invalidRequest = new ItemRequest("item1", Category.EYE, null, null, 1000, 10);
@@ -127,6 +129,19 @@ public class ItemServiceTest {
         assertThatThrownBy(() -> itemService.registerItem(invalidRequest))
                 .isInstanceOf(InvalidRequestException.class)
                 .hasMessageContaining(InvalidRequestMessages.INVALID_IMAGE_VALUE.getMessage());
+    }
+
+    @Test
+    @DisplayName("아이템 등록 실패 - nickColor 존재X")
+    void registerItemFailMissingColor() {
+        // given
+        ItemRequest invalidRequest =
+                new ItemRequest("item1", Category.NICKNAME, null, null, 1000, 10);
+
+        // when & then
+        assertThatThrownBy(() -> itemService.registerItem(invalidRequest))
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessageContaining(InvalidRequestMessages.INVALID_COLOR_VALUE.getMessage());
     }
 
     @Test
@@ -182,5 +197,51 @@ public class ItemServiceTest {
         assertThatThrownBy(() -> itemService.deleteItem(1L))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessageContaining(NotFoundMessages.ITEM.getMessage());
+    }
+
+    @Test
+    @DisplayName("찜한 아이템 목록 조회")
+    void testGetItemInfoByWishlist() {
+        // given
+        List<Long> itemIds = List.of(1L, 2L);
+        PageRequest pageable = PageRequest.of(0, 6);
+
+        Slice<Item> items = new SliceImpl<>(List.of(item1, item2), pageable, false);
+
+        when(itemRepository.findAllByIdIn(itemIds, pageable)).thenReturn(items);
+
+        // when
+        PageResponse<ItemResponse> response = itemService.getItemInfoByWishlist(itemIds, pageable);
+
+        // then
+        assertNotNull(response);
+        assertFalse(response.isHasNext());
+        assertTrue(response.isFirst());
+        assertTrue(response.isLast());
+        assertFalse(response.isEmpty());
+        assertEquals(2, response.getNumberOfElements());
+        assertEquals("item1", response.getContent().get(0).getName());
+        assertEquals("item2", response.getContent().get(1).getName());
+    }
+
+    @Test
+    @DisplayName("itemIds가 비어있다면 찜한 빈 목록 조회")
+    void getItemInfoByWishlist_ShouldReturnEmptyPage_WhenItemIdsAreEmpty() {
+        // given
+        List<Long> emptyItemIds = Collections.emptyList();
+        PageRequest pageable = PageRequest.of(0, 6);
+
+        // when
+        PageResponse<ItemResponse> response =
+                itemService.getItemInfoByWishlist(emptyItemIds, pageable);
+
+        // then
+        assertNotNull(response);
+        assertTrue(response.getContent().isEmpty());
+        assertFalse(response.isHasNext());
+        assertTrue(response.isFirst());
+        assertTrue(response.isLast());
+        assertTrue(response.isEmpty());
+        assertEquals(0, response.getNumberOfElements());
     }
 }
