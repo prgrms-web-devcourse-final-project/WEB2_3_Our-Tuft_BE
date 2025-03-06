@@ -28,6 +28,7 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: https://hiq-lounge.duckdns.org/login/oauth2/code/google
             scope:
               - email
               - profile
@@ -35,7 +36,7 @@ spring:
           kakao:
             client-id: ${KAKAO_CLIENT_ID}
             client-secret: ${KAKAO_CLIENT_SECRET}
-            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            redirect-uri: https://hiq-lounge.duckdns.org/login/oauth2/code/kakao
             client-name: Kakao
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post

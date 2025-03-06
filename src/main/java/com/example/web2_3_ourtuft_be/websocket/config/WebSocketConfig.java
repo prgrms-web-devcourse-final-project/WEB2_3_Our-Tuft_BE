@@ -31,7 +31,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setErrorHandler(new StompSubProtocolErrorHandler())
                 .addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
-                .addInterceptors(new WebsocketHandshakeInterceptor(jwtUtil));
+                .setAllowedOrigins("http://localhost:3000")
+                .addInterceptors(new WebsocketHandshakeInterceptor(jwtUtil))
+                .withSockJS();
     }
 
     @Override
