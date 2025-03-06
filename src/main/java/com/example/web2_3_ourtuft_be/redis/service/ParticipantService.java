@@ -106,19 +106,19 @@ public class ParticipantService {
     }
 
     // 방장이 권한 위임 없이 나갔을 경우 권한 위임 (입장순)
-    public String getNextHost(String roomId) {
+    public String getNextHost(Long roomId) {
 
-        String key = "room:participants:" + roomId;
+        String participantsOrderKey = getParticipantsOrderKey(roomId.toString());
 
-        Set<Object> participants = redisTemplate.opsForZSet().range(key, 0, 2);
+        Set<Object> participants = redisTemplate.opsForZSet().range(participantsOrderKey, 0, 2);
 
         return participants.isEmpty() ? null : (String) participants.iterator().next();
     }
 
-    public void removeParticipant(Long roomId, Long userId) {
+    /*public void removeParticipant(Long roomId, Long userId) {
 
         String key = "room:participants:" + roomId;
 
         redisTemplate.opsForZSet().remove(key, userId);
-    }
+    }*/
 }
