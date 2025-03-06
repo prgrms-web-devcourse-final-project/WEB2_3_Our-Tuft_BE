@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.room.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
+import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "📬 Lobby", description = "로비 및 방 관련 API")
 public class LobbyController {
     private final LobbyService lobbyService;
+    private final RoomQuizService roomQuizService;
 
     @Operation(summary = "방 전체 조회 API", description = "로비에서 생성된 방을 조회합니다.")
     @ApiResponses({
@@ -93,5 +95,16 @@ public class LobbyController {
         lobbyService.deleteRoom(roomId);
 
         return GlobalResponse.success("방이 삭제되었습니다.");
+    }
+
+    @Operation(summary = "게임에서 진행할 퀴즈세트 세팅", description = "퀴즈목록중 진행할 퀴즈세트를 지정합니다. ")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
+    @PutMapping("/rooms/{roomid}/quizzes/{quizsetid}")
+    public ResponseEntity<GlobalResponse<String>> setQuizSet(
+            @PathVariable("roomid") Long roomId, @PathVariable("quizsetid") Long quizSetId) {
+
+        roomQuizService.setQuizSet(roomId, quizSetId);
+
+        return ResponseEntity.ok(GlobalResponse.success("퀴즈세트 저장"));
     }
 }
