@@ -153,7 +153,7 @@ public class LobbyService {
     }
 
     @Transactional
-    public ResponseEntity<GlobalResponse<String>> leaveRoom(Long roomId, Long userId) {
+    public GlobalResponse<String> leaveRoom(Long roomId, Long userId) {
         boolean isHost = isHost(roomId, userId);
         participantService.removeParticipant(roomId, userId);
 
@@ -168,7 +168,7 @@ public class LobbyService {
                     "/topic/room/" + roomId.toString(),
                     WebSocketResponse.Send.of("SYSTEM", "방이 삭제되었습니다."));
 
-            return ResponseEntity.ok(GlobalResponse.success("방이 삭제되었습니다."));
+            return GlobalResponse.success("방이 삭제되었습니다.");
 
         } else { // 잔여인원이 있는 경우
 
@@ -183,7 +183,7 @@ public class LobbyService {
                             "/topic/room/" + roomId.toString(),
                             WebSocketResponse.Send.of("SYSTEM", "방장이 변경되었습니다."));
 
-                    return ResponseEntity.ok(GlobalResponse.success("방장이 변경되었습니다."));
+                    return GlobalResponse.success("방장이 변경되었습니다.");
                 }
             }
 
@@ -191,7 +191,7 @@ public class LobbyService {
                     "/topic/room/" + roomId.toString(),
                     WebSocketResponse.Send.of("SYSTEM", "방을 나갔습니다."));
 
-            return ResponseEntity.ok(GlobalResponse.success("방을 성공적으로 나갔습니다."));
+            return GlobalResponse.success("방을 성공적으로 나갔습니다.");
         }
     }
 }

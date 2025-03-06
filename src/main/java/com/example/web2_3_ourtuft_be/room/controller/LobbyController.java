@@ -93,8 +93,10 @@ public class LobbyController {
     @DeleteMapping("/rooms/{roomId}/participant/{userId}")
     public ResponseEntity<GlobalResponse<String>> leaveRoom(
             @PathVariable Long roomId, @PathVariable Long userId) {
-        System.out.println(roomId + "  " + userId);
-        return lobbyService.leaveRoom(roomId, userId);
+
+        GlobalResponse<String> response = lobbyService.leaveRoom(roomId, userId);
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "게임에서 진행할 퀴즈세트 세팅", description = "퀴즈목록중 진행할 퀴즈세트를 지정합니다. ")
