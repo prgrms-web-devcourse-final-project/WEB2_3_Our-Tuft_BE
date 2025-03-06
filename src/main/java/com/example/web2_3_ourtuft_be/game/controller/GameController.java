@@ -17,9 +17,8 @@ public class GameController {
     private final GameService gameService;
 
     @PostMapping("/start/{roomId}")
-    public ResponseEntity<GlobalResponse<String>> startGame(
-            @PathVariable Long roomId, Long quizSetId) {
-        gameService.startGame(roomId, quizSetId);
+    public ResponseEntity<GlobalResponse<String>> startGame(@PathVariable Long roomId) {
+        gameService.gameSet(roomId);
 
         return ResponseEntity.ok(GlobalResponse.success("Game started"));
     }

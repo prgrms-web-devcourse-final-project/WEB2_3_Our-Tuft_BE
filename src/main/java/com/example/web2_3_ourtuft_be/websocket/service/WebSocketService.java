@@ -3,10 +3,8 @@ package com.example.web2_3_ourtuft_be.websocket.service;
 import com.example.web2_3_ourtuft_be.redis.enums.GameStatus;
 import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -26,8 +24,8 @@ public class WebSocketService {
             SimpMessageHeaderAccessor headerAccessor, Long roomId, String message) {
         String username = getUsernameFromSession(headerAccessor);
 
-        messagingTemplate.convertAndSend("/topic/room/" + roomId,
-                WebSocketResponse.Send.of(username, message));
+        messagingTemplate.convertAndSend(
+                "/topic/room/" + roomId, WebSocketResponse.Send.of(username, message));
     }
 
     // 게임방에서 보내는 채팅
@@ -51,31 +49,27 @@ public class WebSocketService {
                 messagingTemplate.convertAndSendToUser(
                         userId,
                         "/topic/gameRoom/" + roomId,
-                        WebSocketResponse.Send.of("SYSTEM", "정답입니다!")
-                );
+                        WebSocketResponse.Send.of("SYSTEM", "정답입니다!"));
 
                 // 모든 게임방 인원에게 "@@님이 정답을 맞췄습니다!" 전송
                 messagingTemplate.convertAndSend(
                         "/topic/gameRoom/" + roomId,
-                        WebSocketResponse.Send.of("SYSTEM", username + "님이 정답을 맞췄습니다!")
-                );
+                        WebSocketResponse.Send.of("SYSTEM", username + "님이 정답을 맞췄습니다!"));
 
                 return;
             }
         }
         messagingTemplate.convertAndSend(
-                "/topic/gameRoom/" + roomId,
-                WebSocketResponse.Send.of(username, message));
-
+                "/topic/gameRoom/" + roomId, WebSocketResponse.Send.of(username, message));
     }
 
+    // TODO: 현재 라운드 정답 가져오는 함수
     public String getCorrectAnswerFromRedis(Long roomId) {
-        String key = "room_" + roomId + ":correctAnswer";
-        return redisTemplate.opsForValue().get(key);
+
+        return "함수 채워야함";
     }
 
-    public void increaseUserScore(Long roomId, String userId) {
-    }
+    public void increaseUserScore(Long roomId, String userId) {}
 
     // 구독을 하면 방 정보에 유저가 추가
     // 로비는 세부 정보를 로비에 추가 X

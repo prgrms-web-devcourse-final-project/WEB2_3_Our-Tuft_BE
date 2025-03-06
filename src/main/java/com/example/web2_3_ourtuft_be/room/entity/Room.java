@@ -35,11 +35,6 @@ public class Room extends BaseTime {
         this.hostId = newHostId;
     }
 
-    public void startGame() {
-        isGameRunning = true;
-        currentRound = 0;
-    }
-
     public void endGame() {
         isGameRunning = false;
         currentRound = 0;

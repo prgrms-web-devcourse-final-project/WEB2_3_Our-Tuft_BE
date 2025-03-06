@@ -37,16 +37,13 @@ public class WebSocketController {
     public void processGameRoom(
             @DestinationVariable Long roomId,
             SimpMessageHeaderAccessor headerAccessor,
-            String message ) {
+            String message) {
         webSocketService.processGameRoom(headerAccessor, roomId, message);
     }
 
     @SubscribeMapping("/gameRoom/{roomId}")
     public void handleGameRoomSubscribe(
-            @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor
-    ) {
-
-    }
+            @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {}
 
     // /app/lobby 로 메세지 보내면, /topic/lobby 구독중인 모든 클라이언트에게 전달
     @MessageMapping("/lobby")
