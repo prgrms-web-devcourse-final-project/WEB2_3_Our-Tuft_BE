@@ -25,7 +25,7 @@ public class ItemDiscountService {
             applyDiscount(discount);
         }
 
-        List<Discount> discountsToExpire = discountService.getDiscountByEndDate(today);
+        List<Discount> discountsToExpire = discountService.getDiscountByEndDate(today.minusDays(1));
         for (Discount discount : discountsToExpire) {
             removeDiscount(discount);
         }

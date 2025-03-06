@@ -59,4 +59,18 @@ public class InventoryService {
 
         inventoryRepository.saveAll(defaultItems);
     }
+
+    public void createInventory(Long userId, List<Item> items) {
+
+        for (Item item : items) {
+            Inventory inventory =
+                    Inventory.builder()
+                            .userId(userId)
+                            .itemId(item.getId())
+                            .category(Category.valueOf(item.getCategory()))
+                            .build();
+
+            inventoryRepository.save(inventory);
+        }
+    }
 }
