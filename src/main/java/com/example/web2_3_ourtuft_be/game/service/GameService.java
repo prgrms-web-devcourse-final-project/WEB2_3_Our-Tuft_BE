@@ -4,6 +4,7 @@ import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundExcepti
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
+import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import jakarta.transaction.Transactional;
@@ -20,6 +21,7 @@ public class GameService {
     private final SimpMessagingTemplate messagingTemplate;
     private final QuizRepository quizRepository;
     private final LobbyService lobbyService;
+    private final RoomStatusService roomStatusService;
 
     // TODO: roomId로 redis에서 quiz 가져오기
     //    public List<Quiz> getQuizList(Long roomId){
@@ -39,9 +41,10 @@ public class GameService {
 
         room.startGame();
 
-        // TODO: redis에 상태, topic 저장...
+        // TODO: redis에 topic 저장...
 
         System.out.println("게임 시작 : ");
+        roomStatusService.setGameStatus(roomId,"RUNNING");
         sendQuiz();
     }
 
