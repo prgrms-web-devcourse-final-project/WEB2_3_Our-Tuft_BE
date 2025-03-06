@@ -1,7 +1,6 @@
 package com.example.web2_3_ourtuft_be.room.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
-import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
@@ -13,8 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "📬 Lobby", description = "로비 및 방 관련 API")
 public class LobbyController {
     private final LobbyService lobbyService;
-    private final ParticipantService participantService;
+
     private final RoomQuizService roomQuizService;
 
     @Operation(summary = "방 전체 조회 API", description = "로비에서 생성된 방을 조회합니다.")
@@ -95,34 +92,16 @@ public class LobbyController {
     @Operation(summary = "방 나가기 API", description = "사용자가 특정 방을 나갑니다. 잔여인원이 0명이 되면 방이 삭제됩니다.")
     @DeleteMapping("/rooms/{roomId}/participant/{userId}")
     public ResponseEntity<GlobalResponse<String>> leaveRoom(
-            @PathVariable Long roomId,
-            @PathVariable Long userId
-    ) {
-        participantService.removeParticipant(roomId, userId);
-
-        // 남은 참가자수 확인
-        Map<String, String> participants = participantService.getParticipants(roomId);
-
-        if (participants.isEmpty()) {
-            lobbyService.deleteRoom(roomId);
-            return ResponseEntity.ok(GlobalResponse.success("방이 삭제되었습니다."));
-
-        } else {
-            // 방장이 나갔을 경우 방장 변경
-            String newHostId = participantService.getNextHost(String.valueOf(roomId));
-            if (newHostId != null) {
-                lobbyService.changeRoomHost(roomId, Long.parseLong(newHostId));
-            }
-
-            return ResponseEntity.ok(GlobalResponse.success("방이 삭제되었습니다."));
-        }
+            @PathVariable Long roomId, @PathVariable Long userId) {
+        System.out.println(roomId + "  " + userId);
+        return lobbyService.leaveRoom(roomId, userId);
     }
 
     @Operation(summary = "게임에서 진행할 퀴즈세트 세팅", description = "퀴즈목록중 진행할 퀴즈세트를 지정합니다. ")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
-    @PutMapping("/rooms/{roomid}/quizzes/{quizsetid}")
+    @PutMapping("/rooms/{roomId}/quizzes/{quizSetId}")
     public ResponseEntity<GlobalResponse<String>> setQuizSet(
-            @PathVariable("roomid") Long roomId, @PathVariable("quizsetid") Long quizSetId) {
+            @PathVariable("roomId") Long roomId, @PathVariable("quizSetId") Long quizSetId) {
 
         roomQuizService.setQuizSet(roomId, quizSetId);
 

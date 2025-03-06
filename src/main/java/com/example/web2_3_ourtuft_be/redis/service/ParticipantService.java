@@ -58,15 +58,16 @@ public class ParticipantService {
     // 플레이어 추가
     public void addParticipantToLobby(String playerId, String username) {
 
-//        String participantsKey = "room:participants:lobby";
-//        String playerInfoKey = getParticipantsInfoKey("lobby");
-//
-//        redisTemplate
-//                .opsForZSet()
-//                .add(participantsKey, playerId, getTimeStamp()); // 타임스탬프로 입장 순서 관리
-//        redisTemplate
-//                .opsForHash()
-//                .put(playerInfoKey, playerId, username); // playerId를 field, username을 value로 저장
+        //        String participantsKey = "room:participants:lobby";
+        //        String playerInfoKey = getParticipantsInfoKey("lobby");
+        //
+        //        redisTemplate
+        //                .opsForZSet()
+        //                .add(participantsKey, playerId, getTimeStamp()); // 타임스탬프로 입장 순서 관리
+        //        redisTemplate
+        //                .opsForHash()
+        //                .put(playerInfoKey, playerId, username); // playerId를 field, username을
+        // value로 저장
     }
 
     // 플레이어 준비 상태 토글

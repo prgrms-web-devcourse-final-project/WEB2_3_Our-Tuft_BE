@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,7 +41,7 @@ public class CustomRequestFilter extends OncePerRequestFilter {
         }
         String accessToken = "";
         // token 이 null 일수도 있으므로 여기서 떼주었습니다. 변수명이나 조건문 위치 등등 수정 필요할듯
-        if(token.startsWith("Bearer ")) {
+        if (token.startsWith("Bearer ")) {
             accessToken = token.substring(7);
         }
         try {
@@ -93,13 +92,9 @@ public class CustomRequestFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         AntPathMatcher pathMatcher = new AntPathMatcher();
 
-        String[] paths = {
-                "/api/v1/auth/**",
-                "/api/v1/test/**"
-        };
+        String[] paths = {"/api/v1/auth/**", "/api/v1/test/**"};
 
         String path = new UrlPathHelper().getPathWithinApplication(request);
-        return Arrays.stream(paths)
-                .anyMatch(pattern -> pathMatcher.match(pattern, path));
+        return Arrays.stream(paths).anyMatch(pattern -> pathMatcher.match(pattern, path));
     }
 }

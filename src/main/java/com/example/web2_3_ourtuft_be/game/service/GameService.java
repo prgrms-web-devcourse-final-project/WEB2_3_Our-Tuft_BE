@@ -44,7 +44,7 @@ public class GameService {
         // TODO: redis에 topic 저장...
 
         System.out.println("게임 시작 : ");
-        roomStatusService.setGameStatus(roomId,"RUNNING");
+        roomStatusService.setGameStatus(roomId, "RUNNING");
         sendQuiz();
     }
 
