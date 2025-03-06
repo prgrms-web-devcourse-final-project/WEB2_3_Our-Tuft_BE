@@ -8,6 +8,7 @@ import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.quiz.dto.*;
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.entity.QuizSet;
+import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizSetRepository;
 import jakarta.transaction.Transactional;
@@ -147,5 +148,16 @@ public class QuizService {
                                         .answer(quiz.getAnswer())
                                         .build())
                 .toList();
+    }
+
+    public List<QuizSetTopicResponse> getQuizSets(QuizSetType quizSetType) {
+
+        List<QuizSet> quizSets =
+                quizSetRepository
+                        .findAllByQuizSetType(quizSetType.name())
+                        .orElseThrow(
+                                () -> new NotFoundException(NotFoundMessages.NOT_FOUND_QUIZ_SET));
+
+        return quizSets.stream().map(QuizSetTopicResponse::from).toList();
     }
 }
