@@ -11,6 +11,7 @@ import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.*;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
+import com.example.web2_3_ourtuft_be.user.value.Nickname;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -56,7 +57,7 @@ public class UserFacadeService {
                         profile.getNicknameItemId(),
                         itemService.getItem(profile.getNicknameItemId()).getNickColor());
 
-        //TODO : 빌더패턴 도입 검토 (아이템이 없을시 Response 생성 오류 발생)
+        // TODO : 빌더패턴 도입 검토 (아이템이 없을시 Response 생성 오류 발생)
         return new UserInfoResponseDto(profile, record, exp, eye, mouse, skin, nickColor);
     }
 
@@ -92,7 +93,7 @@ public class UserFacadeService {
     @Transactional
     public NickNameResponseDto changeNickName(Long userId, NickNameRequestDto request) {
         Nickname nickname = new Nickname(request.getNickName());
-        return profileService.changeNickname(userId, nickname.getNickname());
+        return profileService.changeNickname(userId, nickname.getValue());
     }
 
     @Transactional

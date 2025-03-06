@@ -7,6 +7,7 @@ import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.entity.enums.Provider;
 import com.example.web2_3_ourtuft_be.user.entity.enums.Role;
+import com.example.web2_3_ourtuft_be.user.model.Profile;
 import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,7 @@ public class UserService {
                         .socialId(userInfo.getProviderId())
                         .provider(Provider.KAKAO.toString())
                         .role(Role.ROLE_USER.toString())
+                        .profile(new Profile(userInfo.getName()))
                         .build();
         userRepository.save(newUser);
 
