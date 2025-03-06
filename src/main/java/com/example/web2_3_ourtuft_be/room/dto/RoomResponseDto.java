@@ -27,4 +27,10 @@ public class RoomResponseDto {
         this.time = room.getTime();
         this.maxUsers = room.getMaxUsers();
     }
+
+    public record GetPlayerInRoom(String userId, String username, String isReady) {
+        public static GetPlayerInRoom of(String userId, String username, String isReady) {
+            return new GetPlayerInRoom(userId, username, isReady);
+        }
+    }
 }
