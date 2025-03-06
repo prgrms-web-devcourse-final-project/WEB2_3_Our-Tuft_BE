@@ -29,6 +29,7 @@ public class UserFacadeService {
     private final MemberRecordService memberRecordService;
     private final MemberPointService pointService;
     private final WishlistItemService wishlistItemService;
+    private final InventoryService inventoryService;
 
     @Transactional(readOnly = true)
     public UserInfoResponseDto getUserInfo(Long userId) {
@@ -55,21 +56,18 @@ public class UserFacadeService {
                         profile.getNicknameItemId(),
                         itemService.getItem(profile.getNicknameItemId()).getNickColor());
 
+        //TODO : 빌더패턴 도입 검토 (아이템이 없을시 Response 생성 오류 발생)
         return new UserInfoResponseDto(profile, record, exp, eye, mouse, skin, nickColor);
     }
 
     @Transactional(readOnly = true)
-    public UserInfoResponseDto getMyInfo() {
-        // TODO: userId SecurityHolder 에서 가져옴
-        Long userId = 1L;
+    public UserInfoResponseDto getMyInfo(Long userId) {
         return getUserInfo(userId);
     }
 
     @Transactional
-    public UserInfoResponseDto updateProfile(UserInfoRequestDto request) {
+    public UserInfoResponseDto updateProfile(Long userId, UserInfoRequestDto request) {
 
-        // TODO: userId SecurityHolder 에서 가져옴
-        Long userId = 1L;
         // TODO: Item 로직 생성 후 ItemService 에서 처리 예정
         ItemImageUrlDto eye =
                 new ItemImageUrlDto(
@@ -88,13 +86,11 @@ public class UserFacadeService {
 
         profileService.updateMemberProfile(userId, request.getIntroduction(), equipItems);
 
-        return getMyInfo();
+        return getMyInfo(userId);
     }
 
     @Transactional
-    public NickNameResponseDto changeNickName(NickNameRequestDto request) {
-        // TODO: userId SecurityHolder 에서 가져옴
-        Long userId = 1L;
+    public NickNameResponseDto changeNickName(Long userId, NickNameRequestDto request) {
         Nickname nickname = new Nickname(request.getNickName());
         return profileService.changeNickname(userId, nickname.getNickname());
     }
@@ -120,8 +116,7 @@ public class UserFacadeService {
         return newUser;
     }
 
-    public RewardDto reward(RewardDto request) {
-        Long userId = 1L;
+    public RewardDto reward(Long userId, RewardDto request) {
         int exp = expService.increaseExp(userId, request.getExp());
         // TODO: UserId 로직 변경하면서 points 가져오는 부분 중복 제거 예정
         pointService.updatePoints(
@@ -154,13 +149,14 @@ public class UserFacadeService {
         User exist = userService.findUserBySocialId(userInfo.getProviderId());
         if (exist != null) {
             throw new DuplicatedException(DuplicatedMessages.EMAIL);
-
+        }
         User newUser = userService.createUserForFE(userInfo);
         Long userId = newUser.getId();
         profileService.createProfile(userId);
         memberPointService.createPoint(userId);
         memberRecordService.createRecord(userId);
         expService.createExp(userId);
+        inventoryService.registerDefaultItem(userId);
         return newUser;
     }
 }

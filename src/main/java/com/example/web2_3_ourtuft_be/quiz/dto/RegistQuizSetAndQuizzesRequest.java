@@ -18,14 +18,14 @@ public class RegistQuizSetAndQuizzesRequest {
 
     @NotNull(message = "퀴즈 세트 타입은 필수입니다.") private QuizSetType quizSetType;
 
-    @NotEmpty(message = "등록할 퀴즈가 없습니다.") private List<QuizRequest> quizzes;
+    @NotEmpty(message = "등록할 퀴즈가 없습니다.") private List<RegistQuizRequest> quizzes;
 
     @Builder
     public RegistQuizSetAndQuizzesRequest(
             String quizSetName,
             QuizSetCategoryType quizSetCategoryType,
             QuizSetType quizSetType,
-            List<QuizRequest> quizzes) {
+            List<RegistQuizRequest> quizzes) {
         this.quizSetName = quizSetName;
         this.quizSetCategoryType = quizSetCategoryType;
         this.quizSetType = quizSetType;

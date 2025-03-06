@@ -21,15 +21,15 @@ public class MemberProfile extends BaseTime {
     @Column(unique = true)
     private String nickname;
 
-    private String introduction;
+    private String introduction = "안녕하세요";
 
     private Long eyeItemId = 1L;
 
-    private Long mouseItemId = 1L;
+    private Long mouseItemId = 4L;
 
-    private Long skinItemId = 1L;
+    private Long skinItemId = 7L;
 
-    private Long nicknameItemId = 1L;
+    private Long nicknameItemId = 10L;
 
     public MemberProfile(Long userId) {
         this.userId = userId;

@@ -25,8 +25,31 @@ public class Room extends BaseTime {
     private int round;
     private Long hostId;
     private QuizSetType gameType;
+    private int maxUsers;
+    private int time;
+
+    private boolean isGameRunning;
+    private int currentRound;
 
     public void changeHost(Long newHostId) {
         this.hostId = newHostId;
+    }
+
+    public void startGame() {
+        isGameRunning = true;
+        currentRound = 0;
+    }
+
+    public void endGame() {
+        isGameRunning = false;
+        currentRound = 0;
+    }
+
+    public void nextRound() {
+        currentRound++;
+    }
+
+    public boolean isGameRunning() {
+        return isGameRunning;
     }
 }

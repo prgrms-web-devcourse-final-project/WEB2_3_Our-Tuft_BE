@@ -1,5 +1,6 @@
 package com.example.web2_3_ourtuft_be.user.entity;
 
+import com.example.web2_3_ourtuft_be.item.entity.enums.Category;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,4 +21,15 @@ public class Inventory {
     private Long itemId;
 
     private String category;
+
+    @Builder
+    private Inventory(Long userId, Long itemId, Category category) {
+        this.userId = userId;
+        this.itemId = itemId;
+        this.category = category.name();
+    }
+
+    public static Inventory create(Long userId, Long itemId, Category category) {
+        return Inventory.builder().userId(userId).itemId(itemId).category(category).build();
+    }
 }

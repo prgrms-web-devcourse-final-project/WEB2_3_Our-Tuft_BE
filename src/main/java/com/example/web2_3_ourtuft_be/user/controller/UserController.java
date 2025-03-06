@@ -38,9 +38,10 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "아이템이 존재하지 않습니다..")
     })
     @GetMapping("/myInfo")
-    public ResponseEntity<GlobalResponse<UserInfoResponseDto>> getMyProfile() {
+    public ResponseEntity<GlobalResponse<UserInfoResponseDto>> getMyProfile(
+            @AuthenticationPrincipal(expression = "user") User user) {
 
-        UserInfoResponseDto response = userFacadeService.getMyInfo();
+        UserInfoResponseDto response = userFacadeService.getMyInfo(user.getId());
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
@@ -66,9 +67,10 @@ public class UserController {
     })
     @PutMapping("/myInfo")
     public ResponseEntity<GlobalResponse<UserInfoResponseDto>> updateMyInfo(
-            @RequestBody UserInfoRequestDto request) {
+            @RequestBody UserInfoRequestDto request,
+            @AuthenticationPrincipal(expression = "user") User user) {
 
-        UserInfoResponseDto response = userFacadeService.updateProfile(request);
+        UserInfoResponseDto response = userFacadeService.updateProfile(user.getId(), request);
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
@@ -80,8 +82,9 @@ public class UserController {
     })
     @PutMapping("/myInfo/nickname")
     public ResponseEntity<GlobalResponse<NickNameResponseDto>> changeNickname(
-            @RequestBody NickNameRequestDto request) {
-        NickNameResponseDto response = userFacadeService.changeNickName(request);
+            @RequestBody NickNameRequestDto request,
+            @AuthenticationPrincipal(expression = "user") User user) {
+        NickNameResponseDto response = userFacadeService.changeNickName(user.getId(), request);
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
@@ -91,8 +94,9 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "아이템이 존재하지 않습니다.")
     })
     @GetMapping("/myInfo/items")
-    public ResponseEntity<GlobalResponse<InventoryItemDto>> getMyItems() {
-        InventoryItemDto response = inventoryService.getMyItems();
+    public ResponseEntity<GlobalResponse<InventoryItemDto>> getMyItems(
+            @AuthenticationPrincipal(expression = "user") User user) {
+        InventoryItemDto response = inventoryService.getMyItems(user.getId());
 
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
@@ -133,9 +137,11 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "포인트가 존재하지 않습니다.")
     })
     @PostMapping("/reward")
-    public ResponseEntity<GlobalResponse<RewardDto>> reward(@RequestBody RewardDto request) {
+    public ResponseEntity<GlobalResponse<RewardDto>> reward(
+            @RequestBody RewardDto request,
+            @AuthenticationPrincipal(expression = "user") User user) {
 
-        RewardDto response = userFacadeService.reward(request);
+        RewardDto response = userFacadeService.reward(user.getId(), request);
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 }

@@ -20,8 +20,7 @@ public class InventoryService {
     private final ItemService itemService;
     private final InventoryRepository inventoryRepository;
 
-    public InventoryItemDto getMyItems() {
-        Long userId = 1L;
+    public InventoryItemDto getMyItems(Long userId) {
 
         List<Inventory> inventories = inventoryRepository.findByUserId(userId);
 
@@ -48,5 +47,16 @@ public class InventoryService {
         }
 
         return new InventoryItemDto(eyeItems, mouthItems, skinItems, nickColorItems);
+    }
+
+    public void registerDefaultItem(Long userId) {
+        List<Inventory> defaultItems =
+                List.of(
+                        Inventory.create(userId, 1L, Category.EYE),
+                        Inventory.create(userId, 4L, Category.MOUTH),
+                        Inventory.create(userId, 7L, Category.SKIN),
+                        Inventory.create(userId, 10L, Category.NICKNAME));
+
+        inventoryRepository.saveAll(defaultItems);
     }
 }
