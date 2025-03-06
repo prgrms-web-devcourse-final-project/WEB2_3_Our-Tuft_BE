@@ -28,15 +28,7 @@ public class ItemService {
     public PageResponse<ItemResponse> getItems(String category, String keyword, Pageable pageable) {
         Slice<Item> items;
 
-        if (category != null && keyword != null) {
-            items = itemRepository.findByCategoryAndNameContaining(category, keyword, pageable);
-        } else if (category != null) {
-            items = itemRepository.findByCategory(category, pageable);
-        } else if (keyword != null) {
-            items = itemRepository.findByNameContaining(keyword, pageable);
-        } else {
-            items = itemRepository.findAllBy(pageable);
-        }
+        items = itemRepository.findFilteredItems(category, keyword, "default", pageable);
 
         List<ItemResponse> itemResponses =
                 items.stream().map(ItemResponse::from).collect(Collectors.toList());
