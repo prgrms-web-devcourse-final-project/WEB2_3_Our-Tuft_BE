@@ -151,11 +151,11 @@ public class ItemService {
         return itemRepository.findByDiscountId(discountId);
     }
 
+    @Transactional
     public void setDiscountId(List<Long> itemIds, Discount discount) {
         List<Item> items = itemRepository.findAllById(itemIds);
         for (Item item : items) {
             item.updateDiscountId(discount.getId());
         }
-        itemRepository.saveAll(items);
     }
 }
