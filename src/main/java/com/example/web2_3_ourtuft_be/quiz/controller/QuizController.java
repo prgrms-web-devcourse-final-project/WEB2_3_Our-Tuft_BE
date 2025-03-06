@@ -4,20 +4,19 @@ import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.QuizSetTopicResponse;
 import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetAndQuizzesRequest;
 import com.example.web2_3_ourtuft_be.quiz.dto.RegistQuizSetAndQuizzesResponse;
-import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.quiz.dto.UpdateQuizSetandQuizzesRequest;
+import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.quiz.service.QuizService;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -67,11 +66,11 @@ public class QuizController {
     @Operation(summary = "퀴즈세트 조회 API", description = "게임별 등록된 퀴즈세트를 조회합니다.")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
     @GetMapping("/{quizsettype}")
-    public GlobalResponse<List<QuizSetTopicResponse>> getQuizSets(
+    public ResponseEntity<GlobalResponse<List<QuizSetTopicResponse>>> getQuizSets(
             @PathVariable("quizsettype") QuizSetType quizSetType) {
 
         List<QuizSetTopicResponse> quizSets = quizService.getQuizSets(quizSetType);
 
-        return GlobalResponse.success(quizSets);
+        return ResponseEntity.ok(GlobalResponse.success(quizSets));
     }
 }

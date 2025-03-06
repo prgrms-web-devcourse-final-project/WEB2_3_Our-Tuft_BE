@@ -2,6 +2,7 @@ package com.example.web2_3_ourtuft_be.room.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
+import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 public class LobbyController {
     private final LobbyService lobbyService;
     private final ParticipantService participantService;
+    private final RoomQuizService roomQuizService;
 
     @Operation(summary = "방 전체 조회 API", description = "로비에서 생성된 방을 조회합니다.")
     @ApiResponses({
@@ -95,25 +97,35 @@ public class LobbyController {
     public ResponseEntity<GlobalResponse<String>> leaveRoom(
             @PathVariable Long roomId,
             @PathVariable Long userId
-    ){
+    ) {
         participantService.removeParticipant(roomId, userId);
 
         // 남은 참가자수 확인
         Map<String, String> participants = participantService.getParticipants(roomId);
 
-        if(participants.isEmpty()) {
+        if (participants.isEmpty()) {
             lobbyService.deleteRoom(roomId);
             return ResponseEntity.ok(GlobalResponse.success("방이 삭제되었습니다."));
 
         } else {
             // 방장이 나갔을 경우 방장 변경
             String newHostId = participantService.getNextHost(String.valueOf(roomId));
-            if(newHostId != null) {
+            if (newHostId != null) {
                 lobbyService.changeRoomHost(roomId, Long.parseLong(newHostId));
             }
 
-            return ResponseEntity.ok(GlobalResponse.success("방에서 나갔습니다."));
+            return ResponseEntity.ok(GlobalResponse.success("방이 삭제되었습니다."));
         }
+    }
 
+    @Operation(summary = "게임에서 진행할 퀴즈세트 세팅", description = "퀴즈목록중 진행할 퀴즈세트를 지정합니다. ")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
+    @PutMapping("/rooms/{roomid}/quizzes/{quizsetid}")
+    public ResponseEntity<GlobalResponse<String>> setQuizSet(
+            @PathVariable("roomid") Long roomId, @PathVariable("quizsetid") Long quizSetId) {
+
+        roomQuizService.setQuizSet(roomId, quizSetId);
+
+        return ResponseEntity.ok(GlobalResponse.success("퀴즈세트 저장"));
     }
 }
