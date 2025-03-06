@@ -94,9 +94,9 @@ public class LobbyController {
     public ResponseEntity<GlobalResponse<String>> leaveRoom(
             @PathVariable Long roomId, @PathVariable Long userId) {
 
-        GlobalResponse<String> response = lobbyService.leaveRoom(roomId, userId);
+        lobbyService.leaveRoom(roomId, userId);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(GlobalResponse.success("방을 나갔습니다."));
     }
 
     @Operation(summary = "게임에서 진행할 퀴즈세트 세팅", description = "퀴즈목록중 진행할 퀴즈세트를 지정합니다. ")
