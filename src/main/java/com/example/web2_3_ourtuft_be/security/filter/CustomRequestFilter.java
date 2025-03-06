@@ -13,12 +13,16 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.UrlPathHelper;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,6 +42,11 @@ public class CustomRequestFilter extends OncePerRequestFilter {
         }
         // token 이 null 일수도 있으므로 여기서 떼주었습니다. 변수명이나 조건문 위치 등등 수정 필요할듯
         String accessToken = token.replace("Bearer ", "");
+
+        if(token.startsWith("Bearer ")) {
+
+        }
+
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
@@ -80,5 +89,20 @@ public class CustomRequestFilter extends OncePerRequestFilter {
                         customUserDetails, null, customUserDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        AntPathMatcher pathMatcher = new AntPathMatcher();
+
+        String[] paths = {
+                "/api/v1/auth/**",
+                "/api/v1/test/**"
+        };
+
+        String path = new UrlPathHelper().getPathWithinApplication(request);
+        return Arrays.stream(paths)
+                .anyMatch(pattern -> pathMatcher.match(pattern, path));
     }
 }
