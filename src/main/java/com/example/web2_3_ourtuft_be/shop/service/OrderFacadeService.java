@@ -9,6 +9,7 @@ import com.example.web2_3_ourtuft_be.shop.dto.OrderListResponse;
 import com.example.web2_3_ourtuft_be.shop.entity.Order;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
+import com.example.web2_3_ourtuft_be.user.service.InventoryService;
 import com.example.web2_3_ourtuft_be.user.service.MemberPointService;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +23,19 @@ public class OrderFacadeService {
     private final OrderService orderService;
     private final OrderItemService orderItemService;
     private final MemberPointService memberPointService;
+    private final InventoryService inventoryService;
 
     public OrderFacadeService(
             ItemService itemService,
             OrderService orderService,
             OrderItemService orderItemService,
-            MemberPointService memberPointService) {
+            MemberPointService memberPointService,
+            InventoryService inventoryService) {
         this.itemService = itemService;
         this.orderService = orderService;
         this.orderItemService = orderItemService;
         this.memberPointService = memberPointService;
+        this.inventoryService = inventoryService;
     }
 
     @Transactional
@@ -45,6 +49,7 @@ public class OrderFacadeService {
                 newOrder.getTotalFinalPrice(),
                 PointChangeType.DECREASE,
                 PointChangeReason.PURCHASE);
+        inventoryService.createInventory(userId, items);
 
         return OrderListResponse.from(newOrder, orderItemDtoList);
     }
