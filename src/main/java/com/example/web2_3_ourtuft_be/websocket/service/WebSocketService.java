@@ -1,10 +1,9 @@
 package com.example.web2_3_ourtuft_be.websocket.service;
 
 import com.example.web2_3_ourtuft_be.redis.enums.GameStatus;
+import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -18,6 +17,7 @@ public class WebSocketService {
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisTemplate<String, String> redisTemplate;
     private final RoomStatusService roomStatusService;
+    private final ParticipantService participantService;
 
     public WebSocketResponse.Send processMessage(
             SimpMessageHeaderAccessor headerAccessor, Long roomId, String message) {
@@ -64,10 +64,11 @@ public class WebSocketService {
         String username = getUsernameFromSession(headerAccessor);
         String userId = getUserIdFromSession(headerAccessor);
 
-        addParticipantToRoom(roomId, userId);
-
-        if (!"lobby".equals(roomId)) {
-            addParticipantDetailToRoom(roomId, userId, username);
+        if (roomId.equals("lobby")) {
+            participantService.addParticipantToLobby(Long.parseLong(userId), username);
+        } else {
+            participantService.addParticipantToRoom(
+                    Long.parseLong(roomId), Long.parseLong(userId), username);
         }
 
         messagingTemplate.convertAndSend(
@@ -91,28 +92,5 @@ public class WebSocketService {
     // 핸드셰이크 JWT 인증단계에서 attributes 에 키벨류로 담아뒀다
     private String getUsernameFromSession(SimpMessageHeaderAccessor headerAccessor) {
         return (String) headerAccessor.getSessionAttributes().get("username");
-    }
-
-    private void addParticipantToRoom(String roomId, String userId) {
-        String key = "room:" + roomId + ":participants";
-
-        // ZRANGE room:1:participants 0 -1 WITHSCORES, 로 조회
-        redisTemplate.opsForZSet().add(key, userId, System.currentTimeMillis());
-    }
-
-    private void addParticipantDetailToRoom(String roomId, String userId, String username) {
-        String key = "room:" + roomId + ":participant:" + userId;
-
-        Map<String, String> participantDetail = new HashMap<>();
-
-        participantDetail.put("role", "PLAYER");
-        participantDetail.put("username", username);
-        participantDetail.put("userId", userId);
-        participantDetail.put("score", Integer.toString(0));
-
-        // 한글은 바이트 코드로 나옴
-        // redis 직렬화를 따로 해주면 된다고 함
-        // HGETALL room:1:participant:{userId} 모든 필드를 다 조회 가능
-        redisTemplate.opsForHash().putAll(key, participantDetail);
     }
 }

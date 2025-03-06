@@ -17,12 +17,12 @@ public class ParticipantService {
 
     // 타임스탬프로 입장순서를 관리
     public String getParticipantsOrderKey(String roomId) {
-        return "room:participants:order" + roomId;
+        return "room:participants:order:" + roomId;
     }
 
     // 참여자 id,닉네임 관리
     public String getParticipantsInfoKey(String roomId) {
-        return "room:participants:info" + roomId;
+        return "room:participants:info:" + roomId;
     }
 
     // 참여자 준비상태 관리
@@ -31,7 +31,7 @@ public class ParticipantService {
     }
 
     public String getParticipantsScoreKey(String roomId) {
-        return "room:participants:score" + roomId;
+        return "room:participants:score:" + roomId;
     }
 
     public Long getTimeStamp() {
@@ -58,7 +58,7 @@ public class ParticipantService {
     }
 
     // 플레이어 추가
-    public void addParticipantToLobby(String playerId, String username) {
+    public void addParticipantToLobby(Long playerId, String username) {
 
         String participantsKey = "room:participants:lobby";
         String playerInfoKey = getParticipantsInfoKey("lobby");
