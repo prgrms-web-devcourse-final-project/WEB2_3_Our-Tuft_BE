@@ -9,6 +9,7 @@ import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestE
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
+import com.example.web2_3_ourtuft_be.item.service.ItemService;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class DiscountService {
 
     private final DiscountRepository discountRepository;
+    private final ItemService itemService;
 
     public List<DiscountResponse> getDiscounts() {
         return discountRepository.findAll().stream().map(DiscountResponse::from).toList();
@@ -37,6 +39,10 @@ public class DiscountService {
                         .build();
 
         Discount savedDiscount = discountRepository.save(discount);
+
+        if (request.getItemIds() != null && !request.getItemIds().isEmpty()) {
+            itemService.setDiscountId(request.getItemIds(), savedDiscount);
+        }
 
         return DiscountResponse.from(savedDiscount);
     }

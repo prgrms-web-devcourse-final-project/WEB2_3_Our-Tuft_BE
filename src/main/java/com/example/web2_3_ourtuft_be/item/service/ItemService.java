@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.item.service;
 
 import com.example.web2_3_ourtuft_be.common.PageResponse;
+import com.example.web2_3_ourtuft_be.discount.entity.Discount;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
@@ -148,5 +149,13 @@ public class ItemService {
 
     public List<Item> getItemsByDiscountId(Long discountId) {
         return itemRepository.findByDiscountId(discountId);
+    }
+
+    public void setDiscountId(List<Long> itemIds, Discount discount) {
+        List<Item> items = itemRepository.findAllById(itemIds);
+        for (Item item : items) {
+            item.updateDiscountId(discount.getId());
+        }
+        itemRepository.saveAll(items);
     }
 }
