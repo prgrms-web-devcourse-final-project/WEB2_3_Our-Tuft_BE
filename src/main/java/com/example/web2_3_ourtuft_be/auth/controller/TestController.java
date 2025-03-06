@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.auth.controller;
 
-import com.example.web2_3_ourtuft_be.auth.dto.*;
+import com.example.web2_3_ourtuft_be.auth.dto.CreateUserDto;
+import com.example.web2_3_ourtuft_be.auth.dto.LoginDto;
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.security.util.JwtUtil;
 import com.example.web2_3_ourtuft_be.user.entity.User;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/test")
 public class TestController {
-    // 프론트엔드 개발용 로그인 컨트롤러 (삭제예정)
+    // TODO: 프론트엔드 개발용 로그인 컨트롤러 (삭제예정)
 
     private final UserFacadeService userFacadeService;
     private final UserService userService;
@@ -28,13 +29,11 @@ public class TestController {
         this.jwtUtil = jwtUtil;
     }
 
-    //    @PostMapping("/user")
-    //    public ResponseEntity<GlobalResponse<User>> creatUser(@RequestBody CreateUserDto userDto)
-    // {
-    //
-    //        User user = userFacadeService.registerUserForFE(userDto);
-    //        return ResponseEntity.ok(GlobalResponse.success(user));
-    //    }
+    @PostMapping("/user")
+    public ResponseEntity<GlobalResponse<User>> creatUser(@RequestBody CreateUserDto userDto) {
+        User user = userFacadeService.registerUserForFE(userDto);
+        return ResponseEntity.ok(GlobalResponse.success(user));
+    }
 
     @PostMapping("/login")
     public ResponseEntity<GlobalResponse<String>> login(@RequestBody LoginDto loginDto) {

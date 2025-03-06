@@ -1,5 +1,7 @@
 package com.example.web2_3_ourtuft_be.websocket.service;
 
+import com.example.web2_3_ourtuft_be.redis.enums.GameStatus;
+import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +17,7 @@ public class WebSocketService {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisTemplate<String, String> redisTemplate;
+    private final RoomStatusService roomStatusService;
 
     public WebSocketResponse.Send processMessage(
             SimpMessageHeaderAccessor headerAccessor, Long roomId, String message) {
@@ -22,9 +25,9 @@ public class WebSocketService {
         String userId = getUserIdFromSession(headerAccessor);
 
         // TODO: redis에서 방 상태 불러오기
-        // RoomStatus roomStatus = roomStatusRedisService.getRoomStatus(roomId);
-        boolean isGameRunning = true;
-        if (isGameRunning) {
+        String gameStatus = roomStatusService.getGameStatus(roomId);
+
+        if (gameStatus.equals(GameStatus.RUNNING.name())) {
             String correctAnswer = getCorrectAnswerFromRedis(roomId);
 
             if (correctAnswer.equalsIgnoreCase(message.trim())) { // 정답 맞췄을 때 - 대소문자 구분없이 비교

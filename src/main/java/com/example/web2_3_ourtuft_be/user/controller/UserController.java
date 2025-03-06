@@ -38,9 +38,10 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "아이템이 존재하지 않습니다..")
     })
     @GetMapping("/myInfo")
-    public ResponseEntity<GlobalResponse<UserInfoResponseDto>> getMyProfile() {
+    public ResponseEntity<GlobalResponse<UserInfoResponseDto>> getMyProfile(
+            @AuthenticationPrincipal(expression = "user") User user) {
 
-        UserInfoResponseDto response = userFacadeService.getMyInfo();
+        UserInfoResponseDto response = userFacadeService.getMyInfo(user.getId());
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
@@ -66,9 +67,10 @@ public class UserController {
     })
     @PutMapping("/myInfo")
     public ResponseEntity<GlobalResponse<UserInfoResponseDto>> updateMyInfo(
-            @RequestBody UserInfoRequestDto request) {
+            @RequestBody UserInfoRequestDto request,
+            @AuthenticationPrincipal(expression = "user") User user) {
 
-        UserInfoResponseDto response = userFacadeService.updateProfile(request);
+        UserInfoResponseDto response = userFacadeService.updateProfile(user.getId(), request);
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
@@ -80,8 +82,9 @@ public class UserController {
     })
     @PutMapping("/myInfo/nickname")
     public ResponseEntity<GlobalResponse<NickNameResponseDto>> changeNickname(
-            @RequestBody NickNameRequestDto request) {
-        NickNameResponseDto response = userFacadeService.changeNickName(request);
+            @RequestBody NickNameRequestDto request,
+            @AuthenticationPrincipal(expression = "user") User user) {
+        NickNameResponseDto response = userFacadeService.changeNickName(user.getId(), request);
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
