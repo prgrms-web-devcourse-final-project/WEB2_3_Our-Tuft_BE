@@ -6,10 +6,13 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
+        servers =
+                @Server(url = "https://hiq-lounge.duckdns.org", description = "https://hiq-lounge.duckdns.org 서버"),
         info =
                 @Info(
                         title = "하이큐 API Docs",
