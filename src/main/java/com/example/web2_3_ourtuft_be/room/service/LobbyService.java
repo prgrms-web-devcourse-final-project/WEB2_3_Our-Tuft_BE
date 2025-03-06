@@ -6,17 +6,17 @@ import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundExcepti
 import com.example.web2_3_ourtuft_be.global.exception.messages.AccessDeniedMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
+import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
+import com.example.web2_3_ourtuft_be.redis.service.RoomSettingService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
 import com.example.web2_3_ourtuft_be.user.entity.User;
+import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -29,6 +29,9 @@ public class LobbyService {
     private final RoomRepository roomRepository;
     private final UserService userService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ParticipantService participantService;
+    private final UserRepository userRepository;
+    private final RoomSettingService roomSettingService;
 
     public List<RoomResponseDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
@@ -74,6 +77,16 @@ public class LobbyService {
                         .build();
 
         room = roomRepository.save(room);
+
+        // 해당 룸 key로 참여인원 저장
+        User host =
+                userRepository
+                        .findById(userId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
+
+        participantService.addParticipantToRoom(room.getId(), userId, host.getName());
+
+        roomSettingService.saveRoomSettingsToRedis(room.getId(), roomRequestDto);
 
         return new RoomResponseDto(room);
     }

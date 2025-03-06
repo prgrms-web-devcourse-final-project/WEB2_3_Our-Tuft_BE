@@ -1,8 +1,10 @@
 package com.example.web2_3_ourtuft_be.redis.service;
 
+import com.example.web2_3_ourtuft_be.redis.dto.ParticipantDto;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -37,11 +39,11 @@ public class ParticipantService {
     }
 
     // 플레이어 추가 (입장 순서와 준비 상태)
-    public void addParticipantToRoom(String roomId, String playerId, String username) {
+    public void addParticipantToRoom(Long roomId, Long playerId, String username) {
 
-        String participantsOrderKey = getParticipantsOrderKey(roomId);
-        String participantsInfoKey = getParticipantsInfoKey(roomId);
-        String readyStatusKey = getReadyStatusKey(roomId);
+        String participantsOrderKey = getParticipantsOrderKey(roomId.toString());
+        String participantsInfoKey = getParticipantsInfoKey(roomId.toString());
+        String readyStatusKey = getReadyStatusKey(roomId.toString());
 
         redisTemplate
                 .opsForZSet()
@@ -70,8 +72,8 @@ public class ParticipantService {
     }
 
     // 플레이어 준비 상태 토글
-    public void togglePlayerReady(String roomId, String playerId) {
-        String key = getReadyStatusKey(roomId);
+    public void togglePlayerReady(Long roomId, Long playerId) {
+        String key = getReadyStatusKey(roomId.toString());
 
         // 현재 상태 가져오기
         Object currentStatus = redisTemplate.opsForHash().get(key, playerId);
@@ -82,18 +84,25 @@ public class ParticipantService {
     }
 
     // 방에 있는 참가자 리스트 조회
-    public Map<String, String> getParticipants(String roomId) {
+    public List<ParticipantDto> getParticipants(Long roomId) {
 
-        String participantsInfoKey = getParticipantsInfoKey(roomId);
+        List<ParticipantDto> participants = new ArrayList<>();
+
+        String participantsInfoKey = getParticipantsInfoKey(roomId.toString());
+        String participantsOrderKey = getParticipantsOrderKey(roomId.toString());
         Map<Object, Object> entries = redisTemplate.opsForHash().entries(participantsInfoKey);
 
-        // playerId와 username을 Map 형태로 변환하여 반환
-        return entries.entrySet().stream()
-                .collect(
-                        Collectors.toMap(
-                                entry -> (String) entry.getKey(), // playerId (key)
-                                entry -> (String) entry.getValue() // username (value)
-                                ));
+        for (Map.Entry<Object, Object> entry : entries.entrySet()) {
+            // key와 value를 String으로 캐스팅
+            Long playerId = Long.parseLong(entry.getKey().toString());
+            String username = (String) entry.getValue();
+            Double score = redisTemplate.opsForZSet().score(participantsOrderKey, playerId);
+
+            ParticipantDto participant = ParticipantDto.of(playerId, username, Math.round(score));
+            participants.add(participant);
+        }
+
+        return participants;
     }
 
     // 방장이 권한 위임 없이 나갔을 경우 권한 위임 (입장순)
