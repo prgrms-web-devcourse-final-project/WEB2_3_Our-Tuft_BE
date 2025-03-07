@@ -2,7 +2,6 @@ package com.example.web2_3_ourtuft_be.redis.service;
 
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
-import com.example.web2_3_ourtuft_be.quiz.repository.QuizSetRepository;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +24,13 @@ public class RoomQuizService {
         return "quiz:set:" + quizSetId + ":" + quizId;
     }
 
+    public List<Map<String, String>> getCurrentGameQuizzes(Long roomId) {
+
+        Long quizSetId = getQuizSet(roomId);
+
+        return getAllQuizzes(quizSetId);
+    }
+
     // 퀴즈 세트 설정
     public void setQuizSet(Long roomId, Long quizSetId) {
         redisTemplate.opsForValue().set(getRoomQuizSetKey(roomId), quizSetId);
@@ -33,7 +39,7 @@ public class RoomQuizService {
     // 퀴즈 세트 가져오기
     public Long getQuizSet(Long roomId) {
         return Long.parseLong(
-                redisTemplate.opsForValue().get( getRoomQuizSetKey( roomId ) ).toString());
+                redisTemplate.opsForValue().get(getRoomQuizSetKey(roomId)).toString());
     }
 
     public List<Map<String, String>> getAllQuizzes(Long quizSetId) {

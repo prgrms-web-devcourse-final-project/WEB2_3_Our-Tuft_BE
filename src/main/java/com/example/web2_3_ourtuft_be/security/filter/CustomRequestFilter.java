@@ -1,9 +1,9 @@
 package com.example.web2_3_ourtuft_be.security.filter;
 
+import com.example.web2_3_ourtuft_be.auth.dto.CustomOAuth2User;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.UnauthorizedException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.UnauthorizedMessages;
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
-import com.example.web2_3_ourtuft_be.security.userdetails.UserDetailsImpl;
 import com.example.web2_3_ourtuft_be.security.util.JwtUtil;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
-
+import java.util.Collections;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,7 +43,7 @@ public class CustomRequestFilter extends OncePerRequestFilter {
         }
         String accessToken = "";
         // token 이 null 일수도 있으므로 여기서 떼주었습니다. 변수명이나 조건문 위치 등등 수정 필요할듯
-        if(token.startsWith("Bearer ")) {
+        if (token.startsWith("Bearer ")) {
             accessToken = token.substring(7);
         }
         try {
@@ -80,11 +81,12 @@ public class CustomRequestFilter extends OncePerRequestFilter {
         Long id = jwtUtil.getUserId(accessToken);
         String name = jwtUtil.getUserName(accessToken);
         String role = jwtUtil.getRole(accessToken);
+        Map<String, Object> attributes = Collections.emptyMap();
 
-        UserDetailsImpl customUserDetails = new UserDetailsImpl(User.to(id, name, role));
+        CustomOAuth2User oAuth2User = new CustomOAuth2User(User.to(id, name, role), attributes);
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(
-                        customUserDetails, null, customUserDetails.getAuthorities());
+                        oAuth2User, null, oAuth2User.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
@@ -101,5 +103,6 @@ public class CustomRequestFilter extends OncePerRequestFilter {
         String path = new UrlPathHelper().getPathWithinApplication(request);
         return Arrays.stream(paths)
                 .anyMatch(pattern -> pathMatcher.match(pattern, path));
+
     }
 }

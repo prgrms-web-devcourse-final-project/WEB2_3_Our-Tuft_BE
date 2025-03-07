@@ -15,6 +15,7 @@ import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
+import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
 import jakarta.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -152,5 +153,49 @@ public class LobbyService {
         roomRepository.delete(room);
 
         messagingTemplate.convertAndSend("/topic/lobby/", "deleted:" + roomId);
+    }
+
+    public boolean isHost(Long roomId, Long userId) {
+        Room room = findByRoomId(roomId);
+        Long hostId = room.getHostId();
+        return hostId != null && hostId.equals(userId);
+    }
+
+    @Transactional
+    public void leaveRoom(Long roomId, Long userId) {
+        boolean isHost = isHost(roomId, userId);
+        participantService.removeParticipant(roomId, userId);
+
+        // 남은 참가자수 확인
+        Map<String, String> participants = participantService.getParticipants(roomId);
+
+        // TODO: refactoring 중첩 조건문 (depth = 3)
+        if (participants.isEmpty()) { // 마지막 사람이 나갔으면
+
+            deleteRoom(roomId);
+
+            messagingTemplate.convertAndSend(
+                    "/topic/room/" + roomId.toString(),
+                    WebSocketResponse.Send.of("SYSTEM", "방이 삭제되었습니다."));
+
+        } else { // 잔여인원이 있는 경우
+
+            // 방장이 나갔을 경우 방장 변경
+            if (isHost) {
+                String newHostId = participantService.getNextHost(String.valueOf(roomId));
+
+                if (newHostId != null) {
+                    changeRoomHost(roomId, Long.parseLong(newHostId));
+
+                    messagingTemplate.convertAndSend(
+                            "/topic/room/" + roomId.toString(),
+                            WebSocketResponse.Send.of("SYSTEM", "방장이 변경되었습니다."));
+                }
+            }
+
+            messagingTemplate.convertAndSend(
+                    "/topic/room/" + roomId.toString(),
+                    WebSocketResponse.Send.of("SYSTEM", "방을 나갔습니다."));
+        }
     }
 }

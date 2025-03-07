@@ -143,7 +143,6 @@ class QuizServiceTest {
                 });
     }
 
-
     @DisplayName("요청받은 퀴즈세트, 퀴즈목록으로 업데이트 한다.  ")
     @Test
     void testUpdateQuizSetandQuizzes() {

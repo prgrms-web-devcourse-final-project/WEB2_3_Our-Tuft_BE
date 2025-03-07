@@ -2,6 +2,7 @@ package com.example.web2_3_ourtuft_be.redis.service;
 
 import com.example.web2_3_ourtuft_be.redis.dto.ParticipantDto;
 import java.util.ArrayList;
+import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,30 +17,34 @@ public class ParticipantService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     // 타임스탬프로 입장순서를 관리
-    public String getParticipantsOrderKey(String roomId) {
+    public String getParticipantsOrderKey(Long roomId) {
         return "room:participants:order:" + roomId;
     }
 
     // 참여자 id,닉네임 관리
-    public String getParticipantsInfoKey(String roomId) {
+
+    public String getParticipantsInfoKey(Long roomId) {
         return "room:participants:info:" + roomId;
     }
 
     // 참여자 준비상태 관리
-    public String getReadyStatusKey(String roomId) {
+    public String getReadyStatusKey(Long roomId) {
         return "room:readystatus:" + roomId;
     }
 
-    public String getParticipantsScoreKey(String roomId) {
-        return "room:participants:score:" + roomId;
+
+    public String getParticipantsScoreKey(Long roomId) {
+        return "room:participants:score" + roomId;
+
     }
 
     public Long getTimeStamp() {
         return System.currentTimeMillis();
     }
 
-    // 플레이어 추가 (입장 순서와 준비 상태)
+
     public void addParticipantToRoom(Long roomId, Long playerId, String username) {
+
 
         String participantsOrderKey = getParticipantsOrderKey(roomId.toString());
         String participantsInfoKey = getParticipantsInfoKey(roomId.toString());
@@ -75,6 +80,12 @@ public class ParticipantService {
     public void togglePlayerReady(Long roomId, Long playerId) {
         String key = getReadyStatusKey(roomId.toString());
 
+
+    // 플레이어 준비 상태 토글
+    public void togglePlayerReady(Long roomId, String playerId) {
+        String key = getReadyStatusKey(roomId);
+
+
         // 현재 상태 가져오기
         Object currentStatus = redisTemplate.opsForHash().get(key, playerId);
         boolean isReady = currentStatus != null && Boolean.parseBoolean(currentStatus.toString());
@@ -85,6 +96,7 @@ public class ParticipantService {
 
     // 방에 있는 참가자 리스트 조회
     public List<ParticipantDto> getParticipants(Long roomId) {
+
 
         List<ParticipantDto> participants = new ArrayList<>();
 
@@ -115,10 +127,27 @@ public class ParticipantService {
         return participants.isEmpty() ? null : (String) participants.iterator().next();
     }
 
-    /*public void removeParticipant(Long roomId, Long userId) {
 
-        String key = "room:participants:" + roomId;
+    }
 
-        redisTemplate.opsForZSet().remove(key, userId);
-    }*/
+    public List<RoomResponseDto.GetPlayerInRoom> getPlayersInRoom(String roomId) {
+        String participantsInfoKey = getParticipantsInfoKey(Long.valueOf(roomId));
+        String readyStatusKey = getReadyStatusKey(Long.valueOf(roomId));
+
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries(participantsInfoKey);
+
+        return entries.entrySet().stream()
+                .map(
+                        entry -> {
+                            String userId = entry.getKey().toString();
+                            String username = entry.getValue().toString();
+
+                            String isReady =
+                                    (String) redisTemplate.opsForHash().get(readyStatusKey, userId);
+
+                            return RoomResponseDto.GetPlayerInRoom.of(userId, username, isReady);
+                        })
+                .collect(Collectors.toList());
+    }
+
 }

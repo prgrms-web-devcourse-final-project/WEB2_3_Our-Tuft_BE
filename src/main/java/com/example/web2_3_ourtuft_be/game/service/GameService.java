@@ -1,73 +1,72 @@
 package com.example.web2_3_ourtuft_be.game.service;
 
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
-import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
-import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
-import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
+import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
+import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
-import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class GameService {
 
-    private final SimpMessagingTemplate messagingTemplate;
-    private final QuizRepository quizRepository;
     private final LobbyService lobbyService;
+    private final RoomStatusService roomStatusService;
+    private final RoomQuizService roomQuizService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    // TODO: roomId로 redis에서 quiz 가져오기
-    //    public List<Quiz> getQuizList(Long roomId){
-    //
-    //    }
+    public List<Map<String, String>> getQuizList(Long roomId) {
+        return roomQuizService.getCurrentGameQuizzes(roomId);
+    }
 
-    @Transactional
-    public void startGame(Long roomId, Long quizSetId) {
+    public void gameSet(Long roomId) {
+
+        System.out.println("게임 세팅 시작");
+
+        roomStatusService.setGameStatus(roomId, "RUNNING");
+        roomStatusService.setCurrentRound(roomId, 0);
+
+        startQuizSending(roomId);
+    }
+
+    private void startQuizSending(Long roomId) {
 
         Room room = lobbyService.findByRoomId(roomId);
+        int totalRound = room.getRound();
 
-        // 레디스에서 List 가져옴
-        List<Quiz> quizzes =
-                quizRepository
-                        .findAllByQuizSetId(quizSetId)
-                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.NOT_FOUND_QUIZ));
-
-        room.startGame();
-
-        // TODO: redis에 상태, topic 저장...
-
-        System.out.println("게임 시작 : ");
-        sendQuiz();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
+        scheduler.scheduleAtFixedRate(() -> sendQuiz(roomId, totalRound), 0, 5, TimeUnit.SECONDS);
     }
 
-    @Scheduled(fixedRate = 30000)
-    public void sendQuiz() {
+    public void sendQuiz(Long roomId, int totalRound) {
+        System.out.println("sendQuiz함수 실행 ~~~~~~~~~~~~");
+        List<Map<String, String>> quizzes = getQuizList(roomId);
+        int currentRound = roomStatusService.getCurrentRound(roomId);
 
-        //        if (room.isGameRunning() || quizzes == null) return;
-        //
-        //        if (room.getCurrentRound() >= quizzes.size()) {
-        //            messagingTemplate.convertAndSend("/topic/room/" + room.getId(), "GAME_OVER");
-        //            stopGame(room);
-        //            return;
-        //        }
-        //
-        //        Quiz nextQuiz = quizzes.get(room.getCurrentRound()); // TODO: 예외처리
-        //        messagingTemplate.convertAndSend("/topic/room/" + room.getId(), nextQuiz);
-        //
-        //        System.out.println("출제된 문제: " + nextQuiz);
-        //        room.nextRound();
+        if (!quizzes.isEmpty() && currentRound < totalRound) {
+
+            Map<String, String> quiz = quizzes.get(currentRound);
+            String question = quiz.get("question");
+            String hint = quiz.get("hint");
+
+            System.out.println("문제 내기 : " + question);
+            messagingTemplate.convertAndSend("/topic/gameRoom/" + roomId, question);
+            roomStatusService.setCurrentRound(roomId, currentRound + 1);
+
+        } else {
+            stopGame(roomId);
+        }
     }
 
-    public void stopGame(Room room) {
-
-        room.endGame();
+    public void stopGame(Long roomId) {
+        roomStatusService.setGameStatus(roomId, "WAITING");
         System.out.println("게임 종료!");
     }
-
-    // TODO: 응답자 확인 - 누가 몇문제 맞췄는지
 }
