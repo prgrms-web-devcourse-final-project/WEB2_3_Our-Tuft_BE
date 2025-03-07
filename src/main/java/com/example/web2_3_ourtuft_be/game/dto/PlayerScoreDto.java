@@ -1,6 +1,5 @@
 package com.example.web2_3_ourtuft_be.game.dto;
 
-
 public class PlayerScoreDto {
     private final String playerId;
     private final String nickName;

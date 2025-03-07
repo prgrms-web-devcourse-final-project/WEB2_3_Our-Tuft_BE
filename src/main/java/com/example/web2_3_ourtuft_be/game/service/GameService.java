@@ -5,15 +5,14 @@ import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -71,7 +70,6 @@ public class GameService {
         System.out.println("게임 종료!");
     }
 
-
     public void initializePlayerScores(String roomId) {
         String participantsScoreKey = participantService.getParticipantsScoreKey(roomId);
         String participantsOrderKey = participantService.getParticipantsOrderKey(roomId);
@@ -83,40 +81,37 @@ public class GameService {
                 redisTemplate.opsForZSet().add(participantsScoreKey, participant, 0);
             }
         }
-
     }
 
     // TODO : RestAPI용 함수 웹소켓 구현시 삭제예정
-    public void updatePlayerScore(Long roomId ,Long userId) {
+    public void updatePlayerScore(Long roomId, Long userId) {
 
         String participantsScoreKey = participantService.getParticipantsScoreKey(roomId.toString());
 
         redisTemplate.opsForZSet().incrementScore(participantsScoreKey, userId.toString(), 1);
-
     }
 
     // TODO : RestAPI용 함수 웹소켓 구현시 삭제예정
-    public List<PlayerScoreDto> getPlayerScores(Long roomId ) {
+    public List<PlayerScoreDto> getPlayerScores(Long roomId) {
         List<PlayerScoreDto> playerScores = new ArrayList<>();
 
         String participantsScoreKey = participantService.getParticipantsScoreKey(roomId.toString());
-        String getParticipantsInfoKey = participantService.getParticipantsInfoKey(roomId.toString());
+        String getParticipantsInfoKey =
+                participantService.getParticipantsInfoKey(roomId.toString());
 
-        Set<ZSetOperations.TypedTuple<String>> typedTuples = redisTemplate.opsForZSet().reverseRangeWithScores(participantsScoreKey, 0, -1);
+        Set<ZSetOperations.TypedTuple<String>> typedTuples =
+                redisTemplate.opsForZSet().reverseRangeWithScores(participantsScoreKey, 0, -1);
         for (ZSetOperations.TypedTuple<String> tuple : typedTuples) {
 
             String userId = tuple.getValue();
-            int score = tuple.getScore().intValue() ;
+            int score = tuple.getScore().intValue();
             Object nickName = redisTemplate.opsForHash().get(getParticipantsInfoKey, userId);
 
             PlayerScoreDto playerScoreDto = new PlayerScoreDto(userId, nickName.toString(), score);
 
             playerScores.add(playerScoreDto);
-
         }
         return playerScores;
 
     }
-
-
 }

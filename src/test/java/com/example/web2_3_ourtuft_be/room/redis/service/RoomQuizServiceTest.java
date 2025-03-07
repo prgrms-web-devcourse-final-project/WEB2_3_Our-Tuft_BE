@@ -32,7 +32,6 @@ class RoomQuizServiceTest {
     @Test
     void test() {
         // given
-        roomQuizService.getAllQuizzes(1L);
 
         // when
 

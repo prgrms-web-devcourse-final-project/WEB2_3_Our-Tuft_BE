@@ -6,6 +6,5 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class OXResponseDto {
-    private Long userId;
     private boolean isCorrect;
 }

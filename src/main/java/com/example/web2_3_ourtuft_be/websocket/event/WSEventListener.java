@@ -33,7 +33,6 @@ public class WSEventListener {
 
         wsRoomService.removePlayer(roomId, userId, username);
         log.info("roomId: {}, userId: {} disconnected", roomId, userId);
-
     }
 
     @EventListener

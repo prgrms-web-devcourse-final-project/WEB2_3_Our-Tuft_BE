@@ -160,4 +160,10 @@ public class QuizService {
 
         return quizSets.stream().map(QuizSetTopicResponse::from).toList();
     }
+
+    public List<Quiz> getQuizList(Long quizSetId) {
+        return quizRepository
+                .findAllByQuizSetId(quizSetId)
+                .orElseThrow(() -> new NotFoundException(NotFoundMessages.NOT_FOUND_QUIZ_SET));
+    }
 }
