@@ -4,12 +4,13 @@ import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomSettingService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,29 +18,87 @@ import org.springframework.stereotype.Service;
 public class WSGameService {
 
     private final RoomQuizService roomQuizService;
-
     private final WebSocketService webSocketService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ParticipantService participantService;
     private final RoomStatusService roomStatusService;
     private final RoomSettingService roomSettingService;
+    private final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+    private final Map<String, ScheduledFuture<?>> gameSchedulers = new HashMap<>();
 
     public void gameSetting(String roomId, SimpMessageHeaderAccessor headerAccessor) {
         roomStatusService.setGameStatus(Long.valueOf(roomId), "RUNNING");
-        roomStatusService.setCurrentRound(Long.valueOf(roomId), 0);
+        roomStatusService.setCurrentRound(Long.valueOf(roomId), 1);
     }
 
     public void startGame(String roomId) {
         int totalRound = Integer.parseInt(getTotalRound(roomId));
         int timeLimit = Integer.parseInt(getTimeLimit(roomId));
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(3);
-        scheduledExecutorService.scheduleAtFixedRate(
-                () -> sendQuiz(roomId, totalRound), 0, timeLimit, TimeUnit.SECONDS);
+
+        roomQuizService.setQuiz(roomId, totalRound);
+
+        // FixedDelay
+        scheduledQuizWithFixedDelay(roomId, totalRound, timeLimit);
+    }
+
+    private void scheduledQuizWithFixedDelay(String roomId, int totalRound, int timeLimit) {
+        taskScheduler.initialize();
+
+        ScheduledFuture<?> scheduledFuture =
+                taskScheduler.scheduleWithFixedDelay(
+                        () -> sendQuiz(roomId, totalRound), timeLimit * 1000L); // timeLimit 초 이후 실행
+
+        gameSchedulers.put(roomId, scheduledFuture);
     }
 
     public void sendQuiz(String roomId, int totalRound) {
         int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
-        webSocketService.sendGameSystemMessage(roomId, "테스트");
+
+        if (currentRound > totalRound) {
+            webSocketService.sendGameSystemMessage(roomId, "게임이 종료되었습니다!");
+            return;
+        }
+
+        String quizId = roomQuizService.getQuizIdByRoom(roomId, currentRound - 1);
+
+        if (quizId == null || quizId.trim().isEmpty()) {
+            System.err.println("퀴즈 ID가 null이거나 빈 문자열입니다. currentRound: " + currentRound);
+            webSocketService.sendGameSystemMessage(roomId, "퀴즈를 불러오는 중 오류가 발생했습니다.");
+            return;
+        }
+
+        Long quizIdLong;
+        try {
+            quizIdLong = Long.valueOf(quizId);
+        } catch (NumberFormatException e) {
+            System.err.println("퀴즈 ID 변환 실패: " + quizId);
+            webSocketService.sendGameSystemMessage(roomId, "퀴즈 ID 형식 오류가 발생했습니다.");
+            return;
+        }
+
+        String quizKey = roomQuizService.getQuizKey(quizIdLong);
+
+        if (quizKey == null || quizKey.trim().isEmpty()) {
+            System.err.println("퀴즈 키가 null이거나 빈 문자열입니다. quizId: " + quizId);
+            webSocketService.sendGameSystemMessage(roomId, "퀴즈 키를 불러오는 중 오류가 발생했습니다.");
+            return;
+        }
+
+        String question = roomQuizService.getQuizDetail("question", quizKey);
+        String answer = roomQuizService.getQuizDetail("answer", quizKey);
+        String hint = roomQuizService.getQuizDetail("hint", quizKey);
+
+        if (question == null || answer == null || hint == null) {
+            System.err.println("퀴즈 상세 정보를 불러오지 못했습니다. quizKey: " + quizKey);
+            webSocketService.sendGameSystemMessage(roomId, "퀴즈 상세 정보 오류");
+            return;
+        }
+
+        webSocketService.sendGameQuizMessage(roomId, "question", question);
+        webSocketService.sendGameQuizMessage(roomId, "answer", answer);
+        webSocketService.sendGameQuizMessage(roomId, "hint", hint);
+
+        roomStatusService.setCurrentRound(Long.valueOf(roomId), currentRound + 1);
     }
 
     private String getTotalRound(String roomId) {

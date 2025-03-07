@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +25,13 @@ public class RoomController {
 
     @Operation(summary = "방 참가자 목록 조회", description = "현재 방의 참가자 목록을 조회합니다.")
     @GetMapping("/{roomId}/players")
-    public ResponseEntity<GlobalResponse<List<RoomResponseDto.GetPlayerInRoom>>> getPlayersInRoom(
+    public ResponseEntity<GlobalResponse<RoomResponseDto.GetPlayersInRoom>> getPlayersInRoom(
             @PathVariable("roomId") String roomId) {
         return ResponseEntity.ok(
-                GlobalResponse.success(participantService.getPlayersInRoom(roomId)));
+                GlobalResponse.success(
+                        RoomResponseDto.GetPlayersInRoom.of(
+                                roomService.getHostIdByRoomId(Long.valueOf(roomId)),
+                                participantService.getPlayersInRoom(roomId))));
     }
 
     @Operation(summary = "게임에서 진행할 퀴즈세트 세팅", description = "퀴즈 목록 중 진행할 퀴즈 세트를 지정합니다. ")

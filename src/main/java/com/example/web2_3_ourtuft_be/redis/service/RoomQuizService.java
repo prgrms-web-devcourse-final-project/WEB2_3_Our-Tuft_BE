@@ -7,6 +7,8 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,7 +31,7 @@ public class RoomQuizService {
         return "quiz:set:" + quizSetId + ":" + quizId;
     }
 
-    private String getQuizKey(Long quizId) {
+    public String getQuizKey(Long quizId) {
         return "quiz:" + quizId;
     }
 
@@ -37,19 +39,58 @@ public class RoomQuizService {
         return "quizSet:" + quizSetId;
     }
 
-    public void checkQuizIds(String roomId) {
+    private String getQuizOrderKey(String roomId) {
+        return "quiz:order:" + roomId;
+    }
+
+    public String getQuizIdByRoom(String roomId, int index) {
+        String key = getQuizOrderKey(roomId);
+        return redisTemplate.opsForList().index(key, index);
+    }
+
+    public Set<String> getQuizzes(String roomId) {
+        String quizSetId = redisTemplate.opsForValue().get(getRoomQuizSetKey(Long.valueOf(roomId)));
+        String key = getQuizSetKey(Long.valueOf(Objects.requireNonNull(quizSetId)));
+
+        return redisTemplate.opsForSet().members(key);
+    }
+
+    public void setQuiz(String roomId, int totalRound) {
+        Set<String> quizSet = getQuizzes(roomId);
+        System.out.println(quizSet);
+        int count = Math.min(quizSet.size(), totalRound);
+
+        List<String> quizList = new ArrayList<>(quizSet);
+        Collections.shuffle(quizList);
+        List<String> selected = quizList.subList(0, count);
+
+        String quizOrderKey = getQuizOrderKey(roomId);
+
+        redisTemplate.delete(quizOrderKey);
+        redisTemplate.opsForList().rightPushAll(quizOrderKey, selected);
+    }
+
+    public String getQuizDetail(String objKey, String quizKey) {
+        return (String) redisTemplate.opsForHash().get(quizKey, objKey);
+    }
+
+    public boolean checkQuizIds(String roomId) {
+
         Long quizSetId = getQuizSet(Long.parseLong(roomId));
         System.out.println(quizSetId);
         if (quizSetId == null) {
-            webSocketService.sendGameEvent(roomId, "퀴즈가 등록되지 않았습니다.");
-            return;
+            webSocketService.sendEvent(roomId, "퀴즈가 등록되지 않았습니다.");
+            return false;
         }
 
         String key = getQuizSetKey(quizSetId);
 
         Boolean exists = redisTemplate.hasKey(key);
 
-        if (!exists) setQuizSet(quizSetId);
+        if (!exists) {
+            setQuizSet(quizSetId);
+        }
+        return true;
     }
 
     public void setQuizSet(Long quizSetId) {
@@ -82,6 +123,7 @@ public class RoomQuizService {
     // 퀴즈 세트 설정
     public void setQuizSet(Long roomId, Long quizSetId) {
         redisTemplate.opsForValue().set(getRoomQuizSetKey(roomId), String.valueOf(quizSetId));
+        webSocketService.sendSystemMessage(String.valueOf(roomId), "퀴즈가 선택이 완료되었습니다");
     }
 
     // 퀴즈 세트 가져오기

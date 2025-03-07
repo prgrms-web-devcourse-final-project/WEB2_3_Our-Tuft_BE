@@ -27,4 +27,10 @@ public class RoomService {
 
         return room.getRound();
     }
+
+    public Long getHostIdByRoomId(Long roomId) {
+        Room room = lobbyService.findByRoomId(roomId);
+
+        return room.getHostId();
+    }
 }

@@ -2,6 +2,7 @@ package com.example.web2_3_ourtuft_be.room.dto;
 
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -31,6 +32,12 @@ public class RoomResponseDto {
     public record GetPlayerInRoom(String userId, String username, String isReady) {
         public static GetPlayerInRoom of(String userId, String username, String isReady) {
             return new GetPlayerInRoom(userId, username, isReady);
+        }
+    }
+
+    public record GetPlayersInRoom(Long hostId, List<GetPlayerInRoom> dto) {
+        public static GetPlayersInRoom of(Long hostId, List<GetPlayerInRoom> dto) {
+            return new GetPlayersInRoom(hostId, dto);
         }
     }
 }

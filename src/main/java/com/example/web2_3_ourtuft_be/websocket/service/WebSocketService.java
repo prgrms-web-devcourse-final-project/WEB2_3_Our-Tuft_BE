@@ -56,4 +56,9 @@ public class WebSocketService {
         messagingTemplate.convertAndSend(
                 "/topic/game/" + roomId, WebSocketResponse.Send.of("SYSTEM", message));
     }
+
+    public void sendGameQuizMessage(String roomId, String type, String message) {
+        messagingTemplate.convertAndSend(
+                "/topic/game/" + roomId, WebSocketResponse.Send.of(type, message));
+    }
 }
