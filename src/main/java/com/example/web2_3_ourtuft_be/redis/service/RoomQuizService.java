@@ -3,14 +3,14 @@ package com.example.web2_3_ourtuft_be.redis.service;
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
 import com.example.web2_3_ourtuft_be.websocket.service.WebSocketService;
-import java.time.Duration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +36,7 @@ public class RoomQuizService {
     private String getQuizSetKey(Long quizSetId) {
         return "quizSet:" + quizSetId;
     }
+
 
     public void checkQuizIds(String roomId) {
         Long quizSetId = getQuizSet(Long.parseLong(roomId));
@@ -72,7 +73,7 @@ public class RoomQuizService {
 
         for (String quizId : quizIds) {
             String key = getQuizSetKey(quizSetId);
-
+   
             redisTemplate.opsForSet().add(key, quizId);
             redisTemplate.expire(key, Duration.ofHours(1));
         }

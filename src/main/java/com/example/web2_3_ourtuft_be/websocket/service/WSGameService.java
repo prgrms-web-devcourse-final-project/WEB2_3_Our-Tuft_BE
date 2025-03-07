@@ -9,6 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class WSGameService {
 
     private final RoomQuizService roomQuizService;
+
     private final WebSocketService webSocketService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ParticipantService participantService;
@@ -115,6 +117,7 @@ public class WSGameService {
 
     public String getPlayerInfoKey(String roomId) {
         return "game:participants:info:" + roomId;
+
     }
 
     private void validateQuizRedis(String roomId) {}
