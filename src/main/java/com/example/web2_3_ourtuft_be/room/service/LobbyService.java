@@ -15,7 +15,6 @@ import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
-import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
 import jakarta.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -85,7 +84,7 @@ public class LobbyService {
                         .findById(userId)
                         .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
 
-        participantService.addParticipantToRoom(room.getId(), userId, host.getName());
+        participantService.addHost(room.getId(), userId, host.getName());
 
         roomSettingService.saveRoomSettingsToRedis(room.getId(), roomRequestDto);
 
@@ -151,5 +150,4 @@ public class LobbyService {
         Long hostId = room.getHostId();
         return hostId != null && hostId.equals(userId);
     }
-
 }

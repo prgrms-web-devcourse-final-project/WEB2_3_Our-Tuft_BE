@@ -41,7 +41,7 @@ public class ParticipantService {
         return System.currentTimeMillis();
     }
 
-    public void addParticipantToRoom(Long roomId, Long playerId, String username) {
+    public void addHost(Long roomId, Long playerId, String username) {
 
         String participantsOrderKey = getParticipantsOrderKey(roomId.toString());
         String participantsInfoKey = getParticipantsInfoKey(roomId.toString());
@@ -49,14 +49,11 @@ public class ParticipantService {
 
         redisTemplate
                 .opsForZSet()
-                .add(participantsOrderKey, playerId, getTimeStamp()); // 타임스탬프로 입장 순서 관리
+                .add(participantsOrderKey, playerId.toString(), getTimeStamp()); // 타임스탬프로 입장 순서 관리
+        redisTemplate.opsForHash().put(participantsInfoKey, playerId.toString(), username);
         redisTemplate
                 .opsForHash()
-                .put(
-                        participantsInfoKey,
-                        playerId,
-                        username); // playerId를 field, username을 value로 저장
-        redisTemplate.opsForHash().put(readyStatusKey, playerId, false); // 입장시 준비 상태 false
+                .put(readyStatusKey, playerId.toString(), "true"); // 입장시 준비 상태 false
     }
 
     // 플레이어 준비 상태 토글

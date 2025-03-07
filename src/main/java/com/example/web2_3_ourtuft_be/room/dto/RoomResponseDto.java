@@ -5,8 +5,6 @@ import com.example.web2_3_ourtuft_be.room.entity.Room;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
 @AllArgsConstructor
 public class RoomResponseDto {
