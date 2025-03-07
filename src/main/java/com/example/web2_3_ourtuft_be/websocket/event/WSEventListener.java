@@ -19,7 +19,6 @@ public class WSEventListener {
     private final SimpMessagingTemplate messagingTemplate;
     private final WSRoomService wsRoomService;
 
-
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
@@ -29,7 +28,7 @@ public class WSEventListener {
         String userId = (String) accessor.getSessionAttributes().get("userId");
         String username = (String) accessor.getSessionAttributes().get("username");
         wsRoomService.removePlayer(roomId, userId, username);
-        log.info("roomId: {}, userId: {}disconnected", roomId, userId);
+        log.info("roomId: {}, userId: {} disconnected", roomId, userId);
     }
 
     @EventListener
