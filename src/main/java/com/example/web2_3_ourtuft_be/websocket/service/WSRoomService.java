@@ -47,7 +47,8 @@ public class WSRoomService {
 
     private void addPlayerToRoom(String roomId, String userId, String username) {
 
-        String participantOrderKey = participantService.getParticipantsOrderKey(Long.valueOf(roomId));
+        String participantOrderKey =
+                participantService.getParticipantsOrderKey(Long.valueOf(roomId));
         String participantInfoKey = participantService.getParticipantsInfoKey(Long.valueOf(roomId));
 
         redisTemplate
@@ -62,7 +63,8 @@ public class WSRoomService {
     }
 
     public void removePlayerFromRoom(String roomId, String userId) {
-        String participantOrderKey = participantService.getParticipantsOrderKey(Long.valueOf(roomId));
+        String participantOrderKey =
+                participantService.getParticipantsOrderKey(Long.valueOf(roomId));
         String participantInfoKey = participantService.getParticipantsInfoKey(Long.valueOf(roomId));
 
         redisTemplate.opsForZSet().remove(participantOrderKey, userId);

@@ -95,14 +95,9 @@ public class CustomRequestFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         AntPathMatcher pathMatcher = new AntPathMatcher();
 
-        String[] paths = {
-                "/api/v1/auth/**",
-                "/api/v1/test/**"
-        };
+        String[] paths = {"/api/v1/auth/**", "/api/v1/test/**"};
 
         String path = new UrlPathHelper().getPathWithinApplication(request);
-        return Arrays.stream(paths)
-                .anyMatch(pattern -> pathMatcher.match(pattern, path));
-
+        return Arrays.stream(paths).anyMatch(pattern -> pathMatcher.match(pattern, path));
     }
 }
