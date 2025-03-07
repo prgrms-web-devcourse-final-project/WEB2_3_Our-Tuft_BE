@@ -18,7 +18,7 @@ public class WebSocketController {
     @MessageMapping("/room/{roomId}")
     @SendTo("/topic/room/{roomId}")
     public void processMessage(
-            @DestinationVariable Long roomId,
+            @DestinationVariable String roomId,
             SimpMessageHeaderAccessor headerAccessor,
             String message) {
         webSocketService.sendMessage(headerAccessor, roomId, message);
