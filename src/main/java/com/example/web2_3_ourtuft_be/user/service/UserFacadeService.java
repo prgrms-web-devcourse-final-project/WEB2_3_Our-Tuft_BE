@@ -61,12 +61,14 @@ public class UserFacadeService {
     }
 
     @Transactional(readOnly = true)
-    public UserInfoResponseDto getMyInfo(Long userId) {
-        return getUserInfo(userId);
+    public MyInfoResponseDto getMyInfo(Long userId) {
+        User user = userService.getUser(userId);
+
+        return new MyInfoResponseDto(user.getName(), getUserInfo(userId));
     }
 
     @Transactional
-    public UserInfoResponseDto updateProfile(Long userId, UserInfoRequestDto request) {
+    public MyInfoResponseDto updateProfile(Long userId, UserInfoRequestDto request) {
 
         // TODO: Item 로직 생성 후 ItemService 에서 처리 예정
         ItemImageUrlDto eye =
@@ -113,6 +115,7 @@ public class UserFacadeService {
         memberPointService.createPoint(userId);
         memberRecordService.createRecord(userId);
         expService.createExp(userId);
+        inventoryService.registerDefaultItem(userId);
         return newUser;
     }
 
