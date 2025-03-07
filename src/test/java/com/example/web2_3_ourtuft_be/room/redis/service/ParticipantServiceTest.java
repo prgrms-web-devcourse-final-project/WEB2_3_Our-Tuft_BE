@@ -83,14 +83,14 @@ class ParticipantServiceTest {
 
     @DisplayName("플레이어 참여시 해당 room 플레이어 리스트, 입장순서, 준비상태 저장한다. ")
     @Test
-    void testAddParticipantToRoom() {
+    void testAddHost() {
         // given
         Long roomId = 12345L;
         Long playerId = 10L;
         String userName = "user1";
 
         // when
-        participantService.addParticipantToRoom(roomId, playerId, userName);
+        participantService.addHost(roomId, playerId, userName);
 
         // then
         Set<Object> range =
