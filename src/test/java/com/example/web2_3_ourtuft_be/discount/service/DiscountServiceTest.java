@@ -5,8 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.example.web2_3_ourtuft_be.discount.dto.DiscountRequest;
 import com.example.web2_3_ourtuft_be.discount.dto.DiscountResponse;
@@ -16,6 +15,7 @@ import com.example.web2_3_ourtuft_be.discount.repository.DiscountRepository;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
+import com.example.web2_3_ourtuft_be.item.service.ItemService;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +31,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class DiscountServiceTest {
 
     @Mock private DiscountRepository discountRepository;
+    @Mock private ItemService itemService;
 
     @InjectMocks private DiscountService discountService;
 
@@ -69,7 +70,11 @@ class DiscountServiceTest {
         // given
         discountRequest =
                 new DiscountRequest(
-                        DiscountType.PERCENTAGE, 20, LocalDate.now(), LocalDate.now().plusDays(1));
+                        DiscountType.PERCENTAGE,
+                        20,
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(1),
+                        List.of(1L, 2L));
 
         when(discountRepository.save(any(Discount.class))).thenReturn(discount);
 
@@ -79,6 +84,8 @@ class DiscountServiceTest {
         // then
         assertNotNull(response);
         assertEquals("PERCENTAGE", response.getType());
+
+        verify(itemService, times(1)).setDiscountId(discountRequest.getItemIds(), discount);
     }
 
     @DisplayName("할인 타입이 퍼센트인 경우 100을 넘는 숫자를 입력할 수 없다")
@@ -86,7 +93,11 @@ class DiscountServiceTest {
     void testValidateInvalidPercentageValue() {
         DiscountRequest invalidRequest =
                 new DiscountRequest(
-                        DiscountType.PERCENTAGE, 150, LocalDate.now(), LocalDate.now().plusDays(1));
+                        DiscountType.PERCENTAGE,
+                        150,
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(1),
+                        List.of(1L, 2L));
 
         assertThatThrownBy(() -> discountService.registerDiscount(invalidRequest))
                 .isInstanceOf(InvalidRequestException.class)
@@ -98,7 +109,11 @@ class DiscountServiceTest {
     void testValidateInvalidDateRange() {
         DiscountRequest invalidRequest =
                 new DiscountRequest(
-                        DiscountType.PERCENTAGE, 50, LocalDate.now().plusDays(2), LocalDate.now());
+                        DiscountType.PERCENTAGE,
+                        50,
+                        LocalDate.now().plusDays(2),
+                        LocalDate.now(),
+                        List.of(1L, 2L));
 
         assertThatThrownBy(() -> discountService.registerDiscount(invalidRequest))
                 .isInstanceOf(InvalidRequestException.class)
@@ -111,7 +126,11 @@ class DiscountServiceTest {
         // given
         discountRequest =
                 new DiscountRequest(
-                        DiscountType.AMOUNT, 200, LocalDate.now(), LocalDate.now().plusDays(1));
+                        DiscountType.AMOUNT,
+                        200,
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(1),
+                        List.of(1L, 2L));
 
         when(discountRepository.findById(1L)).thenReturn(Optional.of(discount));
 
@@ -130,7 +149,11 @@ class DiscountServiceTest {
         // given
         discountRequest =
                 new DiscountRequest(
-                        DiscountType.AMOUNT, 200, LocalDate.now(), LocalDate.now().plusDays(1));
+                        DiscountType.AMOUNT,
+                        200,
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(1),
+                        List.of(1L, 2L));
         when(discountRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // when & then

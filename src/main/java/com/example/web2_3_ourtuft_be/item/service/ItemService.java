@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.item.service;
 
 import com.example.web2_3_ourtuft_be.common.PageResponse;
+import com.example.web2_3_ourtuft_be.discount.entity.Discount;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
@@ -28,15 +29,7 @@ public class ItemService {
     public PageResponse<ItemResponse> getItems(String category, String keyword, Pageable pageable) {
         Slice<Item> items;
 
-        if (category != null && keyword != null) {
-            items = itemRepository.findByCategoryAndNameContaining(category, keyword, pageable);
-        } else if (category != null) {
-            items = itemRepository.findByCategory(category, pageable);
-        } else if (keyword != null) {
-            items = itemRepository.findByNameContaining(keyword, pageable);
-        } else {
-            items = itemRepository.findAllBy(pageable);
-        }
+        items = itemRepository.findFilteredItems(category, keyword, "default", pageable);
 
         List<ItemResponse> itemResponses =
                 items.stream().map(ItemResponse::from).collect(Collectors.toList());
@@ -156,5 +149,13 @@ public class ItemService {
 
     public List<Item> getItemsByDiscountId(Long discountId) {
         return itemRepository.findByDiscountId(discountId);
+    }
+
+    @Transactional
+    public void setDiscountId(List<Long> itemIds, Discount discount) {
+        List<Item> items = itemRepository.findAllById(itemIds);
+        for (Item item : items) {
+            item.updateDiscountId(discount.getId());
+        }
     }
 }

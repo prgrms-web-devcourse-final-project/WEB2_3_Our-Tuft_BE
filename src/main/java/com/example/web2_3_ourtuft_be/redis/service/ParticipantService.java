@@ -14,21 +14,21 @@ public class ParticipantService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     // 타임스탬프로 입장순서를 관리
-    public String getParticipantsOrderKey(String roomId) {
+    public String getParticipantsOrderKey(Long roomId) {
         return "room:participants:order" + roomId;
     }
 
     // 참여자 id,닉네임 관리
-    public String getParticipantsInfoKey(String roomId) {
+    public String getParticipantsInfoKey(Long roomId) {
         return "room:participants:info" + roomId;
     }
 
     // 참여자 준비상태 관리
-    public String getReadyStatusKey(String roomId) {
+    public String getReadyStatusKey(Long roomId) {
         return "room:readystatus:" + roomId;
     }
 
-    public String getParticipantsScoreKey(String roomId) {
+    public String getParticipantsScoreKey(Long roomId) {
         return "room:participants:score" + roomId;
     }
 
@@ -37,7 +37,7 @@ public class ParticipantService {
     }
 
     // 플레이어 추가 (입장 순서와 준비 상태)
-    public void addParticipantToRoom(String roomId, String playerId, String username) {
+    public void addParticipantToRoom(Long roomId, String playerId, String username) {
 
         String participantsOrderKey = getParticipantsOrderKey(roomId);
         String participantsInfoKey = getParticipantsInfoKey(roomId);
@@ -58,19 +58,20 @@ public class ParticipantService {
     // 플레이어 추가
     public void addParticipantToLobby(String playerId, String username) {
 
-        String participantsKey = "room:participants:lobby";
-        String playerInfoKey = getParticipantsInfoKey("lobby");
-
-        redisTemplate
-                .opsForZSet()
-                .add(participantsKey, playerId, getTimeStamp()); // 타임스탬프로 입장 순서 관리
-        redisTemplate
-                .opsForHash()
-                .put(playerInfoKey, playerId, username); // playerId를 field, username을 value로 저장
+        //        String participantsKey = "room:participants:lobby";
+        //        String playerInfoKey = getParticipantsInfoKey("lobby");
+        //
+        //        redisTemplate
+        //                .opsForZSet()
+        //                .add(participantsKey, playerId, getTimeStamp()); // 타임스탬프로 입장 순서 관리
+        //        redisTemplate
+        //                .opsForHash()
+        //                .put(playerInfoKey, playerId, username); // playerId를 field, username을
+        // value로 저장
     }
 
     // 플레이어 준비 상태 토글
-    public void togglePlayerReady(String roomId, String playerId) {
+    public void togglePlayerReady(Long roomId, String playerId) {
         String key = getReadyStatusKey(roomId);
 
         // 현재 상태 가져오기
@@ -82,7 +83,7 @@ public class ParticipantService {
     }
 
     // 방에 있는 참가자 리스트 조회
-    public Map<String, String> getParticipants(String roomId) {
+    public Map<String, String> getParticipants(Long roomId) {
 
         String participantsInfoKey = getParticipantsInfoKey(roomId);
         Map<Object, Object> entries = redisTemplate.opsForHash().entries(participantsInfoKey);
@@ -106,6 +107,8 @@ public class ParticipantService {
         return participants.isEmpty() ? null : (String) participants.iterator().next();
     }
 
+    // 유저가 방을 나감
+    // 0명이 되면 방 삭제 함수 호출
     public void removeParticipant(Long roomId, Long userId) {
 
         String key = "room:participants:" + roomId;

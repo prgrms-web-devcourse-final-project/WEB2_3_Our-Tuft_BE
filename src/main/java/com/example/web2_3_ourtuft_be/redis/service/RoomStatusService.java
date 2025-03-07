@@ -14,14 +14,14 @@ public class RoomStatusService {
     private String getStatusKey(Long roomId) {
         return "room:status:" + roomId;
     }
+
     private String getRoundKey(Long roomId) {
         return "room:round:" + roomId;
     }
 
-
     // 게임 상태 저장
     public void setGameStatus(Long roomId, String status) {
-        redisTemplate.opsForValue().set( getStatusKey(roomId), status);
+        redisTemplate.opsForValue().set(getStatusKey(roomId), status);
     }
 
     // 게임 상태 조회
@@ -41,6 +41,4 @@ public class RoomStatusService {
         String round = redisTemplate.opsForValue().get(getRoundKey(roomId));
         return (round != null) ? Integer.parseInt(round) : 0;
     }
-
-
 }

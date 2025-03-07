@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.room.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
+import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "📬 Lobby", description = "로비 및 방 관련 API")
 public class LobbyController {
     private final LobbyService lobbyService;
+
+    private final RoomQuizService roomQuizService;
 
     @Operation(summary = "방 전체 조회 API", description = "로비에서 생성된 방을 조회합니다.")
     @ApiResponses({
@@ -86,12 +89,24 @@ public class LobbyController {
         return ResponseEntity.ok(GlobalResponse.success("방장 변경 성공"));
     }
 
-    @Operation(summary = "방 삭제 API", description = "방을 삭제합니다.")
-    @DeleteMapping("/rooms/{roomId}")
-    public GlobalResponse<String> deleteRoom(@PathVariable Long roomId) {
+    @Operation(summary = "방 나가기 API", description = "사용자가 특정 방을 나갑니다. 잔여인원이 0명이 되면 방이 삭제됩니다.")
+    @DeleteMapping("/rooms/{roomId}/participant/{userId}")
+    public ResponseEntity<GlobalResponse<String>> leaveRoom(
+            @PathVariable Long roomId, @PathVariable Long userId) {
 
-        lobbyService.deleteRoom(roomId);
+        lobbyService.leaveRoom(roomId, userId);
 
-        return GlobalResponse.success("방이 삭제되었습니다.");
+        return ResponseEntity.ok(GlobalResponse.success("방을 나갔습니다."));
+    }
+
+    @Operation(summary = "게임에서 진행할 퀴즈세트 세팅", description = "퀴즈목록중 진행할 퀴즈세트를 지정합니다. ")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
+    @PutMapping("/rooms/{roomId}/quizzes/{quizSetId}")
+    public ResponseEntity<GlobalResponse<String>> setQuizSet(
+            @PathVariable("roomId") Long roomId, @PathVariable("quizSetId") Long quizSetId) {
+
+        roomQuizService.setQuizSet(roomId, quizSetId);
+
+        return ResponseEntity.ok(GlobalResponse.success("퀴즈세트 저장"));
     }
 }
