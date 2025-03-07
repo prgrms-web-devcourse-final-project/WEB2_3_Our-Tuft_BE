@@ -83,12 +83,12 @@ public class WSRoomService {
         }
     }
 
-    private void sendEvent(String roomId, String event) {
+    public void sendEvent(String roomId, String event) {
         messagingTemplate.convertAndSend(
                 "/topic/room/" + roomId, WebSocketResponse.SendEvent.of(event));
     }
 
-    private void sendSystemMessage(String roomId, String message) {
+    public void sendSystemMessage(String roomId, String message) {
         messagingTemplate.convertAndSend(
                 "/topic/room/" + roomId, WebSocketResponse.Send.of("SYSTEM", message));
     }
