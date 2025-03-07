@@ -24,7 +24,7 @@ public class WebSocketService {
         return (String) headerAccessor.getSessionAttributes().get("username");
     }
 
-    public void sendMessage(SimpMessageHeaderAccessor headerAccessor, Long roomId, String message) {
+    public void sendMessage(SimpMessageHeaderAccessor headerAccessor, String roomId, String message) {
         String username = getUsernameFromSession(headerAccessor);
 
         messagingTemplate.convertAndSend(
