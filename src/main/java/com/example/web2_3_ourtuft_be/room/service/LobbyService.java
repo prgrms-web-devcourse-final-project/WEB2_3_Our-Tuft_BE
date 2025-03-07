@@ -87,7 +87,9 @@ public class LobbyService {
                         .findById(userId)
                         .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
 
+
         participantService.addHost(room.getId(), userId, host.getName());
+
 
         roomSettingService.saveRoomSettingsToRedis(room.getId(), roomRequestDto);
 
