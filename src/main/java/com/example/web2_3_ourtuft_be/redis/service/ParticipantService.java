@@ -1,5 +1,7 @@
 package com.example.web2_3_ourtuft_be.redis.service;
 
+import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,12 +17,12 @@ public class ParticipantService {
 
     // 타임스탬프로 입장순서를 관리
     public String getParticipantsOrderKey(Long roomId) {
-        return "room:participants:order" + roomId;
+        return "room:participants:order:" + roomId;
     }
 
     // 참여자 id,닉네임 관리
     public String getParticipantsInfoKey(Long roomId) {
-        return "room:participants:info" + roomId;
+        return "room:participants:info:" + roomId;
     }
 
     // 참여자 준비상태 관리
@@ -55,20 +57,6 @@ public class ParticipantService {
         redisTemplate.opsForHash().put(readyStatusKey, playerId, false); // 입장시 준비 상태 false
     }
 
-    // 플레이어 추가
-    public void addParticipantToLobby(String playerId, String username) {
-
-        //        String participantsKey = "room:participants:lobby";
-        //        String playerInfoKey = getParticipantsInfoKey("lobby");
-        //
-        //        redisTemplate
-        //                .opsForZSet()
-        //                .add(participantsKey, playerId, getTimeStamp()); // 타임스탬프로 입장 순서 관리
-        //        redisTemplate
-        //                .opsForHash()
-        //                .put(playerInfoKey, playerId, username); // playerId를 field, username을
-        // value로 저장
-    }
 
     // 플레이어 준비 상태 토글
     public void togglePlayerReady(Long roomId, String playerId) {
@@ -114,5 +102,25 @@ public class ParticipantService {
         String key = "room:participants:" + roomId;
 
         redisTemplate.opsForZSet().remove(key, userId);
+    }
+
+    public List<RoomResponseDto.GetPlayerInRoom> getPlayersInRoom(String roomId) {
+        String participantsInfoKey = getParticipantsInfoKey(Long.valueOf(roomId));
+        String readyStatusKey = getReadyStatusKey(Long.valueOf(roomId));
+
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries(participantsInfoKey);
+
+        return entries.entrySet().stream()
+                .map(
+                        entry -> {
+                            String userId = entry.getKey().toString();
+                            String username = entry.getValue().toString();
+
+                            String isReady =
+                                    (String) redisTemplate.opsForHash().get(readyStatusKey, userId);
+
+                            return RoomResponseDto.GetPlayerInRoom.of(userId, username, isReady);
+                        })
+                .collect(Collectors.toList());
     }
 }
