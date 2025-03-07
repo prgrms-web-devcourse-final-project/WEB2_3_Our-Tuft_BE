@@ -18,6 +18,7 @@ import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
+import com.example.web2_3_ourtuft_be.websocket.service.WebSocketService;
 import jakarta.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ public class LobbyService {
     private final ParticipantService participantService;
     private final UserRepository userRepository;
     private final RoomSettingService roomSettingService;
+    private final WebSocketService webSocketService;
 
     public List<RoomResponseDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
@@ -90,6 +92,8 @@ public class LobbyService {
         participantService.addHost(room.getId(), userId, host.getName());
 
         roomSettingService.saveRoomSettingsToRedis(room.getId(), roomRequestDto);
+
+        webSocketService.sendEvent("lobby", "ROOM_CREATED");
 
         return new RoomResponseDto(room);
     }
