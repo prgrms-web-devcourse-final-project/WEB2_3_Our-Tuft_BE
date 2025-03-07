@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OXSubmitRequestDto {
-    private int round;
-    private String answer;
+@Getter
+public class OXQuizResponse {
+    private int nexRound;
+    private String question;
+    private boolean isEnd;
 }
