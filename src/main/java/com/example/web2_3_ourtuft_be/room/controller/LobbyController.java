@@ -90,16 +90,6 @@ public class LobbyController {
         return ResponseEntity.ok(GlobalResponse.success("방장 변경 성공"));
     }
 
-    @Operation(summary = "방 나가기 API", description = "사용자가 특정 방을 나갑니다. 잔여인원이 0명이 되면 방이 삭제됩니다.")
-    @DeleteMapping("/rooms/{roomId}/participant/{userId}")
-    public ResponseEntity<GlobalResponse<String>> leaveRoom(
-            @PathVariable Long roomId, @PathVariable Long userId) {
-
-        lobbyService.leaveRoom(roomId, userId);
-
-        return ResponseEntity.ok(GlobalResponse.success("방을 나갔습니다."));
-    }
-
     @Operation(summary = "게임에서 진행할 퀴즈세트 세팅", description = "퀴즈목록중 진행할 퀴즈세트를 지정합니다. ")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
     @PutMapping("/rooms/{roomId}/quizzes/{quizSetId}")

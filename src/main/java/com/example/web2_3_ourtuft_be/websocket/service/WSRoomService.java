@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.websocket.service;
 
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
+import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,6 +17,7 @@ public class WSRoomService {
     private final RedisTemplate<String, String> redisTemplate;
     private final ParticipantService participantService;
     private final WebSocketService webSocketService;
+    private final LobbyService lobbyService;
 
     public void handleRoomEvent(
             SimpMessageHeaderAccessor headerAccessor, String roomId, String event) {
@@ -75,9 +77,29 @@ public class WSRoomService {
     }
 
     public void removePlayer(String roomId, String userId, String username) {
+
+        boolean isLobby = "lobby".equals(roomId);
+        boolean isHost = lobbyService.isHost(Long.valueOf(roomId), Long.valueOf(userId));
+
+        int remaining = participantService.getPlayersInRoom(roomId).size();
+
+
         removePlayerFromRoom(roomId, userId);
 
-        if (!"lobby".equals(roomId)) {
+        if(remaining == 0) {lobbyService.deleteRoom(Long.valueOf(roomId));
+        return;
+        }
+
+        if (!isLobby && isHost) {
+            String newHostId = participantService.getNextHost(roomId);
+            if (newHostId != null) {
+                lobbyService.changeRoomHost(Long.valueOf(roomId), Long.parseLong(newHostId));
+                sendEvent(roomId, "HOST_CHANGED");
+                sendSystemMessage(roomId, "방장이 변경되었습니다.");
+            }
+        }
+
+        if (!isLobby && !isHost) {
             sendEvent(roomId, "PLAYER_DISCONNECTED");
             sendSystemMessage(roomId, username + "님이 퇴장하였습니다");
         }
