@@ -4,6 +4,7 @@ import com.example.web2_3_ourtuft_be.game.dto.OXFinishDto;
 import com.example.web2_3_ourtuft_be.game.dto.OXQuizResponse;
 import com.example.web2_3_ourtuft_be.game.dto.OXResponseDto;
 import com.example.web2_3_ourtuft_be.game.dto.OXSubmitRequestDto;
+import com.example.web2_3_ourtuft_be.game.service.GameService;
 import com.example.web2_3_ourtuft_be.game.service.OXQuizService;
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.user.entity.User;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class GameController {
 
     private final OXQuizService oxQuizService;
+    private final GameService gameService;
 
     @Operation(summary = "OX 정답 제출 API", description = "사용자가 O, X를 입력하여 정답 여부를 받습니다.")
     @PostMapping("/ox/quiz/{roomId}/{round}")
@@ -53,4 +55,14 @@ public class GameController {
         OXFinishDto response = oxQuizService.finish(user.getId(), roomId);
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
+
+    @PostMapping("/ox/quiz/{roomId}/start")
+    public ResponseEntity<GlobalResponse<String>> start(
+            @PathVariable Long roomId, @AuthenticationPrincipal(expression = "user") User user) {
+
+        gameService.initializePlayerScores(roomId);
+        return ResponseEntity.ok(GlobalResponse.success("스코어 세팅"));
+    }
+
+
 }

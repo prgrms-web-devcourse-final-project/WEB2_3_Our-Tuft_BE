@@ -70,9 +70,9 @@ public class GameService {
         System.out.println("게임 종료!");
     }
 
-    public void initializePlayerScores(String roomId) {
-        String participantsScoreKey = participantService.getParticipantsScoreKey(roomId);
-        String participantsOrderKey = participantService.getParticipantsOrderKey(roomId);
+    public void initializePlayerScores(Long roomId) {
+        String participantsScoreKey = participantService.getParticipantsScoreKey(roomId.toString());
+        String participantsOrderKey = participantService.getParticipantsOrderKey(roomId.toString());
 
         Set<String> range = redisTemplate.opsForZSet().range(participantsOrderKey, 0, -1);
 
