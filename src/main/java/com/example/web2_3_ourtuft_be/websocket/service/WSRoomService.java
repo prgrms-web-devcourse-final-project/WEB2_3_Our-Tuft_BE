@@ -88,6 +88,7 @@ public class WSRoomService {
         if (remaining == 0) {
             lobbyService.deleteRoom(Long.valueOf(roomId));
             return;
+
         }
 
         if (!isLobby && isHost) {

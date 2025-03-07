@@ -19,6 +19,7 @@ public class WSEventListener {
     private final SimpMessagingTemplate messagingTemplate;
     private final WSRoomService wsRoomService;
 
+
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
