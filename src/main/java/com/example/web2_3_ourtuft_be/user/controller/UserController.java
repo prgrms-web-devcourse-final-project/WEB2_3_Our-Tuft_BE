@@ -7,6 +7,8 @@ import com.example.web2_3_ourtuft_be.user.service.InventoryService;
 import com.example.web2_3_ourtuft_be.user.service.MemberPointService;
 import com.example.web2_3_ourtuft_be.user.service.UserFacadeService;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -38,10 +40,10 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "아이템이 존재하지 않습니다..")
     })
     @GetMapping("/myInfo")
-    public ResponseEntity<GlobalResponse<MyInfoResponseDto>> getMyProfile(
+    public ResponseEntity<GlobalResponse<UserInfoResponseDto>> getMyProfile(
             @AuthenticationPrincipal(expression = "user") User user) {
 
-        MyInfoResponseDto response = userFacadeService.getMyInfo(user.getId());
+        UserInfoResponseDto response = userFacadeService.getMyInfo(user.getId());
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
@@ -66,11 +68,11 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "아이템이 존재하지 않습니다.")
     })
     @PutMapping("/myInfo")
-    public ResponseEntity<GlobalResponse<MyInfoResponseDto>> updateMyInfo(
+    public ResponseEntity<GlobalResponse<UserInfoResponseDto>> updateMyInfo(
             @RequestBody UserInfoRequestDto request,
             @AuthenticationPrincipal(expression = "user") User user) {
 
-        MyInfoResponseDto response = userFacadeService.updateProfile(user.getId(), request);
+        UserInfoResponseDto response = userFacadeService.updateProfile(user.getId(), request);
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 

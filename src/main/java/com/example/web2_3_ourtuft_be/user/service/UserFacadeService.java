@@ -60,15 +60,14 @@ public class UserFacadeService {
         return new UserInfoResponseDto(profile, record, exp, eye, mouse, skin, nickColor);
     }
 
+    //TODO : 유저정보 조회와 프로필 조회에서 다른점이 없다면 제거 후, userInfo 만 사용하기
     @Transactional(readOnly = true)
-    public MyInfoResponseDto getMyInfo(Long userId) {
-        User user = userService.getUser(userId);
-
-        return new MyInfoResponseDto(user.getName(), getUserInfo(userId));
+    public UserInfoResponseDto getMyInfo(Long userId) {
+        return getUserInfo(userId);
     }
 
     @Transactional
-    public MyInfoResponseDto updateProfile(Long userId, UserInfoRequestDto request) {
+    public UserInfoResponseDto updateProfile(Long userId, UserInfoRequestDto request) {
 
         // TODO: Item 로직 생성 후 ItemService 에서 처리 예정
         ItemImageUrlDto eye =
@@ -111,7 +110,7 @@ public class UserFacadeService {
     public User registerUser(OAuth2Response userInfo) {
         User newUser = userService.createUser(userInfo);
         Long userId = newUser.getId();
-        profileService.createProfile(userId);
+        profileService.createProfile(userId, newUser.getEmail());
         memberPointService.createPoint(userId);
         memberRecordService.createRecord(userId);
         expService.createExp(userId);
@@ -155,7 +154,7 @@ public class UserFacadeService {
         }
         User newUser = userService.createUserForFE(userInfo);
         Long userId = newUser.getId();
-        profileService.createProfile(userId);
+        profileService.createProfile(userId, newUser.getEmail());
         memberPointService.createPoint(userId);
         memberRecordService.createRecord(userId);
         expService.createExp(userId);
