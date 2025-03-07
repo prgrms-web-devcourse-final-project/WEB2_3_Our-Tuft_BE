@@ -59,8 +59,6 @@ public class WSGameService {
             return;
         }
 
-        webSocketService.sendGameSystemMessage(roomId, currentRound + " 라운드 시작");
-
         String quizId = roomQuizService.getQuizIdByRoom(roomId, currentRound - 1);
 
         if (quizId == null || quizId.trim().isEmpty()) {
