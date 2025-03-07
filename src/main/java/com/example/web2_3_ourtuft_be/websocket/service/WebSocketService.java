@@ -24,7 +24,8 @@ public class WebSocketService {
         return (String) headerAccessor.getSessionAttributes().get("username");
     }
 
-    public void sendMessage(SimpMessageHeaderAccessor headerAccessor, String roomId, String message) {
+    public void sendMessage(
+            SimpMessageHeaderAccessor headerAccessor, String roomId, String message) {
         String username = getUsernameFromSession(headerAccessor);
 
         messagingTemplate.convertAndSend(
@@ -54,5 +55,10 @@ public class WebSocketService {
     public void sendGameSystemMessage(String roomId, String message) {
         messagingTemplate.convertAndSend(
                 "/topic/game/" + roomId, WebSocketResponse.Send.of("SYSTEM", message));
+    }
+
+    public void sendGameQuizMessage(String roomId, String type, String message) {
+        messagingTemplate.convertAndSend(
+                "/topic/game/" + roomId, WebSocketResponse.Send.of(type, message));
     }
 }
