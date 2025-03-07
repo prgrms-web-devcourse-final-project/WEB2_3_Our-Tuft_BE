@@ -1,4 +1,4 @@
-package com.example.web2_3_ourtuft_be.websocket;
+package com.example.web2_3_ourtuft_be.websocket.event;
 
 import com.example.web2_3_ourtuft_be.websocket.service.WSRoomService;
 import java.util.Objects;
@@ -18,6 +18,7 @@ public class WSEventListener {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final WSRoomService wsRoomService;
+
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
