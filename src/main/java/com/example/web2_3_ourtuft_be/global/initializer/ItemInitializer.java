@@ -79,8 +79,8 @@ public class ItemInitializer implements CommandLineRunner {
                 "%s/%s/%s%s%s",
                 S3_URL,
                 category.name().toLowerCase(),
-                identifier,
                 category.name().toLowerCase(),
+                identifier,
                 PNG);
     }
 
