@@ -18,11 +18,11 @@ public class WebSocketController {
     // 보내는 경로 예시) /app/room/1
     @MessageMapping("/room/{roomId}")
     @SendTo("/topic/room/{roomId}")
-    public WebSocketResponse.Send processMessage(
+    public void processMessage(
             @DestinationVariable Long roomId,
             SimpMessageHeaderAccessor headerAccessor,
             String message) {
-        return webSocketService.processMessage(headerAccessor, roomId, message);
+        webSocketService.processRoomMessage(headerAccessor, roomId, message);
     }
 
     //    @SubscribeMapping("/room/{roomId}")
@@ -30,6 +30,19 @@ public class WebSocketController {
     //            @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {
     //        webSocketService.handleRoomSubscribe(headerAccessor, roomId);
     //    }
+
+    @MessageMapping("/gameRoom/{roomId}")
+    @SendTo("/topic/gameRoom/{roomId}")
+    public void processGameRoom(
+            @DestinationVariable Long roomId,
+            SimpMessageHeaderAccessor headerAccessor,
+            String message) {
+        webSocketService.processGameRoom(headerAccessor, roomId, message);
+    }
+
+    @SubscribeMapping("/gameRoom/{roomId}")
+    public void handleGameRoomSubscribe(
+            @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {}
 
     // /app/lobby 로 메세지 보내면, /topic/lobby 구독중인 모든 클라이언트에게 전달
     @MessageMapping("/lobby")

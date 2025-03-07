@@ -19,14 +19,26 @@ public class WebSocketService {
     private final RedisTemplate<String, String> redisTemplate;
     private final RoomStatusService roomStatusService;
 
-    public WebSocketResponse.Send processMessage(
+    // 대기실에서 하는 채팅
+    public void processRoomMessage(
             SimpMessageHeaderAccessor headerAccessor, Long roomId, String message) {
+        String username = getUsernameFromSession(headerAccessor);
+
+        messagingTemplate.convertAndSend(
+                "/topic/room/" + roomId, WebSocketResponse.Send.of(username, message));
+    }
+
+    // 게임방에서 보내는 채팅
+    // 정답 체크 필요
+    public void processGameRoom(
+            SimpMessageHeaderAccessor headerAccessor, Long roomId, String message) {
+
         String username = getUsernameFromSession(headerAccessor);
         String userId = getUserIdFromSession(headerAccessor);
 
-        // TODO: redis에서 방 상태 불러오기
         String gameStatus = roomStatusService.getGameStatus(roomId);
 
+        // 게임이 진행 중 일때
         if (gameStatus.equals(GameStatus.RUNNING.name())) {
             String correctAnswer = getCorrectAnswerFromRedis(roomId);
 
@@ -36,24 +48,25 @@ public class WebSocketService {
                 // 정답자에게만 "정답입니다!" 전송
                 messagingTemplate.convertAndSendToUser(
                         userId,
-                        "/topic/room/" + roomId,
+                        "/topic/gameRoom/" + roomId,
                         WebSocketResponse.Send.of("SYSTEM", "정답입니다!"));
 
                 // 모든 게임방 인원에게 "@@님이 정답을 맞췄습니다!" 전송
                 messagingTemplate.convertAndSend(
-                        "/topic/room/" + roomId,
+                        "/topic/gameRoom/" + roomId,
                         WebSocketResponse.Send.of("SYSTEM", username + "님이 정답을 맞췄습니다!"));
 
-                return null; // 정답 메세지는 숨기기
+                return;
             }
         }
-
-        return WebSocketResponse.Send.of(username, message);
+        messagingTemplate.convertAndSend(
+                "/topic/gameRoom/" + roomId, WebSocketResponse.Send.of(username, message));
     }
 
+    // TODO: 현재 라운드 정답 가져오는 함수
     public String getCorrectAnswerFromRedis(Long roomId) {
-        String key = "room_" + roomId + ":correctAnswer";
-        return redisTemplate.opsForValue().get(key);
+
+        return "함수 채워야함";
     }
 
     public void increaseUserScore(Long roomId, String userId) {}

@@ -6,7 +6,6 @@ import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundExcepti
 import com.example.web2_3_ourtuft_be.global.exception.messages.AccessDeniedMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
-import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -160,7 +158,7 @@ public class LobbyService {
         // 남은 참가자수 확인
         Map<String, String> participants = participantService.getParticipants(roomId);
 
-        //TODO: refactoring 중첩 조건문 (depth = 3)
+        // TODO: refactoring 중첩 조건문 (depth = 3)
         if (participants.isEmpty()) { // 마지막 사람이 나갔으면
 
             deleteRoom(roomId);
@@ -187,7 +185,6 @@ public class LobbyService {
             messagingTemplate.convertAndSend(
                     "/topic/room/" + roomId.toString(),
                     WebSocketResponse.Send.of("SYSTEM", "방을 나갔습니다."));
-
         }
     }
 }
