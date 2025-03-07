@@ -83,13 +83,13 @@ public class WebSocketService {
 
     // 핸드셰이크에서 Principal 객체에 회원 정보를 담으려고 했지만 Null 값이 넘어오는 문제를 아직 해결 X
     // 핸드셰이크 JWT 인증단계에서 attributes 에 키벨류로 담아뒀다
-    private String getUserIdFromSession(SimpMessageHeaderAccessor headerAccessor) {
+    public String getUserIdFromSession(SimpMessageHeaderAccessor headerAccessor) {
         return (String) headerAccessor.getSessionAttributes().get("userId");
     }
 
     // 핸드셰이크에서 Principal 객체에 회원 정보를 담으려고 했지만 Null 값이 넘어오는 문제를 아직 해결 X
     // 핸드셰이크 JWT 인증단계에서 attributes 에 키벨류로 담아뒀다
-    private String getUsernameFromSession(SimpMessageHeaderAccessor headerAccessor) {
+    public String getUsernameFromSession(SimpMessageHeaderAccessor headerAccessor) {
         return (String) headerAccessor.getSessionAttributes().get("username");
     }
 
@@ -108,7 +108,6 @@ public class WebSocketService {
         participantDetail.put("role", "PLAYER");
         participantDetail.put("username", username);
         participantDetail.put("userId", userId);
-        participantDetail.put("score", Integer.toString(0));
 
         // 한글은 바이트 코드로 나옴
         // redis 직렬화를 따로 해주면 된다고 함

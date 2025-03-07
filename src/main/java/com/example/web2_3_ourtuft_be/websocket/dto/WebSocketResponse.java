@@ -7,4 +7,10 @@ public record WebSocketResponse() {
             return new Send(sender, message);
         }
     }
+
+    public record SendEvent(String event) {
+        public static SendEvent of(String event) {
+            return new SendEvent(event);
+        }
+    }
 }

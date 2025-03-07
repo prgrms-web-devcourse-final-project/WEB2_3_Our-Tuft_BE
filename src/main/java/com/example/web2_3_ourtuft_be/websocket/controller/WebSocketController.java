@@ -7,7 +7,6 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -26,11 +25,11 @@ public class WebSocketController {
         return webSocketService.processMessage(headerAccessor, roomId, message);
     }
 
-    @SubscribeMapping("/room/{roomId}")
-    public void handleRoomSubscribe(
-            @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {
-        webSocketService.handleRoomSubscribe(headerAccessor, roomId);
-    }
+    //    @SubscribeMapping("/room/{roomId}")
+    //    public void handleRoomSubscribe(
+    //            @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {
+    //        webSocketService.handleRoomSubscribe(headerAccessor, roomId);
+    //    }
 
     // /app/lobby 로 메세지 보내면, /topic/lobby 구독중인 모든 클라이언트에게 전달
     @MessageMapping("/lobby")

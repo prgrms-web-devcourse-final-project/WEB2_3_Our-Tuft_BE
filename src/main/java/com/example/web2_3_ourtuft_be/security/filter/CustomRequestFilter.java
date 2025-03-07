@@ -1,9 +1,9 @@
 package com.example.web2_3_ourtuft_be.security.filter;
 
+import com.example.web2_3_ourtuft_be.auth.dto.CustomOAuth2User;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.UnauthorizedException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.UnauthorizedMessages;
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
-import com.example.web2_3_ourtuft_be.security.userdetails.UserDetailsImpl;
 import com.example.web2_3_ourtuft_be.security.util.JwtUtil;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -79,11 +81,12 @@ public class CustomRequestFilter extends OncePerRequestFilter {
         Long id = jwtUtil.getUserId(accessToken);
         String name = jwtUtil.getUserName(accessToken);
         String role = jwtUtil.getRole(accessToken);
+        Map<String, Object> attributes = Collections.emptyMap();
 
-        UserDetailsImpl customUserDetails = new UserDetailsImpl(User.to(id, name, role));
+        CustomOAuth2User oAuth2User = new CustomOAuth2User(User.to(id, name, role), attributes);
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(
-                        customUserDetails, null, customUserDetails.getAuthorities());
+                        oAuth2User, null, oAuth2User.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
@@ -92,9 +95,14 @@ public class CustomRequestFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         AntPathMatcher pathMatcher = new AntPathMatcher();
 
-        String[] paths = {"/api/v1/auth/**", "/api/v1/test/**"};
+        String[] paths = {
+                "/api/v1/auth/**",
+                "/api/v1/test/**"
+        };
 
         String path = new UrlPathHelper().getPathWithinApplication(request);
-        return Arrays.stream(paths).anyMatch(pattern -> pathMatcher.match(pattern, path));
+        return Arrays.stream(paths)
+                .anyMatch(pattern -> pathMatcher.match(pattern, path));
+
     }
 }
