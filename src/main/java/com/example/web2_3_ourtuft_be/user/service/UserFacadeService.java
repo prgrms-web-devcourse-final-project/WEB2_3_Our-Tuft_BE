@@ -130,9 +130,9 @@ public class UserFacadeService {
     }
 
     @Transactional
-    public void AddWishItem(Long userId, WishItemRequestDto request) {
-        itemService.validItemId(request.getItemId());
-        wishlistItemService.addItem(userId, request.getItemId());
+    public void AddWishItem(Long userId, Long itemId) {
+        itemService.validItemId(itemId);
+        wishlistItemService.addItem(userId, itemId);
     }
 
     // TODO : 찜 페이지에서 찜 아이템을 취소한다면 새로운 찜 목록을 반환해야 할 것 같음, 응답값 수정 필요한지 논의

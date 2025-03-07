@@ -6,7 +6,6 @@ import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
 import com.example.web2_3_ourtuft_be.shop.dto.OrderListResponse;
 import com.example.web2_3_ourtuft_be.shop.dto.OrderRequest;
 import com.example.web2_3_ourtuft_be.shop.service.OrderFacadeService;
-import com.example.web2_3_ourtuft_be.user.dto.WishItemRequestDto;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.service.UserFacadeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,11 +48,10 @@ public class OrderController {
         @ApiResponse(responseCode = "200", description = "성공"),
         @ApiResponse(responseCode = "409", description = "이미 찜한 상품입니다."),
     })
-    @PostMapping("/wishlist")
+    @PostMapping("/wishlist/{itemId}")
     public ResponseEntity<GlobalResponse<String>> addWishItem(
-            @RequestBody WishItemRequestDto request,
-            @AuthenticationPrincipal(expression = "user") User user) {
-        userFacadeService.AddWishItem(user.getId(), request);
+            @PathVariable Long itemId, @AuthenticationPrincipal(expression = "user") User user) {
+        userFacadeService.AddWishItem(user.getId(), itemId);
         return ResponseEntity.ok(GlobalResponse.success("상품을 위시리스트에 추가했습니다."));
     }
 
@@ -75,7 +73,7 @@ public class OrderController {
     public ResponseEntity<GlobalResponse<PageResponse<ItemResponse>>> wishItemList(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "6") int size,
-            @AuthenticationPrincipal User user) {
+            @AuthenticationPrincipal(expression = "user") User user) {
         Pageable pageable = PageRequest.of(page, size);
         PageResponse<ItemResponse> response =
                 userFacadeService.getWishItems(user.getId(), pageable);
