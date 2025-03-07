@@ -1,10 +1,9 @@
 package com.example.web2_3_ourtuft_be.websocket.service;
 
 import com.example.web2_3_ourtuft_be.redis.enums.GameStatus;
+import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -18,6 +17,7 @@ public class WebSocketService {
     private final SimpMessagingTemplate messagingTemplate;
     private final RedisTemplate<String, String> redisTemplate;
     private final RoomStatusService roomStatusService;
+    private final ParticipantService participantService;
 
     // 대기실에서 하는 채팅
     public void processRoomMessage(
@@ -77,10 +77,11 @@ public class WebSocketService {
         String username = getUsernameFromSession(headerAccessor);
         String userId = getUserIdFromSession(headerAccessor);
 
-        addParticipantToRoom(roomId, userId);
-
-        if (!"lobby".equals(roomId)) {
-            addParticipantDetailToRoom(roomId, userId, username);
+        if (roomId.equals("lobby")) {
+            participantService.addParticipantToLobby(Long.parseLong(userId), username);
+        } else {
+            participantService.addParticipantToRoom(
+                    Long.parseLong(roomId), Long.parseLong(userId), username);
         }
 
         messagingTemplate.convertAndSend(
@@ -127,4 +128,5 @@ public class WebSocketService {
         // HGETALL room:1:participant:{userId} 모든 필드를 다 조회 가능
         redisTemplate.opsForHash().putAll(key, participantDetail);
     }
+
 }
