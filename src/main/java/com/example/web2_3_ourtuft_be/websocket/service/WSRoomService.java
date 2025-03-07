@@ -83,11 +83,12 @@ public class WSRoomService {
 
         int remaining = participantService.getPlayersInRoom(roomId).size();
 
-
         removePlayerFromRoom(roomId, userId);
 
-        if(remaining == 0) {lobbyService.deleteRoom(Long.valueOf(roomId));
-        return;
+        if (remaining == 0) {
+            lobbyService.deleteRoom(Long.valueOf(roomId));
+            return;
+
         }
 
         if (!isLobby && isHost) {

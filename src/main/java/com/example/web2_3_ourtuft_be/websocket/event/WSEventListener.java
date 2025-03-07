@@ -29,7 +29,7 @@ public class WSEventListener {
         String userId = (String) accessor.getSessionAttributes().get("userId");
         String username = (String) accessor.getSessionAttributes().get("username");
         wsRoomService.removePlayer(roomId, userId, username);
-        log.info("roomId: {}, userId: {}disconnected", roomId, userId);
+        log.info("roomId: {}, userId: {} disconnected", roomId, userId);
     }
 
     @EventListener
