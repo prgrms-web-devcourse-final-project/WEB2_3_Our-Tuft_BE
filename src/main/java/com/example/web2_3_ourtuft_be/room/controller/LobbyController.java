@@ -2,6 +2,7 @@ package com.example.web2_3_ourtuft_be.room.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
+import com.example.web2_3_ourtuft_be.room.dto.RoomDetailResponseDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
@@ -109,4 +110,18 @@ public class LobbyController {
 
         return ResponseEntity.ok(GlobalResponse.success("퀴즈세트 저장"));
     }
+
+    @Operation(summary = "대기실 정보 조회 API", description = "특정 대기실로 입장합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "성공"),
+            @ApiResponse(responseCode = "404", description = "해당 방을 찾을 수 없습니다.")
+    })
+    @GetMapping("/rooms/{roomId}")
+    public ResponseEntity<GlobalResponse<RoomDetailResponseDto>> getRooms(
+            @PathVariable Long roomId, @RequestParam(required = false) String password) {
+        RoomDetailResponseDto roomDetail = lobbyService.getRoomDetail(roomId, password);
+
+        return ResponseEntity.ok(GlobalResponse.success(roomDetail));
+    }
+
 }
