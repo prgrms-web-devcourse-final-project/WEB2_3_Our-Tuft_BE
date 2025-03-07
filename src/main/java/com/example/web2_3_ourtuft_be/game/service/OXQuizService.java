@@ -27,11 +27,13 @@ public class OXQuizService {
 
     public OXResponseDto checkAnswer(Long userId, Long roomId, int round, String userAnswer) {
         String correctAnswer = getCorrectAnswer(roomId, round);
+        List<Quiz> quizList = getQuizList(roomId);
+        boolean isEnd = quizList.size() == round - 1;
         boolean isCorrect = correctAnswer.equalsIgnoreCase(userAnswer);
         if (isCorrect) {
             updatePlayerScore(roomId, userId);
         }
-        return new OXResponseDto(isCorrect);
+        return new OXResponseDto(isCorrect, round+1, isEnd);
     }
 
     public String getCorrectAnswer(Long roomId, int round) {
@@ -39,10 +41,8 @@ public class OXQuizService {
     }
 
     public OXQuizResponse getQuiz(Long roomId, int round) {
-        List<Quiz> quizList = getQuizList(roomId);
-        Quiz currentQuiz = quizList.get(round - 1);
-        boolean isEnd = quizList.size() == round - 1;
-        return new OXQuizResponse(round + 1, currentQuiz.getQuestion(), isEnd);
+        Quiz currentQuiz = getCurrentQuiz(roomId, round);
+        return new OXQuizResponse(currentQuiz.getQuestion());
     }
 
     public List<Quiz> getQuizList(Long roomId) {
@@ -103,8 +103,8 @@ public class OXQuizService {
     public OXFinishDto finish(Long userId, Long roomId) {
 
         // userId, roomId 를 가지고 해당 유저의 상태를 Finish로 바꿔주세요. (없으면 만들어야댐 initPlayerScores 할때 상태 key
-        String finishUserKey = participantService.getfinishUserKey(roomId.toString());
-        redisTemplate.opsForHash().put(finishUserKey, userId, true);
+//        String finishUserKey = participantService.getfinishUserKey(roomId.toString());
+//        redisTemplate.opsForHash().put(finishUserKey, userId, true);
         // value
 
         // 모든 유저가 Finish 인것을 확인한다면

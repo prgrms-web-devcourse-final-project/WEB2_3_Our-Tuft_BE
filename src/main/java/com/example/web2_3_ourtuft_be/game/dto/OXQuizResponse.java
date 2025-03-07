@@ -8,7 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class OXQuizResponse {
-    private int nexRound;
     private String question;
-    private boolean isEnd;
 }

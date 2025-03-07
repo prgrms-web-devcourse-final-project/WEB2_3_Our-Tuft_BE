@@ -7,4 +7,7 @@ import lombok.Getter;
 @Getter
 public class OXResponseDto {
     private boolean isCorrect;
+    private int nexRound;
+    private boolean isEnd;
+
 }

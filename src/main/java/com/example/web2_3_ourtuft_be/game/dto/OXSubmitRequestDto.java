@@ -8,6 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OXSubmitRequestDto {
-    private int round;
     private String answer;
 }
