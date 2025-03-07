@@ -80,14 +80,14 @@ public class WSRoomService {
 
         boolean isLobby = "lobby".equals(roomId);
         boolean isHost = lobbyService.isHost(Long.valueOf(roomId), Long.valueOf(userId));
-
         int remaining = participantService.getPlayersInRoom(roomId).size();
-
 
         removePlayerFromRoom(roomId, userId);
 
-        if(remaining == 0) {lobbyService.deleteRoom(Long.valueOf(roomId));
-        return;
+        if (remaining == 1) {
+            lobbyService.deleteRoom(Long.valueOf(roomId));
+            return;
+
         }
 
         if (!isLobby && isHost) {

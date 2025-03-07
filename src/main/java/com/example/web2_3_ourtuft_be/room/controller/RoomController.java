@@ -4,10 +4,9 @@ import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.RoomService;
-import java.util.List;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
