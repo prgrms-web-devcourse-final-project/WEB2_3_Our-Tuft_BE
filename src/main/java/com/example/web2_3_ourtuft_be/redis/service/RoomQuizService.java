@@ -3,15 +3,14 @@ package com.example.web2_3_ourtuft_be.redis.service;
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
 import com.example.web2_3_ourtuft_be.websocket.service.WebSocketService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -38,12 +37,12 @@ public class RoomQuizService {
         return "quizSet:" + quizSetId;
     }
 
-    public boolean checkQuizIds(String roomId) {
+    public void checkQuizIds(String roomId) {
         Long quizSetId = getQuizSet(Long.parseLong(roomId));
-
+        System.out.println(quizSetId);
         if (quizSetId == null) {
             webSocketService.sendGameEvent(roomId, "퀴즈가 등록되지 않았습니다.");
-            return false;
+            return;
         }
 
         String key = getQuizSetKey(quizSetId);
@@ -51,8 +50,6 @@ public class RoomQuizService {
         Boolean exists = redisTemplate.hasKey(key);
 
         if (!exists) setQuizSet(quizSetId);
-
-        return true;
     }
 
     public void setQuizSet(Long quizSetId) {

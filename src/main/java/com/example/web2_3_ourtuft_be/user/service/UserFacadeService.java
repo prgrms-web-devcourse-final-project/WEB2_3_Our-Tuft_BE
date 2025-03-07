@@ -60,7 +60,7 @@ public class UserFacadeService {
         return new UserInfoResponseDto(profile, record, exp, eye, mouse, skin, nickColor);
     }
 
-    //TODO : 유저정보 조회와 프로필 조회에서 다른점이 없다면 제거 후, userInfo 만 사용하기
+    // TODO : 유저정보 조회와 프로필 조회에서 다른점이 없다면 제거 후, userInfo 만 사용하기
     @Transactional(readOnly = true)
     public UserInfoResponseDto getMyInfo(Long userId) {
         return getUserInfo(userId);

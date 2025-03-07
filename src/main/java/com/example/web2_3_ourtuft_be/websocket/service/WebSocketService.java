@@ -50,4 +50,9 @@ public class WebSocketService {
         messagingTemplate.convertAndSend(
                 "/topic/room/" + roomId, WebSocketResponse.Send.of("SYSTEM", message));
     }
+
+    public void sendGameSystemMessage(String roomId, String message) {
+        messagingTemplate.convertAndSend(
+                "/topic/game/" + roomId, WebSocketResponse.Send.of("SYSTEM", message));
+    }
 }

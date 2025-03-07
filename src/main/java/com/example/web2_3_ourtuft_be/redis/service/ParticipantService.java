@@ -27,6 +27,14 @@ public class ParticipantService {
         return "room:participants:info:" + roomId;
     }
 
+    public String getPlayerTotalCountKey(String roomId) {
+        return "room:players:count:total:" + roomId;
+    }
+
+    public String getPlayerCurrentCountKey(String roomId) {
+        return "room:players:count:current:" + roomId;
+    }
+
     // 참여자 준비상태 관리
     public String getReadyStatusKey(String roomId) {
         return "room:readystatus:" + roomId;

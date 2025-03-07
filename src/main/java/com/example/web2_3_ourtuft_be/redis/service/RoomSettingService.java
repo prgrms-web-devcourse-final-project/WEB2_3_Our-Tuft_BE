@@ -13,7 +13,7 @@ public class RoomSettingService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    private String getRoomQuizSetKey(String roomId) {
+    public String getRoomQuizSetKey(String roomId) {
         return "room:settings:" + roomId;
     }
 

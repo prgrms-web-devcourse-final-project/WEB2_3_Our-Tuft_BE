@@ -1,6 +1,8 @@
 package com.example.web2_3_ourtuft_be.websocket.event;
 
+import com.example.web2_3_ourtuft_be.websocket.service.WSGameService;
 import com.example.web2_3_ourtuft_be.websocket.service.WSRoomService;
+import com.example.web2_3_ourtuft_be.websocket.service.WebSocketService;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
+import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
 @Component
 @RequiredArgsConstructor
@@ -16,6 +19,8 @@ import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 public class WSEventListener {
 
     private final WSRoomService wsRoomService;
+    private final WebSocketService webSocketService;
+    private final WSGameService wsGameService;
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
@@ -26,12 +31,8 @@ public class WSEventListener {
         String userId = (String) accessor.getSessionAttributes().get("userId");
         String username = (String) accessor.getSessionAttributes().get("username");
 
-        boolean isSwitchingGame = accessor.getSessionAttributes().get("isSwitchingGame") != null;
-
-        if (!isSwitchingGame) {
-            wsRoomService.removePlayer(roomId, userId, username);
-            log.info("roomId: {}, userId: {} disconnected", roomId, userId);
-        }
+        wsRoomService.removePlayer(roomId, userId, username);
+        log.info("roomId: {}, userId: {} disconnected", roomId, userId);
     }
 
     @EventListener
@@ -46,6 +47,19 @@ public class WSEventListener {
 
             log.info("Subscribed to room {}", roomId);
         }
+    }
+
+    @EventListener
+    public void handleWebSocketUnsubscribeListener(SessionUnsubscribeEvent event) {
+        SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
+
+        String roomId =
+                (String) Objects.requireNonNull(accessor.getSessionAttributes()).get("roomId");
+        String userId = (String) accessor.getSessionAttributes().get("userId");
+        String username = (String) accessor.getSessionAttributes().get("username");
+
+        wsRoomService.removePlayer(roomId, userId, username);
+        log.info("roomId: {}, userId: {} unsubscribe", roomId, userId);
     }
 
     private String parseRoomId(String destination) {
