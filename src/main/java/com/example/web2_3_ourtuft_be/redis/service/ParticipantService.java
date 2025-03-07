@@ -57,7 +57,6 @@ public class ParticipantService {
         redisTemplate.opsForHash().put(readyStatusKey, playerId, false); // 입장시 준비 상태 false
     }
 
-
     // 플레이어 준비 상태 토글
     public void togglePlayerReady(Long roomId, String playerId) {
         String key = getReadyStatusKey(roomId);

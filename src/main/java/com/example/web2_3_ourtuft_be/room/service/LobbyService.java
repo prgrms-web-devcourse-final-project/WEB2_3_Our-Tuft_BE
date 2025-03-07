@@ -155,11 +155,10 @@ public class LobbyService {
         boolean isHost = isHost(roomId, userId);
         participantService.removeParticipant(roomId, userId);
 
-        // 남은 참가자수 확인
-        Map<String, String> participants = participantService.getParticipants(roomId);
+        int remaining = participantService.getPlayersInRoom(roomId.toString()).size();
 
         // TODO: refactoring 중첩 조건문 (depth = 3)
-        if (participants.isEmpty()) { // 마지막 사람이 나갔으면
+        if (remaining == 0) { // 마지막 사람이 나갔으면
 
             deleteRoom(roomId);
 

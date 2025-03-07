@@ -13,4 +13,10 @@ public record WebSocketResponse() {
             return new SendEvent(event);
         }
     }
+
+    public record SendQuestion(String question) {
+        public static SendQuestion of(String question) {
+            return new SendQuestion(question);
+        }
+    }
 }
