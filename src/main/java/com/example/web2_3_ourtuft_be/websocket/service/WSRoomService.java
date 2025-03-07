@@ -23,7 +23,7 @@ public class WSRoomService {
     }
 
     private void changeReadyStatus(SimpMessageHeaderAccessor headerAccessor, String roomId) {
-        String key = participantService.getReadyStatusKey(Long.valueOf(roomId));
+        String key = participantService.getReadyStatusKey(roomId);
         String playerId = webSocketService.getUserIdFromSession(headerAccessor);
 
         String currentStatus = (String) redisTemplate.opsForHash().get(key, playerId);
@@ -47,9 +47,8 @@ public class WSRoomService {
 
     private void addPlayerToRoom(String roomId, String userId, String username) {
 
-        String participantOrderKey =
-                participantService.getParticipantsOrderKey(Long.valueOf(roomId));
-        String participantInfoKey = participantService.getParticipantsInfoKey(Long.valueOf(roomId));
+        String participantOrderKey = participantService.getParticipantsOrderKey(roomId);
+        String participantInfoKey = participantService.getParticipantsInfoKey(roomId);
 
         redisTemplate
                 .opsForZSet()
@@ -57,21 +56,20 @@ public class WSRoomService {
         redisTemplate.opsForHash().put(participantInfoKey, userId, username);
 
         if (!"lobby".equals(roomId)) {
-            String readyStatusKey = participantService.getReadyStatusKey(Long.valueOf(roomId));
+            String readyStatusKey = participantService.getReadyStatusKey(roomId);
             redisTemplate.opsForHash().put(readyStatusKey, userId, "false");
         }
     }
 
     public void removePlayerFromRoom(String roomId, String userId) {
-        String participantOrderKey =
-                participantService.getParticipantsOrderKey(Long.valueOf(roomId));
-        String participantInfoKey = participantService.getParticipantsInfoKey(Long.valueOf(roomId));
+        String participantOrderKey = participantService.getParticipantsOrderKey(roomId);
+        String participantInfoKey = participantService.getParticipantsInfoKey(roomId);
 
         redisTemplate.opsForZSet().remove(participantOrderKey, userId);
         redisTemplate.opsForHash().delete(participantInfoKey, userId);
 
         if (!"lobby".equals(roomId)) {
-            String readyStatusKey = participantService.getReadyStatusKey(Long.valueOf(roomId));
+            String readyStatusKey = participantService.getReadyStatusKey(roomId);
             redisTemplate.opsForHash().delete(readyStatusKey, userId);
         }
     }
