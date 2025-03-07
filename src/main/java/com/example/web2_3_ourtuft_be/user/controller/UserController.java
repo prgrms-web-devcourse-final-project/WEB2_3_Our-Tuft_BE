@@ -38,10 +38,10 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "아이템이 존재하지 않습니다..")
     })
     @GetMapping("/myInfo")
-    public ResponseEntity<GlobalResponse<UserInfoResponseDto>> getMyProfile(
+    public ResponseEntity<GlobalResponse<MyInfoResponseDto>> getMyProfile(
             @AuthenticationPrincipal(expression = "user") User user) {
 
-        UserInfoResponseDto response = userFacadeService.getMyInfo(user.getId());
+        MyInfoResponseDto response = userFacadeService.getMyInfo(user.getId());
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
@@ -66,11 +66,11 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "아이템이 존재하지 않습니다.")
     })
     @PutMapping("/myInfo")
-    public ResponseEntity<GlobalResponse<UserInfoResponseDto>> updateMyInfo(
+    public ResponseEntity<GlobalResponse<MyInfoResponseDto>> updateMyInfo(
             @RequestBody UserInfoRequestDto request,
             @AuthenticationPrincipal(expression = "user") User user) {
 
-        UserInfoResponseDto response = userFacadeService.updateProfile(user.getId(), request);
+        MyInfoResponseDto response = userFacadeService.updateProfile(user.getId(), request);
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 
