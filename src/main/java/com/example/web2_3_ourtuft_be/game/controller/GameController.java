@@ -19,7 +19,6 @@ public class GameController {
     @PostMapping("/start/{roomId}")
     public ResponseEntity<GlobalResponse<String>> startGame(@PathVariable Long roomId) {
         gameService.gameSet(roomId);
-
         return ResponseEntity.ok(GlobalResponse.success("Game started"));
     }
 }

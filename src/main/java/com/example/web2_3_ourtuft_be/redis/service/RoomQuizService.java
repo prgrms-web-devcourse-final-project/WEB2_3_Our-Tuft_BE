@@ -24,7 +24,7 @@ public class RoomQuizService {
         return "quiz:set:" + quizSetId + ":" + quizId;
     }
 
-    public List<Map<String, String>> getCurrentGameQuizzes(Long roomId) {
+    public Set<Map<String, String>> getCurrentGameQuizzes(Long roomId) {
 
         Long quizSetId = getQuizSet(roomId);
 
@@ -42,8 +42,8 @@ public class RoomQuizService {
                 redisTemplate.opsForValue().get(getRoomQuizSetKey(roomId)).toString());
     }
 
-    public List<Map<String, String>> getAllQuizzes(Long quizSetId) {
-        List<Map<String, String>> quizzes = new ArrayList<>();
+    public Set<Map<String, String>> getAllQuizzes(Long quizSetId) {
+        Set<Map<String, String>> quizzes = new HashSet<>();
 
         // Redis에서 해당 quizSetId의 모든 키 조회
         Set<String> quizKeys = redisTemplate.keys("quiz:set:" + quizSetId + ":*");

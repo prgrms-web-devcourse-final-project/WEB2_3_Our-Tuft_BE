@@ -1,11 +1,9 @@
 package com.example.web2_3_ourtuft_be.websocket.service;
 
 import com.example.web2_3_ourtuft_be.redis.enums.GameStatus;
-import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -15,9 +13,8 @@ import org.springframework.stereotype.Service;
 public class WebSocketService {
 
     private final SimpMessagingTemplate messagingTemplate;
-    private final RedisTemplate<String, String> redisTemplate;
     private final RoomStatusService roomStatusService;
-    private final ParticipantService participantService;
+    private final WSGameService wsGameService;
 
     // 대기실에서 하는 채팅
     public void processRoomMessage(
@@ -37,34 +34,34 @@ public class WebSocketService {
         String userId = getUserIdFromSession(headerAccessor);
 
         String gameStatus = roomStatusService.getGameStatus(roomId);
+        int currentRound = roomStatusService.getCurrentRound(roomId);
 
         // 게임이 진행 중 일때
         if (gameStatus.equals(GameStatus.RUNNING.name())) {
-            String correctAnswer = getCorrectAnswerFromRedis(roomId);
-
-            if (correctAnswer.equalsIgnoreCase(message.trim())) { // 정답 맞췄을 때 - 대소문자 구분없이 비교
-                increaseUserScore(roomId, userId);
-
-                // 정답자에게만 "정답입니다!" 전송
-                messagingTemplate.convertAndSendToUser(
-                        userId,
-                        "/topic/gameRoom/" + roomId,
-                        WebSocketResponse.Send.of("SYSTEM", "정답입니다!"));
-
-                // 모든 게임방 인원에게 "@@님이 정답을 맞췄습니다!" 전송
-                messagingTemplate.convertAndSend(
-                        "/topic/gameRoom/" + roomId,
-                        WebSocketResponse.Send.of("SYSTEM", username + "님이 정답을 맞췄습니다!"));
-
-                return;
-            }
+            checkAnswer(roomId, userId, username, message, currentRound);
         }
-        messagingTemplate.convertAndSend(
-                "/topic/gameRoom/" + roomId, WebSocketResponse.Send.of(username, message));
+
+        wsGameService.sendUserMessage(roomId.toString(), username, message);
+    }
+
+    public void checkAnswer(
+            Long roomId, String userId, String username, String message, int currentRound) {
+        String correctAnswer = getCorrectAnswerFromRedis(roomId, currentRound);
+
+        if (correctAnswer.equalsIgnoreCase(message.trim())) { // 정답 맞췄을 때 - 대소문자 구분없이 비교
+            increaseUserScore(roomId, userId);
+
+            // 정답자에게만 "정답입니다!" 전송
+            wsGameService.sendSystemMessageToUser(userId, roomId.toString(), "정답입니다!");
+            increaseUserScore(roomId, userId);
+
+            // 모든 게임방 인원에게 "@@님이 정답을 맞췄습니다!" 전송
+            wsGameService.sendSystemMessage(roomId.toString(), username + "님이 정답을 맞췄습니다!");
+        }
     }
 
     // TODO: 현재 라운드 정답 가져오는 함수
-    public String getCorrectAnswerFromRedis(Long roomId) {
+    public String getCorrectAnswerFromRedis(Long roomId, int currentRound) {
 
         return "함수 채워야함";
     }

@@ -87,9 +87,7 @@ public class LobbyService {
                         .findById(userId)
                         .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
 
-
         participantService.addHost(room.getId(), userId, host.getName());
-
 
         roomSettingService.saveRoomSettingsToRedis(room.getId(), roomRequestDto);
 
@@ -154,31 +152,6 @@ public class LobbyService {
         Room room = findByRoomId(roomId);
         Long hostId = room.getHostId();
         return hostId != null && hostId.equals(userId);
-    }
-
-    public RoomDetailResponseDto getRoomDetail(Long roomId, String password) {
-        Room room = findByRoomId(roomId);
-
-        if (room.isDisclosure()) { // 공개방
-            if (password != null && !password.isEmpty()) {
-                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_DISCLOSURE);
-            }
-        } else { // 비공개방
-            if (password == null || password.isEmpty()) {
-                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD);
-            }
-            if (password.length() != 4) {
-                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_LENGTH);
-            }
-            if (!password.matches("^[0-9]+$")) {
-                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_FORMAT);
-            }
-            if (!room.getRoomPassword().equals(password)) {
-                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_WRONG);
-            }
-        }
-
-        return new RoomDetailResponseDto(room);
     }
 
     public RoomDetailResponseDto getRoomDetail(Long roomId, String password) {
