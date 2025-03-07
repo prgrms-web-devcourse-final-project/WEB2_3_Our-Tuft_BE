@@ -71,8 +71,6 @@ public class WebSocketService {
 
     public void increaseUserScore(Long roomId, String userId) {}
 
-
-
     public WebSocketResponse.Send sendMessageToRoom(
             SimpMessageHeaderAccessor headerAccessor, String message) {
         String username = getUsernameFromSession(headerAccessor);
@@ -90,7 +88,4 @@ public class WebSocketService {
     public String getUsernameFromSession(SimpMessageHeaderAccessor headerAccessor) {
         return (String) headerAccessor.getSessionAttributes().get("username");
     }
-
-
-
 }
