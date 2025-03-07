@@ -90,17 +90,6 @@ public class LobbyController {
         return ResponseEntity.ok(GlobalResponse.success("방장 변경 성공"));
     }
 
-    @Operation(summary = "게임에서 진행할 퀴즈세트 세팅", description = "퀴즈목록중 진행할 퀴즈세트를 지정합니다. ")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "성공")})
-    @PutMapping("/rooms/{roomId}/quizzes/{quizSetId}")
-    public ResponseEntity<GlobalResponse<String>> setQuizSet(
-            @PathVariable("roomId") Long roomId, @PathVariable("quizSetId") Long quizSetId) {
-
-        roomQuizService.setQuizSet(roomId, quizSetId);
-
-        return ResponseEntity.ok(GlobalResponse.success("퀴즈세트 저장"));
-    }
-
     @Operation(summary = "대기실 정보 조회 API", description = "특정 대기실로 입장합니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "성공"),

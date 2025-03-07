@@ -2,19 +2,25 @@ package com.example.web2_3_ourtuft_be.redis.service;
 
 import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
 import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
-import java.time.Duration;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.example.web2_3_ourtuft_be.websocket.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RoomQuizService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
     private final QuizRepository quizRepository;
+    private final WebSocketService webSocketService;
 
     private String getRoomQuizSetKey(Long roomId) {
         return "room:quizset:" + roomId;
@@ -24,61 +30,71 @@ public class RoomQuizService {
         return "quiz:set:" + quizSetId + ":" + quizId;
     }
 
-    public List<Map<String, String>> getCurrentGameQuizzes(Long roomId) {
+    private String getQuizKey(Long quizId) {
+        return "quiz:" + quizId;
+    }
 
-        Long quizSetId = getQuizSet(roomId);
+    private String getQuizSetKey(Long quizSetId) {
+        return "quizSet:" + quizSetId;
+    }
 
-        return getAllQuizzes(quizSetId);
+    public boolean checkQuizIds(String roomId) {
+        Long quizSetId = getQuizSet(Long.parseLong(roomId));
+
+        if (quizSetId == null) {
+            webSocketService.sendGameEvent(roomId, "퀴즈가 등록되지 않았습니다.");
+            return false;
+        }
+
+        String key = getQuizSetKey(quizSetId);
+
+        Boolean exists = redisTemplate.hasKey(key);
+
+        if (!exists) setQuizSet(quizSetId);
+
+        return true;
+    }
+
+    public void setQuizSet(Long quizSetId) {
+        List<Quiz> quizzes = quizRepository.findByQuizSetId(quizSetId);
+
+        Set<String> quizIds = new HashSet<>();
+
+        for (Quiz quiz : quizzes) {
+            Long quizId = quiz.getId();
+            String key = getQuizKey(quizId);
+
+            redisTemplate.opsForHash().put(key, "question", quiz.getQuestion());
+            redisTemplate.opsForHash().put(key, "hint", quiz.getHint());
+            redisTemplate.opsForHash().put(key, "answer", quiz.getAnswer());
+
+            redisTemplate.expire(key, Duration.ofHours(1));
+
+            quizIds.add(String.valueOf(quizId));
+        }
+
+        for (String quizId : quizIds) {
+            String key = getQuizSetKey(quizSetId);
+
+            redisTemplate.opsForSet().add(key, quizId);
+            redisTemplate.expire(key, Duration.ofHours(1));
+        }
+        log.info("퀴즈세트 추가 성공");
     }
 
     // 퀴즈 세트 설정
     public void setQuizSet(Long roomId, Long quizSetId) {
-        redisTemplate.opsForValue().set(getRoomQuizSetKey(roomId), quizSetId);
+        redisTemplate.opsForValue().set(getRoomQuizSetKey(roomId), String.valueOf(quizSetId));
     }
 
     // 퀴즈 세트 가져오기
     public Long getQuizSet(Long roomId) {
-        return Long.parseLong(
-                redisTemplate.opsForValue().get(getRoomQuizSetKey(roomId)).toString());
-    }
+        String key = getRoomQuizSetKey(roomId);
 
-    public List<Map<String, String>> getAllQuizzes(Long quizSetId) {
-        List<Map<String, String>> quizzes = new ArrayList<>();
+        String value = redisTemplate.opsForValue().get(key);
 
-        // Redis에서 해당 quizSetId의 모든 키 조회
-        Set<String> quizKeys = redisTemplate.keys("quiz:set:" + quizSetId + ":*");
+        if (value == null) return null;
 
-        if (quizKeys != null && !quizKeys.isEmpty()) {
-            for (String quizKey : quizKeys) {
-                Map<Object, Object> quizData = redisTemplate.opsForHash().entries(quizKey);
-                quizzes.add(
-                        quizData.entrySet().stream()
-                                .collect(
-                                        Collectors.toMap(
-                                                e -> (String) e.getKey(),
-                                                e -> (String) e.getValue())));
-            }
-            return quizzes;
-        }
-
-        // Redis에 없으면 DB에서 가져와서 캐싱
-        List<Quiz> dbQuizzes = quizRepository.findByQuizSetId(quizSetId);
-        for (Quiz quiz : dbQuizzes) {
-            String quizKey = getQuizzesKey(quizSetId, quiz.getId());
-
-            redisTemplate.opsForHash().put(quizKey, "question", quiz.getQuestion());
-            redisTemplate.opsForHash().put(quizKey, "hint", quiz.getHint());
-            redisTemplate.opsForHash().put(quizKey, "answer", quiz.getAnswer());
-
-            redisTemplate.expire(quizKey, Duration.ofHours(1)); // TTL 설정
-
-            Map<String, String> quizData = new HashMap<>();
-            quizData.put("question", quiz.getQuestion());
-            quizData.put("hint", quiz.getHint());
-            quizData.put("answer", quiz.getAnswer());
-            quizzes.add(quizData);
-        }
-
-        return quizzes;
+        return Long.parseLong(value);
     }
 }

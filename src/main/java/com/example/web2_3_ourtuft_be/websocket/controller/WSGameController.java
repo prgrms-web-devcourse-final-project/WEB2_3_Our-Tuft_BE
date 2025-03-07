@@ -15,5 +15,7 @@ public class WSGameController {
 
     @SubscribeMapping("/game/{roomId}")
     public void handleGameSubscribe(
-            @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {}
+            @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {
+        wsGameService.gameSetting(roomId, headerAccessor);
+    }
 }

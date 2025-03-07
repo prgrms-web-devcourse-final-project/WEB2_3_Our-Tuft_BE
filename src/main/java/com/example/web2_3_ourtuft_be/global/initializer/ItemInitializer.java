@@ -91,6 +91,7 @@ public class ItemInitializer implements CommandLineRunner {
                 category.name().toLowerCase(),
                 DEFAULT_PREFIX,
                 category.name().toLowerCase(),
+                identifier,
                 PNG);
     }
 

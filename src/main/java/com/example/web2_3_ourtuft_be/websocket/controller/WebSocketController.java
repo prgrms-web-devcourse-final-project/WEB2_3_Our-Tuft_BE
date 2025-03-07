@@ -21,21 +21,6 @@ public class WebSocketController {
             @DestinationVariable Long roomId,
             SimpMessageHeaderAccessor headerAccessor,
             String message) {
-        webSocketService.processRoomMessage(headerAccessor, roomId, message);
-    }
-
-    //    @SubscribeMapping("/room/{roomId}")
-    //    public void handleRoomSubscribe(
-    //            @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {
-    //        webSocketService.handleRoomSubscribe(headerAccessor, roomId);
-    //    }
-
-    @MessageMapping("/gameRoom/{roomId}")
-    @SendTo("/topic/gameRoom/{roomId}")
-    public void processGameRoom(
-            @DestinationVariable Long roomId,
-            SimpMessageHeaderAccessor headerAccessor,
-            String message) {
-        webSocketService.processGameRoom(headerAccessor, roomId, message);
+        webSocketService.sendMessage(headerAccessor, roomId, message);
     }
 }
