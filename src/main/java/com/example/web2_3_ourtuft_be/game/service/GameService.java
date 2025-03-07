@@ -1,11 +1,15 @@
 package com.example.web2_3_ourtuft_be.game.service;
 
+import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +19,8 @@ public class GameService {
     private final RoomStatusService roomStatusService;
     private final RoomQuizService roomQuizService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ParticipantService participantService;
+    private final RedisTemplate<String, String> redisTemplate;
 
     //    public void gameSet(Long roomId) {
     //
@@ -60,4 +66,31 @@ public class GameService {
         roomStatusService.setGameStatus(roomId, "WAITING");
         System.out.println("게임 종료!");
     }
+
+
+    public void initializePlayerScores(String roomId) {
+        String participantsScoreKey = participantService.getParticipantsScoreKey(roomId);
+        String participantsOrderKey = participantService.getParticipantsOrderKey(roomId);
+
+        Set<String> range = redisTemplate.opsForZSet().range(participantsOrderKey, 0, -1);
+
+        if (range != null && !range.isEmpty()) {
+            for (String participant : range) {
+                redisTemplate.opsForZSet().add(participantsScoreKey, participant, 0);
+            }
+        }
+
+    }
+
+    // TODO : RestAPI용 함수 웹소켓 구현시 삭제예정
+    public void updatePlayerScore(Long roomId ,Long userId) {
+
+        String participantsScoreKey = participantService.getParticipantsScoreKey(roomId.toString());
+
+        redisTemplate.opsForZSet().incrementScore(participantsScoreKey, userId.toString(), 1);
+
+    }
+
+
+
 }
