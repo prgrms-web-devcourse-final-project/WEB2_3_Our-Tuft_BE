@@ -156,7 +156,6 @@ public class LobbyService {
         return hostId != null && hostId.equals(userId);
     }
 
-
     public RoomDetailResponseDto getRoomDetail(Long roomId, String password) {
         Room room = findByRoomId(roomId);
 
