@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class RoomSettingsDto {
+public class RedisRoomSettingsDto {
     private String title;
     private boolean isPublic;
     private String password;
@@ -13,14 +13,14 @@ public class RoomSettingsDto {
     private int timeLimit;
 
     @Builder
-    public static RoomSettingsDto of(
+    public static RedisRoomSettingsDto of(
             String title,
             boolean isPublic,
             String password,
             int maxPlayers,
             int rounds,
             int timeLimit) {
-        return RoomSettingsDto.builder()
+        return RedisRoomSettingsDto.builder()
                 .title(title)
                 .isPublic(isPublic)
                 .password(password)
