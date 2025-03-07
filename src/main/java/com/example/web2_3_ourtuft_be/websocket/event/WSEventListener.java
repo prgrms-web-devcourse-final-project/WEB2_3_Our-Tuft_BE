@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
@@ -16,7 +15,6 @@ import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 @Slf4j
 public class WSEventListener {
 
-    private final SimpMessagingTemplate messagingTemplate;
     private final WSRoomService wsRoomService;
 
     @EventListener
@@ -27,8 +25,13 @@ public class WSEventListener {
                 (String) Objects.requireNonNull(accessor.getSessionAttributes()).get("roomId");
         String userId = (String) accessor.getSessionAttributes().get("userId");
         String username = (String) accessor.getSessionAttributes().get("username");
-        wsRoomService.removePlayer(roomId, userId, username);
-        log.info("roomId: {}, userId: {} disconnected", roomId, userId);
+
+        boolean isSwitchingGame = accessor.getSessionAttributes().get("isSwitchingGame") != null;
+
+        if (!isSwitchingGame) {
+            wsRoomService.removePlayer(roomId, userId, username);
+            log.info("roomId: {}, userId: {} disconnected", roomId, userId);
+        }
     }
 
     @EventListener

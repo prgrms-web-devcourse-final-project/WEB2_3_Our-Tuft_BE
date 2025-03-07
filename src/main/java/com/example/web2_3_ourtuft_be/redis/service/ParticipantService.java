@@ -23,7 +23,6 @@ public class ParticipantService {
     }
 
     // 참여자 id,닉네임 관리
-
     public String getParticipantsInfoKey(String roomId) {
         return "room:participants:info:" + roomId;
     }

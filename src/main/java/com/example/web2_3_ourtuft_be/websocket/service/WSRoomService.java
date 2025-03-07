@@ -2,18 +2,16 @@ package com.example.web2_3_ourtuft_be.websocket.service;
 
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
-import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class WSRoomService {
 
-    private final SimpMessagingTemplate messagingTemplate;
     private final RedisTemplate<String, String> redisTemplate;
     private final ParticipantService participantService;
     private final WebSocketService webSocketService;
@@ -22,6 +20,11 @@ public class WSRoomService {
     public void handleRoomEvent(
             SimpMessageHeaderAccessor headerAccessor, String roomId, String event) {
         if ("PLAYER_CHANGE_READY".equals(event)) changeReadyStatus(headerAccessor, roomId);
+        if ("SWITCHING_ROOM_TO_GAME".equals(event)) changeDisconnectionFlag(headerAccessor);
+    }
+
+    private void changeDisconnectionFlag(SimpMessageHeaderAccessor headerAccessor) {
+        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("isSwitchingGame", true);
     }
 
     private void changeReadyStatus(SimpMessageHeaderAccessor headerAccessor, String roomId) {
@@ -35,7 +38,7 @@ public class WSRoomService {
 
         redisTemplate.opsForHash().put(key, playerId, currentStatus);
 
-        sendSystemMessage(roomId, "PLAYER_CHANGE_READY");
+        webSocketService.sendEvent(roomId, "PLAYER_CHANGE_READY");
     }
 
     public void addPlayer(SimpMessageHeaderAccessor headerAccessor, String roomId) {
@@ -43,8 +46,8 @@ public class WSRoomService {
         String username = webSocketService.getUsernameFromSession(headerAccessor);
         addPlayerToRoom(roomId, userId, username);
 
-        sendEvent(roomId, "PLAYER_ADDED");
-        sendSystemMessage(roomId, username + "님이 입장하였습니다");
+        webSocketService.sendEvent(roomId, "PLAYER_ADDED");
+        webSocketService.sendSystemMessage(roomId, username + "님이 입장하였습니다");
     }
 
     private void addPlayerToRoom(String roomId, String userId, String username) {
@@ -87,31 +90,20 @@ public class WSRoomService {
         if (remaining == 1) {
             lobbyService.deleteRoom(Long.valueOf(roomId));
             return;
-
         }
 
         if (!isLobby && isHost) {
             String newHostId = participantService.getNextHost(roomId);
             if (newHostId != null) {
                 lobbyService.changeRoomHost(Long.valueOf(roomId), Long.parseLong(newHostId));
-                sendEvent(roomId, "HOST_CHANGED");
-                sendSystemMessage(roomId, "방장이 변경되었습니다.");
+                webSocketService.sendEvent(roomId, "HOST_CHANGED");
+                webSocketService.sendSystemMessage(roomId, "방장이 변경되었습니다.");
             }
         }
 
-        if (!isLobby && !isHost) {
-            sendEvent(roomId, "PLAYER_DISCONNECTED");
-            sendSystemMessage(roomId, username + "님이 퇴장하였습니다");
+        if (!isLobby) {
+            webSocketService.sendEvent(roomId, "PLAYER_DISCONNECTED");
+            webSocketService.sendSystemMessage(roomId, username + "님이 퇴장하였습니다");
         }
-    }
-
-    public void sendEvent(String roomId, String event) {
-        messagingTemplate.convertAndSend(
-                "/topic/room/" + roomId, WebSocketResponse.SendEvent.of(event));
-    }
-
-    public void sendSystemMessage(String roomId, String message) {
-        messagingTemplate.convertAndSend(
-                "/topic/room/" + roomId, WebSocketResponse.Send.of("SYSTEM", message));
     }
 }
