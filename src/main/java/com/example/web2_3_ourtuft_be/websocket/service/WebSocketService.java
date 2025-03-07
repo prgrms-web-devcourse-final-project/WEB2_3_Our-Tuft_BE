@@ -71,24 +71,6 @@ public class WebSocketService {
 
     public void increaseUserScore(Long roomId, String userId) {}
 
-    // 구독을 하면 방 정보에 유저가 추가
-    // 로비는 세부 정보를 로비에 추가 X
-    public void handleRoomSubscribe(SimpMessageHeaderAccessor headerAccessor, String roomId) {
-        String username = getUsernameFromSession(headerAccessor);
-        String userId = getUserIdFromSession(headerAccessor);
-
-        if (roomId.equals("lobby")) {
-            participantService.addParticipantToLobby(Long.parseLong(userId), username);
-        } else {
-            participantService.addParticipantToRoom(
-                    Long.parseLong(roomId), Long.parseLong(userId), username);
-        }
-
-        messagingTemplate.convertAndSend(
-                "/topic/room/" + roomId,
-                WebSocketResponse.Send.of("SYSTEM", username + "님이 입장하였습니다"));
-    }
-
     public WebSocketResponse.Send sendMessageToRoom(
             SimpMessageHeaderAccessor headerAccessor, String message) {
         String username = getUsernameFromSession(headerAccessor);
@@ -106,27 +88,4 @@ public class WebSocketService {
     public String getUsernameFromSession(SimpMessageHeaderAccessor headerAccessor) {
         return (String) headerAccessor.getSessionAttributes().get("username");
     }
-
-    private void addParticipantToRoom(String roomId, String userId) {
-        String key = "room:" + roomId + ":participants";
-
-        // ZRANGE room:1:participants 0 -1 WITHSCORES, 로 조회
-        redisTemplate.opsForZSet().add(key, userId, System.currentTimeMillis());
-    }
-
-    private void addParticipantDetailToRoom(String roomId, String userId, String username) {
-        String key = "room:" + roomId + ":participant:" + userId;
-
-        Map<String, String> participantDetail = new HashMap<>();
-
-        participantDetail.put("role", "PLAYER");
-        participantDetail.put("username", username);
-        participantDetail.put("userId", userId);
-
-        // 한글은 바이트 코드로 나옴
-        // redis 직렬화를 따로 해주면 된다고 함
-        // HGETALL room:1:participant:{userId} 모든 필드를 다 조회 가능
-        redisTemplate.opsForHash().putAll(key, participantDetail);
-    }
-
 }
