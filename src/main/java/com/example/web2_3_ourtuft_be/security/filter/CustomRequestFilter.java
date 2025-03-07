@@ -43,7 +43,7 @@ public class CustomRequestFilter extends OncePerRequestFilter {
         }
         String accessToken = "";
         // token 이 null 일수도 있으므로 여기서 떼주었습니다. 변수명이나 조건문 위치 등등 수정 필요할듯
-        if(token.startsWith("Bearer ")) {
+        if (token.startsWith("Bearer ")) {
             accessToken = token.substring(7);
         }
         try {
@@ -103,5 +103,6 @@ public class CustomRequestFilter extends OncePerRequestFilter {
         String path = new UrlPathHelper().getPathWithinApplication(request);
         return Arrays.stream(paths)
                 .anyMatch(pattern -> pathMatcher.match(pattern, path));
+
     }
 }

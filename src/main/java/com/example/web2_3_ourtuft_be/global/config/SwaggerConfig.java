@@ -11,8 +11,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         servers =
-        @Server(url = "https://hiq-lounge.duckdns.org", description = "https://hiq-lounge.duckdns.org 서버"),
-
+                @Server(
+                        url = "https://hiq-lounge.duckdns.org",
+                        description = "https://hiq-lounge.duckdns.org 서버"),
         info =
                 @Info(
                         title = "하이큐 API Docs",
