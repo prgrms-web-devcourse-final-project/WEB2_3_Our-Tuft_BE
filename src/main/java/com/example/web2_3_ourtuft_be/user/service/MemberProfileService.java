@@ -61,8 +61,9 @@ public class MemberProfileService {
         }
     }
 
-    public void createProfile(Long userId) {
-        MemberProfile profile = new MemberProfile(userId);
+    //TODO: nickname 임시로 처리했음 수정 필요
+    public void createProfile(Long userId, String tempNickname) {
+        MemberProfile profile = new MemberProfile(userId, tempNickname);
 
         profileRepository.save(profile);
     }

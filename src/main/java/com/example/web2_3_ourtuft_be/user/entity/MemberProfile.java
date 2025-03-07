@@ -31,8 +31,9 @@ public class MemberProfile extends BaseTime {
 
     private Long nicknameItemId = 10L;
 
-    public MemberProfile(Long userId) {
+    public MemberProfile(Long userId, String nickname) {
         this.userId = userId;
+        this.nickname = nickname;
     }
 
     public void changeNickname(String nickname) {
