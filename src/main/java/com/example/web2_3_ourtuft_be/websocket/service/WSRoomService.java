@@ -21,6 +21,7 @@ public class WSRoomService {
 
     public void handleRoomEvent(
             SimpMessageHeaderAccessor headerAccessor, String roomId, String event) {
+
         if (event.contains("PLAYER_CHANGE_READY")) changeReadyStatus(headerAccessor, roomId);
         if (event.contains("SWITCHING_ROOM_TO_GAME")) {
             roomQuizService.checkQuizIds(roomId);

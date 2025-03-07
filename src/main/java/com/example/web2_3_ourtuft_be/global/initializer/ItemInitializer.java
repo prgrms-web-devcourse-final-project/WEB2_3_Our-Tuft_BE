@@ -68,7 +68,7 @@ public class ItemInitializer implements CommandLineRunner {
         return Item.builder()
                 .name(DEFAULT_PREFIX + category.name())
                 .category(category.name())
-                .imageUrl(formatImageUrl(category, DEFAULT_PREFIX))
+                .imageUrl(formatDefaultImageUrl(category))
                 .originalPrice(300)
                 .stock(200)
                 .build();
@@ -79,6 +79,17 @@ public class ItemInitializer implements CommandLineRunner {
                 "%s/%s/%s%s%s",
                 S3_URL,
                 category.name().toLowerCase(),
+                category.name().toLowerCase(),
+                identifier,
+                PNG);
+    }
+
+    private String formatDefaultImageUrl(Category category) {
+        return String.format(
+                "%s/%s/%s%s%s",
+                S3_URL,
+                category.name().toLowerCase(),
+                DEFAULT_PREFIX,
                 category.name().toLowerCase(),
                 identifier,
                 PNG);
