@@ -145,7 +145,7 @@ class ParticipantServiceTest {
         redisTemplate.opsForHash().put(participnatInfoKey, 13L, "user4");
 
         // when
-        List<ParticipantDto> participants = participantService.getParticipants(roomId);
+        List<ParticipantDto> participants = participantService.getParticipants(roomId.toString());
 
         // then
         assertThat(participants.size()).isEqualTo(4);
