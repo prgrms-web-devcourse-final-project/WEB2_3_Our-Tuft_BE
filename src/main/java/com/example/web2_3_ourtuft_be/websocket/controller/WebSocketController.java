@@ -7,7 +7,6 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -26,11 +25,11 @@ public class WebSocketController {
         webSocketService.processRoomMessage(headerAccessor, roomId, message);
     }
 
-    @SubscribeMapping("/room/{roomId}")
-    public void handleRoomSubscribe(
-            @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {
-        webSocketService.handleRoomSubscribe(headerAccessor, roomId);
-    }
+    //    @SubscribeMapping("/room/{roomId}")
+    //    public void handleRoomSubscribe(
+    //            @DestinationVariable String roomId, SimpMessageHeaderAccessor headerAccessor) {
+    //        webSocketService.handleRoomSubscribe(headerAccessor, roomId);
+    //    }
 
     @MessageMapping("/gameRoom/{roomId}")
     @SendTo("/topic/gameRoom/{roomId}")
