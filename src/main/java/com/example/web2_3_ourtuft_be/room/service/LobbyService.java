@@ -2,12 +2,15 @@ package com.example.web2_3_ourtuft_be.room.service;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.AccessDeniedException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidValueException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.AccessDeniedMessages;
+import com.example.web2_3_ourtuft_be.global.exception.messages.BadRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomSettingService;
+import com.example.web2_3_ourtuft_be.room.dto.RoomDetailResponseDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
@@ -149,5 +152,32 @@ public class LobbyService {
         Room room = findByRoomId(roomId);
         Long hostId = room.getHostId();
         return hostId != null && hostId.equals(userId);
+    }
+
+ 
+
+    public RoomDetailResponseDto getRoomDetail(Long roomId, String password) {
+        Room room = findByRoomId(roomId);
+
+        if (room.isDisclosure()) { // 공개방
+            if (password != null && !password.isEmpty()) {
+                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_DISCLOSURE);
+            }
+        } else { // 비공개방
+            if (password == null || password.isEmpty()) {
+                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD);
+            }
+            if (password.length() != 4) {
+                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_LENGTH);
+            }
+            if (!password.matches("^[0-9]+$")) {
+                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_FORMAT);
+            }
+            if (!room.getRoomPassword().equals(password)) {
+                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_WRONG);
+            }
+        }
+
+        return new RoomDetailResponseDto(room);
     }
 }

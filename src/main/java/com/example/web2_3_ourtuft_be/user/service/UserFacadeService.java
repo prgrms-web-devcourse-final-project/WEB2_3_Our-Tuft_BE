@@ -61,12 +61,14 @@ public class UserFacadeService {
     }
 
     @Transactional(readOnly = true)
-    public UserInfoResponseDto getMyInfo(Long userId) {
-        return getUserInfo(userId);
+    public MyInfoResponseDto getMyInfo(Long userId) {
+        User user = userService.getUser(userId);
+
+        return new MyInfoResponseDto(user.getName(), getUserInfo(userId));
     }
 
     @Transactional
-    public UserInfoResponseDto updateProfile(Long userId, UserInfoRequestDto request) {
+    public MyInfoResponseDto updateProfile(Long userId, UserInfoRequestDto request) {
 
         // TODO: Item 로직 생성 후 ItemService 에서 처리 예정
         ItemImageUrlDto eye =
@@ -113,6 +115,7 @@ public class UserFacadeService {
         memberPointService.createPoint(userId);
         memberRecordService.createRecord(userId);
         expService.createExp(userId);
+        inventoryService.registerDefaultItem(userId);
         return newUser;
     }
 
@@ -127,9 +130,9 @@ public class UserFacadeService {
     }
 
     @Transactional
-    public void AddWishItem(Long userId, WishItemRequestDto request) {
-        itemService.validItemId(request.getItemId());
-        wishlistItemService.addItem(userId, request.getItemId());
+    public void AddWishItem(Long userId, Long itemId) {
+        itemService.validItemId(itemId);
+        wishlistItemService.addItem(userId, itemId);
     }
 
     // TODO : 찜 페이지에서 찜 아이템을 취소한다면 새로운 찜 목록을 반환해야 할 것 같음, 응답값 수정 필요한지 논의
