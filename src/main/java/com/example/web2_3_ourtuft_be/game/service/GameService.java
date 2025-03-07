@@ -1,15 +1,18 @@
 package com.example.web2_3_ourtuft_be.game.service;
 
+import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,8 @@ public class GameService {
     private final RoomStatusService roomStatusService;
     private final RoomQuizService roomQuizService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ParticipantService participantService;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public List<Map<String, String>> getQuizList(Long roomId) {
         return roomQuizService.getCurrentGameQuizzes(roomId);
@@ -69,4 +74,21 @@ public class GameService {
         roomStatusService.setGameStatus(roomId, "WAITING");
         System.out.println("게임 종료!");
     }
+
+    public void initializePlayerScores(String roomId) {
+        String participantsScoreKey = participantService.getParticipantsScoreKey(roomId);
+        String participantsOrderKey = participantService.getParticipantsOrderKey(roomId);
+
+        Set<String> range = redisTemplate.opsForZSet().range(participantsOrderKey, 0, -1);
+
+        if (range != null) {
+            for (String participant : range) {
+                redisTemplate.opsForZSet().add(participantsScoreKey, participant, 0);
+            }
+        }
+
+    }
+
+
+
 }
