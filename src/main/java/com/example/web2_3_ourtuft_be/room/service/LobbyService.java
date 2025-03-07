@@ -87,9 +87,7 @@ public class LobbyService {
                         .findById(userId)
                         .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
 
-
         participantService.addHost(room.getId(), userId, host.getName());
-
 
         roomSettingService.saveRoomSettingsToRedis(room.getId(), roomRequestDto);
 
@@ -155,7 +153,6 @@ public class LobbyService {
         Long hostId = room.getHostId();
         return hostId != null && hostId.equals(userId);
     }
-
 
     public RoomDetailResponseDto getRoomDetail(Long roomId, String password) {
         Room room = findByRoomId(roomId);
