@@ -61,7 +61,7 @@ public class MemberProfileService {
         }
     }
 
-    //TODO: nickname 임시로 처리했음 수정 필요
+    // TODO: nickname 임시로 처리했음 수정 필요
     public void createProfile(Long userId, String tempNickname) {
         MemberProfile profile = new MemberProfile(userId, tempNickname);
 

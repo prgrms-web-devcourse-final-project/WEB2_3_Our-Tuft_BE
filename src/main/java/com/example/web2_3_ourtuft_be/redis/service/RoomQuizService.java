@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
@@ -38,12 +37,13 @@ public class RoomQuizService {
         return "quizSet:" + quizSetId;
     }
 
-    public boolean checkQuizIds(String roomId) {
-        Long quizSetId = getQuizSet(Long.parseLong(roomId));
 
+    public void checkQuizIds(String roomId) {
+        Long quizSetId = getQuizSet(Long.parseLong(roomId));
+        System.out.println(quizSetId);
         if (quizSetId == null) {
             webSocketService.sendGameEvent(roomId, "퀴즈가 등록되지 않았습니다.");
-            return false;
+            return;
         }
 
         String key = getQuizSetKey(quizSetId);
@@ -51,8 +51,6 @@ public class RoomQuizService {
         Boolean exists = redisTemplate.hasKey(key);
 
         if (!exists) setQuizSet(quizSetId);
-
-        return true;
     }
 
     public void setQuizSet(Long quizSetId) {
@@ -75,7 +73,7 @@ public class RoomQuizService {
 
         for (String quizId : quizIds) {
             String key = getQuizSetKey(quizSetId);
-
+   
             redisTemplate.opsForSet().add(key, quizId);
             redisTemplate.expire(key, Duration.ofHours(1));
         }

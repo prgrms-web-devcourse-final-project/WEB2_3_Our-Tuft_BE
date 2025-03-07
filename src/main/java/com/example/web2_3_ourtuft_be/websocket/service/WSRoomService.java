@@ -1,8 +1,8 @@
 package com.example.web2_3_ourtuft_be.websocket.service;
 
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
+import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -16,15 +16,39 @@ public class WSRoomService {
     private final ParticipantService participantService;
     private final WebSocketService webSocketService;
     private final LobbyService lobbyService;
+    private final WSGameService wsGameService;
+    private final RoomQuizService roomQuizService;
 
     public void handleRoomEvent(
             SimpMessageHeaderAccessor headerAccessor, String roomId, String event) {
-        if ("PLAYER_CHANGE_READY".equals(event)) changeReadyStatus(headerAccessor, roomId);
-        if ("SWITCHING_ROOM_TO_GAME".equals(event)) changeDisconnectionFlag(headerAccessor);
+
+        if (event.contains("PLAYER_CHANGE_READY")) changeReadyStatus(headerAccessor, roomId);
+        if (event.contains("SWITCHING_ROOM_TO_GAME")) {
+            roomQuizService.checkQuizIds(roomId);
+            savePlayerCount(roomId);
+        }
+        if (event.contains("GAME_STARTED")) {
+            wsGameService.startGame(roomId);
+        }
     }
 
-    private void changeDisconnectionFlag(SimpMessageHeaderAccessor headerAccessor) {
-        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("isSwitchingGame", true);
+    private void existsQuizSet(String roomId) {}
+
+    //    private void changeDisconnectionFlag(SimpMessageHeaderAccessor headerAccessor) {
+    //        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("isSwitchingGame",
+    // true);
+    //    }
+
+    private void savePlayerCount(String roomId) {
+        String key = participantService.getParticipantsInfoKey(roomId);
+        int count = redisTemplate.opsForHash().keys(key).size();
+
+        String totalCntKey = participantService.getPlayerTotalCountKey(roomId);
+        redisTemplate.opsForValue().set(totalCntKey, String.valueOf(count));
+
+        redisTemplate
+                .opsForValue()
+                .set(participantService.getPlayerCurrentCountKey(roomId), String.valueOf(0));
     }
 
     private void changeReadyStatus(SimpMessageHeaderAccessor headerAccessor, String roomId) {
@@ -51,7 +75,6 @@ public class WSRoomService {
     }
 
     private void addPlayerToRoom(String roomId, String userId, String username) {
-
         String participantOrderKey = participantService.getParticipantsOrderKey(roomId);
         String participantInfoKey = participantService.getParticipantsInfoKey(roomId);
 
