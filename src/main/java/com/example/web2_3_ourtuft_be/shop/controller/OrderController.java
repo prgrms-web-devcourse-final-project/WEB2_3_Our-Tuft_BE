@@ -6,7 +6,6 @@ import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
 import com.example.web2_3_ourtuft_be.shop.dto.OrderListResponse;
 import com.example.web2_3_ourtuft_be.shop.dto.OrderRequest;
 import com.example.web2_3_ourtuft_be.shop.service.OrderFacadeService;
-import com.example.web2_3_ourtuft_be.user.dto.WishItemRequestDto;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.service.UserFacadeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,8 +50,7 @@ public class OrderController {
     })
     @PostMapping("/wishlist/{itemId}")
     public ResponseEntity<GlobalResponse<String>> addWishItem(
-            @PathVariable Long itemId,
-            @AuthenticationPrincipal(expression = "user") User user) {
+            @PathVariable Long itemId, @AuthenticationPrincipal(expression = "user") User user) {
         userFacadeService.AddWishItem(user.getId(), itemId);
         return ResponseEntity.ok(GlobalResponse.success("상품을 위시리스트에 추가했습니다."));
     }
