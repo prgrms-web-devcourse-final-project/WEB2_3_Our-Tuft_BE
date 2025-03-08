@@ -62,8 +62,9 @@ public class UserFacadeService {
 
     // TODO : 유저정보 조회와 프로필 조회에서 다른점이 없다면 제거 후, userInfo 만 사용하기
     @Transactional(readOnly = true)
-    public UserInfoResponseDto getMyInfo(Long userId) {
-        return getUserInfo(userId);
+    public MyInfoResponseDto getMyInfo(Long userId) {
+        UserInfoResponseDto userInfo = getUserInfo(userId);
+        return new MyInfoResponseDto(userId, userInfo);
     }
 
     @Transactional
@@ -87,7 +88,7 @@ public class UserFacadeService {
 
         profileService.updateMemberProfile(userId, request.getIntroduction(), equipItems);
 
-        return getMyInfo(userId);
+        return getUserInfo(userId);
     }
 
     @Transactional
