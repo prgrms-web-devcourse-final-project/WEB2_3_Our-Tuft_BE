@@ -21,8 +21,9 @@ public class ParticipantService {
     public String getParticipantsOrderKey(String roomId) {
         return "room:participants:order:" + roomId;
     }
+
     public String getfinishUserKey(String roomId) {
-        return "room:participants:finish:" +roomId ;
+        return "room:participants:finish:" + roomId;
     }
 
     // 참여자 id,닉네임 관리

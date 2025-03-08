@@ -112,6 +112,5 @@ public class GameService {
             playerScores.add(playerScoreDto);
         }
         return playerScores;
-
     }
 }

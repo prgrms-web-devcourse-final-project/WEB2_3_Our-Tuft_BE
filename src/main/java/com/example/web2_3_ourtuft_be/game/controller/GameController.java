@@ -32,8 +32,7 @@ public class GameController {
             @AuthenticationPrincipal(expression = "user") User user) {
 
         OXResponseDto response =
-                oxQuizService.checkAnswer(
-                        user.getId(), roomId, round, requestDto.getAnswer());
+                oxQuizService.checkAnswer(user.getId(), roomId, round, requestDto.getAnswer());
 
         return ResponseEntity.ok(response);
     }
@@ -63,6 +62,4 @@ public class GameController {
         gameService.initializePlayerScores(roomId);
         return ResponseEntity.ok(GlobalResponse.success("스코어 세팅"));
     }
-
-
 }
