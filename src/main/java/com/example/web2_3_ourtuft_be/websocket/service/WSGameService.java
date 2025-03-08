@@ -5,6 +5,7 @@ import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomSettingService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
+import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import java.util.HashMap;
 import java.util.Map;
@@ -147,7 +148,8 @@ public class WSGameService {
             gameSchedulers.remove(roomId);
         }
 
-        lobbyService.createRoom(getCreateRoomDTO(roomId), Long.valueOf(winnerId));
+        RoomResponseDto dto = lobbyService.createRoom(getCreateRoomDTO(roomId), Long.valueOf(winnerId));
+        webSocketService.sendGameEvent(roomId, "NEW_ROOM_CREATED_" + dto.getRoomId());
         deleteGameInfo(roomId);
     }
 
