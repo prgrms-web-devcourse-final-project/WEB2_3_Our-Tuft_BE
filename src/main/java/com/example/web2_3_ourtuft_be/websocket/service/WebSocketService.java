@@ -37,6 +37,11 @@ public class WebSocketService {
                 userId, "/topic/room/" + roomId, WebSocketResponse.Send.of(userId, message));
     }
 
+    public void sendGameSystemMessageToUser(String userId, String roomId, String message) {
+        messagingTemplate.convertAndSendToUser(
+                userId, "/topic/game/" + roomId, WebSocketResponse.Send.of("System", message));
+    }
+
     public void sendEvent(String roomId, String event) {
         messagingTemplate.convertAndSend(
                 "/topic/room/" + roomId, WebSocketResponse.SendEvent.of(event));
@@ -57,8 +62,24 @@ public class WebSocketService {
                 "/topic/game/" + roomId, WebSocketResponse.Send.of("SYSTEM", message));
     }
 
-    public void sendGameQuizMessage(String roomId, String type, String message) {
+    public void sendGameMessage(String roomId, String username, String message) {
         messagingTemplate.convertAndSend(
-                "/topic/game/" + roomId, WebSocketResponse.Send.of(type, message));
+                "/topic/game/" + roomId, WebSocketResponse.Send.of(username, message));
+    }
+
+    public void sendGameQuizMessage(String roomId, String type, String message) {
+
+        if ("question".equals(type)) {
+            messagingTemplate.convertAndSend(
+                    "/topic/game/" + roomId, WebSocketResponse.SendQuestion.of(message));
+        }
+        if ("answer".equals(type)) {
+            messagingTemplate.convertAndSend(
+                    "/topic/game/" + roomId, WebSocketResponse.SendAnswer.of(message));
+        }
+        if ("hint".equals(type)) {
+            messagingTemplate.convertAndSend(
+                    "/topic/game/" + roomId, WebSocketResponse.SendHint.of(message));
+        }
     }
 }

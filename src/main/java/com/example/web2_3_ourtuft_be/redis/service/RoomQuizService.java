@@ -19,7 +19,7 @@ public class RoomQuizService {
     private final QuizRepository quizRepository;
     private final WebSocketService webSocketService;
 
-    private String getRoomQuizSetKey(Long roomId) {
+    public String getRoomQuizSetKey(Long roomId) {
         return "room:quizset:" + roomId;
     }
 
@@ -31,11 +31,11 @@ public class RoomQuizService {
         return "quiz:" + quizId;
     }
 
-    private String getQuizSetKey(Long quizSetId) {
+    public String getQuizSetKey(Long quizSetId) {
         return "quizSet:" + quizSetId;
     }
 
-    private String getQuizOrderKey(String roomId) {
+    public String getQuizOrderKey(String roomId) {
         return "quiz:order:" + roomId;
     }
 
@@ -118,7 +118,7 @@ public class RoomQuizService {
     // 퀴즈 세트 설정
     public void setQuizSet(Long roomId, Long quizSetId) {
         redisTemplate.opsForValue().set(getRoomQuizSetKey(roomId), String.valueOf(quizSetId));
-        webSocketService.sendSystemMessage(String.valueOf(roomId), "퀴즈가 선택이 완료되었습니다");
+        webSocketService.sendSystemMessage(String.valueOf(roomId), "퀴즈 선택이 완료되었습니다");
     }
 
     // 퀴즈 세트 가져오기

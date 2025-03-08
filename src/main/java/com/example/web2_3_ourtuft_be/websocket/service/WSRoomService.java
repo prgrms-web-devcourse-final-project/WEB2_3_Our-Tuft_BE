@@ -2,6 +2,7 @@ package com.example.web2_3_ourtuft_be.websocket.service;
 
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
+import com.example.web2_3_ourtuft_be.redis.service.RoomSettingService;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,6 +19,7 @@ public class WSRoomService {
     private final LobbyService lobbyService;
     private final WSGameService wsGameService;
     private final RoomQuizService roomQuizService;
+    private final RoomSettingService roomSettingService;
 
     public void handleRoomEvent(
             SimpMessageHeaderAccessor headerAccessor, String roomId, String event) {
@@ -27,13 +29,6 @@ public class WSRoomService {
             if (roomQuizService.checkQuizIds(roomId)) savePlayerCount(roomId);
         if (event.contains("GAME_STARTED")) wsGameService.startGame(roomId);
     }
-
-    private void existsQuizSet(String roomId) {}
-
-    //    private void changeDisconnectionFlag(SimpMessageHeaderAccessor headerAccessor) {
-    //        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("isSwitchingGame",
-    // true);
-    //    }
 
     private void savePlayerCount(String roomId) {
         String key = participantService.getParticipantsInfoKey(roomId);
@@ -81,7 +76,11 @@ public class WSRoomService {
 
         if (!"lobby".equals(roomId)) {
             String readyStatusKey = participantService.getReadyStatusKey(roomId);
-            redisTemplate.opsForHash().put(readyStatusKey, userId, "false");
+
+            Boolean exists = redisTemplate.opsForHash().hasKey(readyStatusKey, userId);
+            if (!exists) {
+                redisTemplate.opsForHash().put(readyStatusKey, userId, "false");
+            }
         }
     }
 
@@ -99,28 +98,32 @@ public class WSRoomService {
     }
 
     public void removePlayer(String roomId, String userId, String username) {
-
         boolean isLobby = "lobby".equals(roomId);
-        boolean isHost = lobbyService.isHost(Long.valueOf(roomId), Long.valueOf(userId));
+        boolean isHost = false;
+
+        if (!isLobby) {
+            isHost = lobbyService.isHost(Long.valueOf(roomId), Long.valueOf(userId));
+        }
+
         int remaining = participantService.getPlayersInRoom(roomId).size();
 
         removePlayerFromRoom(roomId, userId);
 
-        if (remaining == 1) {
-            lobbyService.deleteRoom(Long.valueOf(roomId));
-            return;
-        }
-
-        if (!isLobby && isHost) {
-            String newHostId = participantService.getNextHost(roomId);
-            if (newHostId != null) {
-                lobbyService.changeRoomHost(Long.valueOf(roomId), Long.parseLong(newHostId));
-                webSocketService.sendEvent(roomId, "HOST_CHANGED");
-                webSocketService.sendSystemMessage(roomId, "방장이 변경되었습니다.");
-            }
-        }
-
         if (!isLobby) {
+            if (remaining == 1) {
+                lobbyService.deleteRoom(Long.valueOf(roomId));
+                return;
+            }
+
+            if (isHost) {
+                String newHostId = participantService.getNextHost(roomId);
+                if (newHostId != null) {
+                    lobbyService.changeRoomHost(Long.valueOf(roomId), Long.parseLong(newHostId));
+                    webSocketService.sendEvent(roomId, "HOST_CHANGED");
+                    webSocketService.sendSystemMessage(roomId, "방장이 변경되었습니다.");
+                }
+            }
+
             webSocketService.sendEvent(roomId, "PLAYER_DISCONNECTED");
             webSocketService.sendSystemMessage(roomId, username + "님이 퇴장하였습니다");
         }

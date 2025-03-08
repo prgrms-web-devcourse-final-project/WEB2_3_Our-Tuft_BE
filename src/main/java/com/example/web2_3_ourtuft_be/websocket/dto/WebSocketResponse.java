@@ -19,4 +19,16 @@ public record WebSocketResponse() {
             return new SendQuestion(question);
         }
     }
+
+    public record SendAnswer(String answer) {
+        public static SendAnswer of(String answer) {
+            return new SendAnswer(answer);
+        }
+    }
+
+    public record SendHint(String hint) {
+        public static SendHint of(String hint) {
+            return new SendHint(hint);
+        }
+    }
 }
