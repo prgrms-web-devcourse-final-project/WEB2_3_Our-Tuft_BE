@@ -61,14 +61,24 @@ public class ParticipantService {
                 .opsForZSet()
                 .add(participantsOrderKey, playerId.toString(), getTimeStamp()); // 타임스탬프로 입장 순서 관리
         redisTemplate.opsForHash().put(participantsInfoKey, playerId.toString(), username);
-        redisTemplate
-                .opsForHash()
-                .put(readyStatusKey, playerId.toString(), "true"); // 입장시 준비 상태 false
+        redisTemplate.opsForHash().put(readyStatusKey, playerId.toString(), "true");
     }
 
     // 플레이어 준비 상태 토글
     public void togglePlayerReady(Long roomId, Long playerId) {
         String key = getReadyStatusKey(roomId.toString());
+
+        if (redisTemplate.opsForHash().get(key, playerId.toString()).equals("true")) {
+            redisTemplate.opsForHash().put(key, playerId.toString(), "false");
+        } else {
+            redisTemplate.opsForHash().put(key, playerId.toString(), "true");
+        }
+    }
+
+    public void changeReadyForNewHost(Long roomId, Long playerId) {
+        String key = getReadyStatusKey(roomId.toString());
+
+        redisTemplate.opsForHash().put(key, playerId.toString(), "true");
     }
 
     public void removeParticipant(Long roomId, Long userId) {

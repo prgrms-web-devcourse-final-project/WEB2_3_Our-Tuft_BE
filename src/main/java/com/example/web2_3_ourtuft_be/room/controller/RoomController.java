@@ -30,7 +30,7 @@ public class RoomController {
         return ResponseEntity.ok(
                 GlobalResponse.success(
                         RoomResponseDto.GetPlayersInRoom.of(
-                                roomService.getHostIdByRoomId(Long.valueOf(roomId)),
+                                roomService.getHostIdByRoomId(roomId),
                                 participantService.getPlayersInRoom(roomId))));
     }
 

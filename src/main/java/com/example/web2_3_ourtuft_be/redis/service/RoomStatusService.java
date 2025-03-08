@@ -19,6 +19,10 @@ public class RoomStatusService {
         return "room:round:" + roomId;
     }
 
+    public void deleteRound(Long roomId) {
+        redisTemplate.delete(getRoundKey(roomId));
+    }
+
     // 게임 상태 저장
     public void setGameStatus(Long roomId, String status) {
         redisTemplate.opsForValue().set(getStatusKey(roomId), status);
@@ -40,5 +44,9 @@ public class RoomStatusService {
     public int getCurrentRound(Long roomId) {
         String round = redisTemplate.opsForValue().get(getRoundKey(roomId));
         return (round != null) ? Integer.parseInt(round) : 0;
+    }
+
+    public void deleteReadyStatus(Long roomId) {
+        redisTemplate.delete(getStatusKey(roomId));
     }
 }

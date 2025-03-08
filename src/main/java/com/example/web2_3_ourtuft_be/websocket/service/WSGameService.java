@@ -4,8 +4,11 @@ import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomSettingService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
+import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
+import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,16 +22,18 @@ public class WSGameService {
 
     private final RoomQuizService roomQuizService;
     private final WebSocketService webSocketService;
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
     private final ParticipantService participantService;
     private final RoomStatusService roomStatusService;
     private final RoomSettingService roomSettingService;
     private final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
     private final Map<String, ScheduledFuture<?>> gameSchedulers = new HashMap<>();
+    private final LobbyService lobbyService;
 
     public void gameSetting(String roomId, SimpMessageHeaderAccessor headerAccessor) {
         roomStatusService.setGameStatus(Long.valueOf(roomId), "RUNNING");
         roomStatusService.setCurrentRound(Long.valueOf(roomId), 1);
+        initializePlayerScores(roomId);
     }
 
     public void startGame(String roomId) {
@@ -51,19 +56,63 @@ public class WSGameService {
         gameSchedulers.put(roomId, scheduledFuture);
     }
 
-    public void sendQuiz(String roomId, int totalRound) {
-        int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
+    public void submitAnswer(
+            String roomId, SimpMessageHeaderAccessor headerAccessor, String answer) {
+        String userId = webSocketService.getUserIdFromSession(headerAccessor);
+        String username = webSocketService.getUsernameFromSession(headerAccessor);
 
-        if (currentRound > totalRound) {
-            webSocketService.sendGameSystemMessage(roomId, "게임이 종료되었습니다!");
+        int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
+        if (currentRound <= 0) {
+            webSocketService.sendGameMessage(roomId, username, answer);
             return;
         }
 
         String quizId = roomQuizService.getQuizIdByRoom(roomId, currentRound - 1);
+        if (quizId == null || quizId.trim().isEmpty()) {
+            webSocketService.sendGameMessage(roomId, username, answer);
+            return;
+        }
+
+        Long quizIdLong;
+        try {
+            quizIdLong = Long.valueOf(quizId);
+        } catch (NumberFormatException e) {
+            webSocketService.sendGameMessage(roomId, username, answer);
+            return;
+        }
+
+        String quizKey = roomQuizService.getQuizKey(quizIdLong);
+        String correctAnswer = roomQuizService.getQuizDetail("answer", quizKey);
+
+        if (correctAnswer == null) {
+            webSocketService.sendGameMessage(roomId, username, answer);
+            return;
+        }
+
+        if (answer.trim().equalsIgnoreCase(correctAnswer.trim())) {
+            incrementPlayerScore(roomId, userId);
+            webSocketService.sendGameSystemMessageToUser(userId, roomId, "정답입니다!");
+            webSocketService.sendGameSystemMessage(roomId, username + "님이 정답을 맞추셨습니다!");
+        } else webSocketService.sendGameMessage(roomId, username, answer);
+    }
+
+    public void sendQuiz(String roomId, int totalRound) {
+        int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
+
+        if (currentRound > totalRound) {
+            webSocketService.sendGameSystemMessage(roomId, "게임이 종료되었습니다.");
+            endGame(roomId, getWinnerId(roomId));
+            return;
+        }
+
+        webSocketService.sendGameSystemMessage(roomId, currentRound + " 라운드가 시작됩니다.");
+
+        String quizId = roomQuizService.getQuizIdByRoom(roomId, currentRound - 1);
 
         if (quizId == null || quizId.trim().isEmpty()) {
-            System.err.println("퀴즈 ID가 null이거나 빈 문자열입니다. currentRound: " + currentRound);
-            webSocketService.sendGameSystemMessage(roomId, "퀴즈를 불러오는 중 오류가 발생했습니다.");
+            webSocketService.sendGameSystemMessage(roomId, "모든 퀴즈가 소진되었습니다.");
+            webSocketService.sendGameSystemMessage(roomId, "게임이 종료되었습니다.");
+            endGame(roomId, getWinnerId(roomId));
             return;
         }
 
@@ -73,32 +122,72 @@ public class WSGameService {
         } catch (NumberFormatException e) {
             System.err.println("퀴즈 ID 변환 실패: " + quizId);
             webSocketService.sendGameSystemMessage(roomId, "퀴즈 ID 형식 오류가 발생했습니다.");
+            webSocketService.sendGameSystemMessage(roomId, "게임을 종료합니다.");
             return;
         }
 
         String quizKey = roomQuizService.getQuizKey(quizIdLong);
-
-        if (quizKey == null || quizKey.trim().isEmpty()) {
-            System.err.println("퀴즈 키가 null이거나 빈 문자열입니다. quizId: " + quizId);
-            webSocketService.sendGameSystemMessage(roomId, "퀴즈 키를 불러오는 중 오류가 발생했습니다.");
-            return;
-        }
-
         String question = roomQuizService.getQuizDetail("question", quizKey);
-        String answer = roomQuizService.getQuizDetail("answer", quizKey);
-        String hint = roomQuizService.getQuizDetail("hint", quizKey);
 
-        if (question == null || answer == null || hint == null) {
+        if (question == null) {
             System.err.println("퀴즈 상세 정보를 불러오지 못했습니다. quizKey: " + quizKey);
             webSocketService.sendGameSystemMessage(roomId, "퀴즈 상세 정보 오류");
+            webSocketService.sendGameSystemMessage(roomId, "게임을 종료합니다.");
             return;
         }
 
         webSocketService.sendGameQuizMessage(roomId, "question", question);
-        webSocketService.sendGameQuizMessage(roomId, "answer", answer);
-        webSocketService.sendGameQuizMessage(roomId, "hint", hint);
-
         roomStatusService.setCurrentRound(Long.valueOf(roomId), currentRound + 1);
+    }
+
+    public void endGame(String roomId, String winnerId) {
+        ScheduledFuture<?> scheduledFuture = gameSchedulers.get(roomId);
+        if (scheduledFuture != null) {
+            scheduledFuture.cancel(false);
+            gameSchedulers.remove(roomId);
+        }
+
+        lobbyService.createRoom(getCreateRoomDTO(roomId), Long.valueOf(winnerId));
+        deleteGameInfo(roomId);
+    }
+
+    public String getWinnerId(String roomId) {
+        String playerScoreKey = getPlayerScoreKey(roomId);
+
+        Set<String> topScorerSet = redisTemplate.opsForZSet().reverseRange(playerScoreKey, 0, 0);
+        if (topScorerSet == null || topScorerSet.isEmpty()) {
+            return "";
+        }
+
+        return topScorerSet.iterator().next();
+    }
+
+    private RoomRequestDto getCreateRoomDTO(String roomId) {
+        return roomSettingService.getRoomSettingsFromRedis(roomId);
+    }
+
+    private void deleteGameInfo(String roomId) {
+        deletePlayerCount(roomId);
+        deleteGame(roomId);
+        deleteQuizInfo(roomId);
+        roomSettingService.deleteRoomSettingToRedis(roomId);
+        roomStatusService.deleteReadyStatus(Long.valueOf(roomId));
+        roomStatusService.deleteRound(Long.valueOf(roomId));
+    }
+
+    private void deleteQuizInfo(String roomId) {
+        redisTemplate.delete(roomQuizService.getQuizOrderKey(roomId));
+        redisTemplate.delete(roomQuizService.getRoomQuizSetKey(Long.valueOf(roomId)));
+    }
+
+    private void deletePlayerCount(String roomId) {
+        redisTemplate.delete(participantService.getPlayerTotalCountKey(roomId));
+        redisTemplate.delete(participantService.getPlayerCurrentCountKey(roomId));
+    }
+
+    private void deleteGame(String roomId) {
+        redisTemplate.delete(getPlayerInfoKey(roomId));
+        redisTemplate.delete(getPlayerOrderKey(roomId));
     }
 
     private String getTotalRound(String roomId) {
@@ -169,6 +258,24 @@ public class WSGameService {
         setPlayerCurrentCount(roomId);
     }
 
+    public void initializePlayerScores(String roomId) {
+        String playerScoreKey = getPlayerScoreKey(roomId);
+        String playerOrderKey = getPlayerOrderKey(roomId);
+
+        Set<String> range = redisTemplate.opsForZSet().range(playerOrderKey, 0, -1);
+
+        if (range != null) {
+            for (String player : range) {
+                redisTemplate.opsForZSet().add(playerScoreKey, player, 0);
+            }
+        }
+    }
+
+    public void incrementPlayerScore(String roomId, String playerId) {
+        String playerScoreKey = getPlayerScoreKey(roomId);
+        redisTemplate.opsForZSet().incrementScore(playerScoreKey, playerId, 1);
+    }
+
     private String getPlayerOrderKey(String roomId) {
         return "game:participants:order:" + roomId;
     }
@@ -177,40 +284,7 @@ public class WSGameService {
         return "game:participants:info:" + roomId;
     }
 
-    private void validateQuizRedis(String roomId) {}
-
-    //    // 게임방에서 보내는 채팅
-    //    // 정답 체크 필요
-    //    public void processGameRoom(
-    //            SimpMessageHeaderAccessor headerAccessor, Long roomId, String message) {
-    //
-    //        String userId = getUserIdFromSession(headerAccessor);
-    //        String username = getUsernameFromSession(headerAccessor);
-    //        String gameStatus = roomStatusService.getGameStatus(roomId);
-    //
-    //        // 게임이 진행 중 일때
-    //        if (gameStatus.equals(GameStatus.RUNNING.name())) {
-    //            String correctAnswer = getCorrectAnswerFromRedis(roomId);
-    //
-    //            if (correctAnswer.equalsIgnoreCase(message.trim())) { // 정답 맞췄을 때 - 대소문자 구분없이 비교
-    //                increaseUserScore(roomId, userId);
-    //
-    //                sendSystemMessageToUser(userId, roomId, "정답입니다!");
-    //                sendSystemMessage(String.valueOf(roomId), username + "님이 정답을 맞췄습니다!");
-    //
-    //                return;
-    //            }
-    //        }
-    //        messagingTemplate.convertAndSend(
-    //                "/topic/gameRoom/" + roomId, WebSocketResponse.Send.of(username, message));
-    //    }
-    //
-    //    // TODO: 현재 라운드 정답 가져오는 함수
-    //    public String getCorrectAnswerFromRedis(Long roomId) {
-    //
-    //        return "함수 채워야함";
-    //    }
-    //
-    //    public void increaseUserScore(Long roomId, String userId) {
-    //    }
+    public String getPlayerScoreKey(String roomId) {
+        return "game:participants:score:" + roomId;
+    }
 }

@@ -137,6 +137,8 @@ public class LobbyService {
 
         room.changeHost(newHost.getId());
 
+        participantService.changeReadyForNewHost(room.getId(), newHost.getId());
+
         roomRepository.save(room);
     }
 

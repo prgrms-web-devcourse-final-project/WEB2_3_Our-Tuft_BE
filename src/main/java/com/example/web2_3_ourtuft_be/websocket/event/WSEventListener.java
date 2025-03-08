@@ -3,6 +3,7 @@ package com.example.web2_3_ourtuft_be.websocket.event;
 import com.example.web2_3_ourtuft_be.websocket.service.WSGameService;
 import com.example.web2_3_ourtuft_be.websocket.service.WSRoomService;
 import com.example.web2_3_ourtuft_be.websocket.service.WebSocketService;
+import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,45 +26,75 @@ public class WSEventListener {
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
+        Map<String, Object> sessionAttributes =
+                Objects.requireNonNull(accessor.getSessionAttributes());
 
-        String roomId =
-                (String) Objects.requireNonNull(accessor.getSessionAttributes()).get("roomId");
-        String userId = (String) accessor.getSessionAttributes().get("userId");
-        String username = (String) accessor.getSessionAttributes().get("username");
+        String currentRoomId = (String) sessionAttributes.get("roomId");
+        String userId = (String) sessionAttributes.get("userId");
+        String username = (String) sessionAttributes.get("username");
 
-        wsRoomService.removePlayer(roomId, userId, username);
-        log.info("roomId: {}, userId: {} disconnected", roomId, userId);
+        if (currentRoomId != null) {
+            wsRoomService.removePlayer(currentRoomId, userId, username);
+            sessionAttributes.remove("roomId");
+            log.info(
+                    "roomId: {}, userId: {}, username: {} disconnected",
+                    currentRoomId,
+                    userId,
+                    username);
+        } else {
+            log.info("User {} ({}) disconnected (no subscribed room)", userId, username);
+        }
     }
 
     @EventListener
     public void handleWebSocketSubscribeListener(SessionSubscribeEvent event) {
         SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
-
         String destination = accessor.getDestination();
+        Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
 
-        if (Objects.requireNonNull(destination).contains("/topic/room/")) {
-            String roomId = parseRoomId(Objects.requireNonNull(destination));
-            Objects.requireNonNull(accessor.getSessionAttributes()).put("roomId", roomId);
+        String newRoomId = parseRoomId(destination);
+        String currentRoomId = (String) sessionAttributes.get("roomId");
 
-            log.info("Subscribed to room {}", roomId);
+        if (currentRoomId != null) {
+            if (!newRoomId.equals(currentRoomId)) {
+                wsRoomService.removePlayer(
+                        currentRoomId,
+                        (String) sessionAttributes.get("userId"),
+                        (String) sessionAttributes.get("username"));
+                sessionAttributes.put("roomId", newRoomId);
+                log.info("Room changed from {} to {}", currentRoomId, newRoomId);
+            } else {
+                log.info("Already subscribed to room {}", currentRoomId);
+            }
+        } else {
+            sessionAttributes.put("roomId", newRoomId);
+            log.info("Subscribed to room {}", newRoomId);
         }
     }
 
     @EventListener
     public void handleWebSocketUnsubscribeListener(SessionUnsubscribeEvent event) {
         SimpMessageHeaderAccessor accessor = SimpMessageHeaderAccessor.wrap(event.getMessage());
+        Map<String, Object> sessionAttributes =
+                Objects.requireNonNull(accessor.getSessionAttributes());
 
-        String roomId =
-                (String) Objects.requireNonNull(accessor.getSessionAttributes()).get("roomId");
-        String userId = (String) accessor.getSessionAttributes().get("userId");
-        String username = (String) accessor.getSessionAttributes().get("username");
+        String roomId = (String) sessionAttributes.get("roomId");
+        String userId = (String) sessionAttributes.get("userId");
+        String username = (String) sessionAttributes.get("username");
 
-        wsRoomService.removePlayer(roomId, userId, username);
-        log.info("roomId: {}, userId: {} unsubscribe", roomId, userId);
+        if (roomId != null) {
+            wsRoomService.removePlayer(roomId, userId, username);
+            log.info("roomId: {}, userId: {} unsubscribe", roomId, userId);
+            sessionAttributes.remove("roomId");
+        }
     }
 
     private String parseRoomId(String destination) {
         String[] parts = destination.split("/");
+        String channelType = parts[2];
+
+        if (channelType.equals("game")) return "game";
+
         return parts[parts.length - 1];
     }
 }
