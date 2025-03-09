@@ -22,11 +22,19 @@ public class WSGameController {
         wsGameService.addPlayer(headerAccessor, roomId);
     }
 
-    @MessageMapping("/game/{roomId}")
+    @MessageMapping("/game/{roomId}/speed")
     public void processGameMessage(
             @DestinationVariable String roomId,
             SimpMessageHeaderAccessor headerAccessor,
             String message) {
         wsGameService.submitAnswer(roomId, headerAccessor, message);
+    }
+
+    @MessageMapping("/game/{roomId}/ox")
+    public void processOXGameMessage(
+            @DestinationVariable String roomId,
+            SimpMessageHeaderAccessor headerAccessor,
+            String message) {
+        wsGameService.submitOXAnswer(roomId, headerAccessor, message);
     }
 }
