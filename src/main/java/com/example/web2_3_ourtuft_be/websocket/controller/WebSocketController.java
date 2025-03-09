@@ -29,11 +29,9 @@ public class WebSocketController {
     public void processGameMessage(
             @DestinationVariable String roomId,
             SimpMessageHeaderAccessor headerAccessor,
-            String message
-    ) {
+            String message) {
         String username = webSocketService.getUsernameFromSession(headerAccessor);
 
         webSocketService.sendGameMessage(roomId, username, message);
     }
-
 }

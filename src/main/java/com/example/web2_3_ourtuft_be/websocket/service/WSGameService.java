@@ -37,22 +37,27 @@ public class WSGameService {
         initializePlayerScores(roomId);
     }
 
-    public void startGame(String roomId) {
+    public void startGame(SimpMessageHeaderAccessor headerAccessor, String roomId) {
         int totalRound = Integer.parseInt(getTotalRound(roomId));
         int timeLimit = Integer.parseInt(getTimeLimit(roomId));
 
         roomQuizService.setQuiz(roomId, totalRound);
 
         // FixedDelay
-        scheduledQuizWithFixedDelay(roomId, totalRound, timeLimit);
+        scheduledQuizWithFixedDelay(headerAccessor, roomId, totalRound, timeLimit);
     }
 
-    private void scheduledQuizWithFixedDelay(String roomId, int totalRound, int timeLimit) {
+    private void scheduledQuizWithFixedDelay(
+            SimpMessageHeaderAccessor headerAccessor,
+            String roomId,
+            int totalRound,
+            int timeLimit) {
         taskScheduler.initialize();
 
         ScheduledFuture<?> scheduledFuture =
                 taskScheduler.scheduleWithFixedDelay(
-                        () -> sendQuiz(roomId, totalRound), timeLimit * 1000L); // timeLimit 초 이후 실행
+                        () -> sendQuiz(headerAccessor, roomId, totalRound),
+                        timeLimit * 1000L); // timeLimit 초 이후 실행
 
         gameSchedulers.put(roomId, scheduledFuture);
     }
@@ -137,14 +142,14 @@ public class WSGameService {
         } else webSocketService.sendGameEvent(roomId, "PLAYER_" + userId + "_UNCORRECTED");
     }
 
-    public void sendQuiz(String roomId, int totalRound) {
+    public void sendQuiz(SimpMessageHeaderAccessor headerAccessor, String roomId, int totalRound) {
 
         int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
         currentRound += 1;
         roomStatusService.setCurrentRound(Long.valueOf(roomId), currentRound);
         if (currentRound > totalRound) {
             webSocketService.sendGameSystemMessage(roomId, "게임이 종료되었습니다.");
-            endGame(roomId, getWinnerId(roomId));
+            endGame(headerAccessor, roomId, getWinnerId(roomId));
             return;
         }
 
@@ -154,7 +159,7 @@ public class WSGameService {
         if (quizId == null || quizId.trim().isEmpty()) {
             webSocketService.sendGameSystemMessage(roomId, "모든 퀴즈가 소진되었습니다.");
             webSocketService.sendGameSystemMessage(roomId, "게임이 종료되었습니다.");
-            endGame(roomId, getWinnerId(roomId));
+            endGame(headerAccessor, roomId, getWinnerId(roomId));
             return;
         }
 
@@ -165,6 +170,7 @@ public class WSGameService {
             System.err.println("퀴즈 ID 변환 실패: " + quizId);
             webSocketService.sendGameSystemMessage(roomId, "퀴즈 ID 형식 오류가 발생했습니다.");
             webSocketService.sendGameSystemMessage(roomId, "게임을 종료합니다.");
+            endGame(headerAccessor, roomId, getWinnerId(roomId));
             return;
         }
 
@@ -175,14 +181,16 @@ public class WSGameService {
             System.err.println("퀴즈 상세 정보를 불러오지 못했습니다. quizKey: " + quizKey);
             webSocketService.sendGameSystemMessage(roomId, "퀴즈 상세 정보 오류");
             webSocketService.sendGameSystemMessage(roomId, "게임을 종료합니다.");
+            endGame(headerAccessor, roomId, getWinnerId(roomId));
             return;
         }
 
         webSocketService.sendGameQuizMessage(roomId, "question", question);
     }
 
-    public void endGame(String roomId, String winnerId) {
+    public void endGame(SimpMessageHeaderAccessor headerAccessor, String roomId, String winnerId) {
         endSchedule(roomId);
+        webSocketService.changeSessionFlag(headerAccessor);
         createNewRoom(roomId, winnerId);
         deleteGameInfo(roomId);
     }

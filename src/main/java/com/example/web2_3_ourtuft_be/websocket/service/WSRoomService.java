@@ -26,8 +26,12 @@ public class WSRoomService {
 
         if (event.contains("PLAYER_CHANGE_READY")) changeReadyStatus(headerAccessor, roomId);
         if (event.contains("SWITCHING_ROOM_TO_GAME"))
-            if (roomQuizService.checkQuizIds(roomId)) savePlayerCount(roomId);
-        if (event.contains("GAME_STARTED")) wsGameService.startGame(roomId);
+            if (roomQuizService.checkQuizIds(roomId)) {
+                savePlayerCount(roomId);
+                webSocketService.changeSessionFlag(headerAccessor);
+                lobbyService.changeRoomPlayingStatus(roomId);
+            }
+        if (event.contains("GAME_STARTED")) wsGameService.startGame(headerAccessor, roomId);
     }
 
     private void savePlayerCount(String roomId) {

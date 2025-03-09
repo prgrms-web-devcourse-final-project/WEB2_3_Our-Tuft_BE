@@ -40,6 +40,11 @@ public class Room extends BaseTime {
         currentRound = 0;
     }
 
+    public void changePlayingStatus() {
+        if (isGameRunning) this.isGameRunning = false;
+        else this.isGameRunning = true;
+    }
+
     public void nextRound() {
         currentRound++;
     }

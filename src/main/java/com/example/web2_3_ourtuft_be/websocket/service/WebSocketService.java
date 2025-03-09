@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.websocket.service;
 
 import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -62,7 +63,7 @@ public class WebSocketService {
                 "/topic/game/" + roomId, WebSocketResponse.Send.of("SYSTEM", message));
     }
 
-    public void sendGameMessage( String roomId, String username, String message) {
+    public void sendGameMessage(String roomId, String username, String message) {
         messagingTemplate.convertAndSend(
                 "/topic/game/" + roomId, WebSocketResponse.Send.of(username, message));
     }
@@ -81,5 +82,15 @@ public class WebSocketService {
             messagingTemplate.convertAndSend(
                     "/topic/game/" + roomId, WebSocketResponse.SendHint.of(message));
         }
+    }
+
+    public void changeSessionFlag(SimpMessageHeaderAccessor headerAccessor) {
+        Map<String, Object> session = headerAccessor.getSessionAttributes();
+        String flag = (String) session.get("changeRoomToGame");
+
+        if (flag == null || "true".equals(flag)) flag = "true";
+        else flag = "false";
+
+        session.put("changeRoomToGame", flag);
     }
 }
