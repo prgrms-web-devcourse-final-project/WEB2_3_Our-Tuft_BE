@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +42,12 @@ public class RoomController {
             @PathVariable("roomId") Long roomId, @PathVariable("quizSetId") Long quizSetId) {
         roomQuizService.setQuizSet(roomId, quizSetId);
         return ResponseEntity.ok(GlobalResponse.success("퀴즈 세트 지정 완료"));
+    }
+
+    @Operation(summary = "게임 방 유저 목록 조회 API", description = "게임 방의 플레이어 목록을 가져옵니다")
+    @GetMapping("/{roomId}/game/players")
+    public ResponseEntity<GlobalResponse<List<RoomResponseDto.GetPlayerInGame>>>
+            getGamePlayersInRoom(@PathVariable String roomId) {
+        return ResponseEntity.ok(GlobalResponse.success(roomService.getPlayersInGame(roomId)));
     }
 }
