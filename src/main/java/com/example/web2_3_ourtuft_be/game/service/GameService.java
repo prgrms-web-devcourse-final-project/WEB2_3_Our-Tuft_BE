@@ -1,10 +1,12 @@
 package com.example.web2_3_ourtuft_be.game.service;
 
+import com.example.web2_3_ourtuft_be.game.dto.GameResponse;
 import com.example.web2_3_ourtuft_be.game.dto.PlayerScoreDto;
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
+import com.example.web2_3_ourtuft_be.websocket.service.WSGameService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +26,7 @@ public class GameService {
     private final SimpMessagingTemplate messagingTemplate;
     private final ParticipantService participantService;
     private final RedisTemplate<String, String> redisTemplate;
+    private final WSGameService wsGameService;
 
     //    public void gameSet(Long roomId) {
     //
@@ -112,5 +115,29 @@ public class GameService {
             playerScores.add(playerScoreDto);
         }
         return playerScores;
+    }
+
+    public List<GameResponse.Scores> getGameScores(String roomId) {
+        Set<ZSetOperations.TypedTuple<String>> result =
+                redisTemplate
+                        .opsForZSet()
+                        .rangeWithScores("game:participants:score:" + roomId, 0, -1);
+
+        List<GameResponse.Scores> list = new ArrayList<>();
+
+        for (ZSetOperations.TypedTuple<String> tuple : result) {
+            String userId = tuple.getValue();
+            System.out.println(userId);
+            String score = String.valueOf(tuple.getScore());
+            String username =
+                    (String)
+                            redisTemplate
+                                    .opsForHash()
+                                    .get(wsGameService.getUsernameKey(roomId), userId);
+
+            list.add(GameResponse.Scores.from(username, score));
+        }
+
+        return list;
     }
 }

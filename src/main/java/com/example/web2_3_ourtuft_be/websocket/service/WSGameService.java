@@ -210,7 +210,6 @@ public class WSGameService {
         redisTemplate.opsForHash().put(key, userId, "false");
     }
 
-
     public void endGame(SimpMessageHeaderAccessor headerAccessor, String roomId, String winnerId) {
         endSchedule(roomId);
         webSocketService.changeSessionFlag(headerAccessor);
@@ -390,5 +389,9 @@ public class WSGameService {
 
     public String getPlayerCorrectFlagKey(String roomId) {
         return "game:participants:correct:" + roomId;
+    }
+
+    public String getUsernameKey(String roomId) {
+        return "game:participants:info:" + roomId;
     }
 }
