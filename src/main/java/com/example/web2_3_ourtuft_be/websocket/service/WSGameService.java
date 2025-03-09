@@ -67,6 +67,13 @@ public class WSGameService {
         String userId = webSocketService.getUserIdFromSession(headerAccessor);
         String username = webSocketService.getUsernameFromSession(headerAccessor);
 
+        String correctFlag = getPlayerCorrectFlag(roomId, userId);
+
+        if ("true".equals(correctFlag)) {
+            webSocketService.sendGameMessage(roomId, username, answer);
+            return;
+        }
+
         int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
         if (currentRound <= 0) {
             webSocketService.sendGameMessage(roomId, username, answer);
@@ -96,6 +103,7 @@ public class WSGameService {
         }
 
         if (answer.trim().equalsIgnoreCase(correctAnswer.trim())) {
+            changePlayerCorrectFlag(roomId, userId);
             incrementPlayerScore(roomId, userId);
             webSocketService.sendGameSystemMessageToUser(userId, roomId, "정답입니다!");
             webSocketService.sendGameSystemMessage(roomId, username + "님이 정답을 맞추셨습니다!");
@@ -104,9 +112,11 @@ public class WSGameService {
 
     public void submitOXAnswer(
             String roomId, SimpMessageHeaderAccessor headerAccessor, String answer) {
-
         String userId = webSocketService.getUserIdFromSession(headerAccessor);
         String username = webSocketService.getUsernameFromSession(headerAccessor);
+        String correctFlag = getPlayerCorrectFlag(roomId, userId);
+
+        if ("true".equals(correctFlag)) return;
 
         int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
         if (currentRound <= 0) {
@@ -137,12 +147,18 @@ public class WSGameService {
         }
 
         if (answer.trim().equalsIgnoreCase(correctAnswer.trim())) {
+            changePlayerCorrectFlag(roomId, userId);
             incrementPlayerScore(roomId, userId);
             webSocketService.sendGameEvent(roomId, "PLAYER_" + userId + "_CORRECTED");
-        } else webSocketService.sendGameEvent(roomId, "PLAYER_" + userId + "_UNCORRECTED");
+        } else {
+            webSocketService.sendGameEvent(roomId, "PLAYER_" + userId + "_UNCORRECTED");
+            changePlayerCorrectFlag(roomId, userId);
+        }
     }
 
     public void sendQuiz(SimpMessageHeaderAccessor headerAccessor, String roomId, int totalRound) {
+        String userId = webSocketService.getUserIdFromSession(headerAccessor);
+        setPlayerCorrectFlag(roomId, userId);
 
         int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
         currentRound += 1;
@@ -188,6 +204,11 @@ public class WSGameService {
         webSocketService.sendGameQuizMessage(roomId, "question", question);
     }
 
+    private void setPlayerCorrectFlag(String roomId, String userId) {
+        String key = getPlayerCorrectFlagKey(roomId);
+        redisTemplate.opsForHash().put(key, userId, "false");
+    }
+
     public void endGame(SimpMessageHeaderAccessor headerAccessor, String roomId, String winnerId) {
         endSchedule(roomId);
         webSocketService.changeSessionFlag(headerAccessor);
@@ -222,6 +243,14 @@ public class WSGameService {
 
     private RoomRequestDto getCreateRoomDTO(String roomId) {
         return roomSettingService.getRoomSettingsFromRedis(roomId);
+    }
+
+    private String getPlayerCorrectFlag(String roomId, String userId) {
+        String key = getPlayerCorrectFlagKey(roomId);
+
+        String flag = redisTemplate.opsForHash().get(key, userId).toString();
+
+        return flag != null ? flag : "false";
     }
 
     private void deleteGameInfo(String roomId) {
@@ -316,6 +345,17 @@ public class WSGameService {
         setPlayerCurrentCount(roomId);
     }
 
+    private void changePlayerCorrectFlag(String roomId, String userId) {
+        String key = getPlayerCorrectFlagKey(roomId);
+
+        if ("true".equals(redisTemplate.opsForHash().get(key, userId))
+                || redisTemplate.opsForHash().get(key, userId) == null) {
+            redisTemplate.opsForHash().put(key, userId, "false");
+        } else {
+            redisTemplate.opsForHash().put(key, userId, "true");
+        }
+    }
+
     public void initializePlayerScores(String roomId) {
         String playerScoreKey = getPlayerScoreKey(roomId);
         String playerOrderKey = getPlayerOrderKey(roomId);
@@ -344,5 +384,9 @@ public class WSGameService {
 
     public String getPlayerScoreKey(String roomId) {
         return "game:participants:score:" + roomId;
+    }
+
+    public String getPlayerCorrectFlagKey(String roomId) {
+        return "game:participants:correct:" + roomId;
     }
 }

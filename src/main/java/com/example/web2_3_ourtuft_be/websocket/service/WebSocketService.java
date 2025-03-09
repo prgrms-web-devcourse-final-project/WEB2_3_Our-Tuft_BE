@@ -88,7 +88,7 @@ public class WebSocketService {
         Map<String, Object> session = headerAccessor.getSessionAttributes();
         String flag = (String) session.get("changeRoomToGame");
 
-        if (flag == null || "true".equals(flag)) flag = "true";
+        if (flag == null || "false".equals(flag)) flag = "true";
         else flag = "false";
 
         session.put("changeRoomToGame", flag);
