@@ -50,8 +50,9 @@ public class WSEventListener {
 
         String newRoomId = parseRoomId(destination);
         String currentRoomId = (String) sessionAttributes.get("roomId");
+        String flag = (String) sessionAttributes.get("changeRoomToGame");
 
-        if (currentRoomId != null) {
+        if (currentRoomId != null && !flag.equals("true")) {
             if (!newRoomId.equals(currentRoomId)) {
                 wsRoomService.removePlayer(
                         currentRoomId,
@@ -79,9 +80,10 @@ public class WSEventListener {
         String username = (String) sessionAttributes.get("username");
         String flag = (String) sessionAttributes.get("changeRoomToGame");
 
-        if (flag != null && flag.equals("true")) return;
+        if (flag == null) flag = "false";
 
-        if (roomId != null) {
+
+        if (roomId != null && flag.equals("false")) {
             wsRoomService.removePlayer(roomId, userId, username);
             log.info("roomId: {}, userId: {} unsubscribe", roomId, userId);
             sessionAttributes.remove("roomId");
@@ -90,9 +92,6 @@ public class WSEventListener {
 
     private String parseRoomId(String destination) {
         String[] parts = destination.split("/");
-        String channelType = parts[2];
-
-        if (channelType.equals("game")) return "game";
 
         return parts[parts.length - 1];
     }
