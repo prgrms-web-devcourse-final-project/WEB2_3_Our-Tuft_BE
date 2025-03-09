@@ -112,6 +112,7 @@ public class WSGameService {
 
     public void submitOXAnswer(
             String roomId, SimpMessageHeaderAccessor headerAccessor, String answer) {
+
         String userId = webSocketService.getUserIdFromSession(headerAccessor);
         String username = webSocketService.getUsernameFromSession(headerAccessor);
         String correctFlag = getPlayerCorrectFlag(roomId, userId);
@@ -208,6 +209,7 @@ public class WSGameService {
         String key = getPlayerCorrectFlagKey(roomId);
         redisTemplate.opsForHash().put(key, userId, "false");
     }
+
 
     public void endGame(SimpMessageHeaderAccessor headerAccessor, String roomId, String winnerId) {
         endSchedule(roomId);

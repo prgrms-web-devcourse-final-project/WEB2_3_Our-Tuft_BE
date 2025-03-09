@@ -82,6 +82,7 @@ public class WSEventListener {
 
         if (flag == null) flag = "false";
 
+
         if (roomId != null && flag.equals("false")) {
             wsRoomService.removePlayer(roomId, userId, username);
             log.info("roomId: {}, userId: {} unsubscribe", roomId, userId);

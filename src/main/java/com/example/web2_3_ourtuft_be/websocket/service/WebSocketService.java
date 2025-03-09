@@ -89,6 +89,7 @@ public class WebSocketService {
         String flag = (String) session.get("changeRoomToGame");
 
         if (flag == null || "false".equals(flag)) flag = "true";
+
         else flag = "false";
 
         session.put("changeRoomToGame", flag);
