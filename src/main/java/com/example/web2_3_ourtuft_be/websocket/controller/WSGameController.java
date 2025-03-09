@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.websocket.controller;
 
 import com.example.web2_3_ourtuft_be.websocket.service.WSGameService;
+import com.example.web2_3_ourtuft_be.websocket.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 public class WSGameController {
 
     private final WSGameService wsGameService;
+    private final WebSocketService webSocketService;
 
     @SubscribeMapping("/game/{roomId}")
     public void handleGameSubscribe(
@@ -29,6 +31,7 @@ public class WSGameController {
             @DestinationVariable String roomId,
             SimpMessageHeaderAccessor headerAccessor,
             String message) {
+        webSocketService.sendGameMessage(roomId, webSocketService.getUsernameFromSession(headerAccessor), message);
         wsGameService.submitAnswer(roomId, headerAccessor, message);
     }
 
