@@ -35,6 +35,7 @@ public class WSGameService {
         roomStatusService.setGameStatus(Long.valueOf(roomId), "RUNNING");
         roomStatusService.setCurrentRound(Long.valueOf(roomId), 0);
         initializePlayerScores(roomId);
+        setPlayerCorrectFlag(roomId);
     }
 
     public void startGame(SimpMessageHeaderAccessor headerAccessor, String roomId) {
@@ -159,7 +160,7 @@ public class WSGameService {
 
     public void sendQuiz(SimpMessageHeaderAccessor headerAccessor, String roomId, int totalRound) {
         String userId = webSocketService.getUserIdFromSession(headerAccessor);
-        setPlayerCorrectFlag(roomId, userId);
+        setPlayerCorrectFlag(roomId);
 
         int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
         currentRound += 1;
@@ -205,9 +206,15 @@ public class WSGameService {
         webSocketService.sendGameQuizMessage(roomId, "question", question);
     }
 
-    private void setPlayerCorrectFlag(String roomId, String userId) {
+    private void setPlayerCorrectFlag(String roomId) {
         String key = getPlayerCorrectFlagKey(roomId);
-        redisTemplate.opsForHash().put(key, userId, "false");
+        String playersKey = getPlayerInfoKey(roomId);
+
+        Set<Object> hashKeys = redisTemplate.opsForHash().keys(playersKey);
+
+        for (Object hashKey : hashKeys) {
+            redisTemplate.opsForHash().put(key, hashKey, "false");
+        }
     }
 
     public void endGame(SimpMessageHeaderAccessor headerAccessor, String roomId, String winnerId) {

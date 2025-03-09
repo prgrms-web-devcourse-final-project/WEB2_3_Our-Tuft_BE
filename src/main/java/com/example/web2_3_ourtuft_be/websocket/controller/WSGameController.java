@@ -4,6 +4,7 @@ import com.example.web2_3_ourtuft_be.websocket.service.WSGameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,7 @@ public class WSGameController {
     }
 
     @MessageMapping("/game/{roomId}/speed")
+    @SendTo("/topic/game/{roomId}")
     public void processGameMessage(
             @DestinationVariable String roomId,
             SimpMessageHeaderAccessor headerAccessor,
