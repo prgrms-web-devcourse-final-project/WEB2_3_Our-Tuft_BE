@@ -44,6 +44,13 @@ public class LobbyService {
         return rooms.stream().map(RoomResponseDto::new).collect(Collectors.toList());
     }
 
+    @Transactional
+    public void changeRoomPlayingStatus(String roomId) {
+        Room room = findByRoomId(Long.valueOf(roomId));
+
+        room.changePlayingStatus();
+    }
+
     public List<RoomResponseDto> searchRoom(String roomName, Long roomId) {
 
         List<Room> rooms = new ArrayList<>();

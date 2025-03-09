@@ -26,8 +26,12 @@ public class WSRoomService {
 
         if (event.contains("PLAYER_CHANGE_READY")) changeReadyStatus(headerAccessor, roomId);
         if (event.contains("SWITCHING_ROOM_TO_GAME"))
-            if (roomQuizService.checkQuizIds(roomId)) savePlayerCount(roomId);
-        if (event.contains("GAME_STARTED")) wsGameService.startGame(roomId);
+            if (roomQuizService.checkQuizIds(roomId)) {
+                savePlayerCount(roomId);
+                webSocketService.changeSessionFlag(headerAccessor);
+                lobbyService.changeRoomPlayingStatus(roomId);
+            }
+        if (event.contains("GAME_STARTED")) wsGameService.startGame(headerAccessor, roomId);
     }
 
     private void savePlayerCount(String roomId) {
@@ -40,6 +44,8 @@ public class WSRoomService {
         redisTemplate
                 .opsForValue()
                 .set(participantService.getPlayerCurrentCountKey(roomId), String.valueOf(0));
+
+        webSocketService.sendEvent(roomId, "SWITCHING_ROOM_TO_GAME");
     }
 
     private void changeReadyStatus(SimpMessageHeaderAccessor headerAccessor, String roomId) {

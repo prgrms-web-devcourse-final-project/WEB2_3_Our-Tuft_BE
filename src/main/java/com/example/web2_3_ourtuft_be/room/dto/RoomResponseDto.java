@@ -17,6 +17,7 @@ public class RoomResponseDto {
     private final QuizSetType gameType;
     private final int time;
     private final int maxUsers;
+    private final boolean isGameRunning;
 
     public RoomResponseDto(Room room) {
         this.roomId = room.getId();
@@ -27,6 +28,7 @@ public class RoomResponseDto {
         this.gameType = room.getGameType();
         this.time = room.getTime();
         this.maxUsers = room.getMaxUsers();
+        this.isGameRunning = room.isGameRunning();
     }
 
     public record GetPlayerInRoom(String userId, String username, String isReady) {

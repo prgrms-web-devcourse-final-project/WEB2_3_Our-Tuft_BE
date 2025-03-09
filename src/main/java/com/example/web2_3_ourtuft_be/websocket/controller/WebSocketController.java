@@ -23,4 +23,15 @@ public class WebSocketController {
             String message) {
         webSocketService.sendMessage(headerAccessor, roomId, message);
     }
+
+    @MessageMapping("/game/{roomId}")
+    @SendTo("/topic/game/{roomId}")
+    public void processGameMessage(
+            @DestinationVariable String roomId,
+            SimpMessageHeaderAccessor headerAccessor,
+            String message) {
+        String username = webSocketService.getUsernameFromSession(headerAccessor);
+
+        webSocketService.sendGameMessage(roomId, username, message);
+    }
 }

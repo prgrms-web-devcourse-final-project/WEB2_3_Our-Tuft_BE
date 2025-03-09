@@ -1,8 +1,6 @@
 package com.example.web2_3_ourtuft_be.websocket.event;
 
-import com.example.web2_3_ourtuft_be.websocket.service.WSGameService;
 import com.example.web2_3_ourtuft_be.websocket.service.WSRoomService;
-import com.example.web2_3_ourtuft_be.websocket.service.WebSocketService;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +18,6 @@ import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 public class WSEventListener {
 
     private final WSRoomService wsRoomService;
-    private final WebSocketService webSocketService;
-    private final WSGameService wsGameService;
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
@@ -81,6 +77,9 @@ public class WSEventListener {
         String roomId = (String) sessionAttributes.get("roomId");
         String userId = (String) sessionAttributes.get("userId");
         String username = (String) sessionAttributes.get("username");
+        String flag = (String) sessionAttributes.get("changeRoomToGame");
+
+        if (flag != null && flag.equals("true")) return;
 
         if (roomId != null) {
             wsRoomService.removePlayer(roomId, userId, username);
