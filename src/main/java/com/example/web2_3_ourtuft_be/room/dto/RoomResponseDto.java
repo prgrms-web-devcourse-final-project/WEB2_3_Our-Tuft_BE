@@ -42,4 +42,10 @@ public class RoomResponseDto {
             return new GetPlayersInRoom(hostId, dto);
         }
     }
+
+    public record GetPlayerInGame(String userId, String username) {
+        public static GetPlayerInGame of(String userId, String username) {
+            return new GetPlayerInGame(userId, username);
+        }
+    }
 }
