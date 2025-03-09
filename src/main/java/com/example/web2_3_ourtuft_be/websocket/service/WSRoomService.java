@@ -40,6 +40,8 @@ public class WSRoomService {
         redisTemplate
                 .opsForValue()
                 .set(participantService.getPlayerCurrentCountKey(roomId), String.valueOf(0));
+
+        webSocketService.sendEvent(roomId, "SWITCHING_ROOM_TO_GAME");
     }
 
     private void changeReadyStatus(SimpMessageHeaderAccessor headerAccessor, String roomId) {
