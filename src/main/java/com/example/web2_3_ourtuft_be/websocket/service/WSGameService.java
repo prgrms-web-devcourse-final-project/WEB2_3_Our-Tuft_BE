@@ -98,7 +98,44 @@ public class WSGameService {
     }
 
     public void submitOXAnswer(
-            String roomId, SimpMessageHeaderAccessor headerAccessor, String message) {}
+            String roomId, SimpMessageHeaderAccessor headerAccessor, String answer) {
+
+        String userId = webSocketService.getUserIdFromSession(headerAccessor);
+        String username = webSocketService.getUsernameFromSession(headerAccessor);
+
+        int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
+        if (currentRound <= 0) {
+            webSocketService.sendGameMessage(roomId, username, answer);
+            return;
+        }
+
+        String quizId = roomQuizService.getQuizIdByRoom(roomId, currentRound - 1);
+        if (quizId == null || quizId.trim().isEmpty()) {
+            webSocketService.sendGameMessage(roomId, username, answer);
+            return;
+        }
+
+        Long quizIdLong;
+        try {
+            quizIdLong = Long.valueOf(quizId);
+        } catch (NumberFormatException e) {
+            webSocketService.sendGameMessage(roomId, username, answer);
+            return;
+        }
+
+        String quizKey = roomQuizService.getQuizKey(quizIdLong);
+        String correctAnswer = roomQuizService.getQuizDetail("answer", quizKey);
+
+        if (correctAnswer == null) {
+            webSocketService.sendGameMessage(roomId, username, answer);
+            return;
+        }
+
+        if (answer.trim().equalsIgnoreCase(correctAnswer.trim())) {
+            incrementPlayerScore(roomId, userId);
+            webSocketService.sendGameEvent(roomId, "PLAYER_" + userId + "_CORRECTED");
+        } else webSocketService.sendGameEvent(roomId, "PLAYER_" + userId + "_UNCORRECTED");
+    }
 
     public void sendQuiz(String roomId, int totalRound) {
 
@@ -150,13 +187,14 @@ public class WSGameService {
         deleteGameInfo(roomId);
     }
 
-    public void endSchedule (String roomId) {
+    public void endSchedule(String roomId) {
         ScheduledFuture<?> scheduledFuture = gameSchedulers.get(roomId);
         if (scheduledFuture != null) {
             scheduledFuture.cancel(false);
             gameSchedulers.remove(roomId);
         }
     }
+
     public void createNewRoom(String roomId, String winnerId) {
         RoomResponseDto dto =
                 lobbyService.createRoom(getCreateRoomDTO(roomId), Long.valueOf(winnerId));

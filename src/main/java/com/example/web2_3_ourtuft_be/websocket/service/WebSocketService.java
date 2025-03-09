@@ -62,7 +62,7 @@ public class WebSocketService {
                 "/topic/game/" + roomId, WebSocketResponse.Send.of("SYSTEM", message));
     }
 
-    public void sendGameMessage(String roomId, String username, String message) {
+    public void sendGameMessage( String roomId, String username, String message) {
         messagingTemplate.convertAndSend(
                 "/topic/game/" + roomId, WebSocketResponse.Send.of(username, message));
     }
