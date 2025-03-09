@@ -31,6 +31,7 @@ public class WSGameController {
             @DestinationVariable String roomId,
             SimpMessageHeaderAccessor headerAccessor,
             String message) {
+        System.out.println(webSocketService.getUsernameFromSession(headerAccessor));
         webSocketService.sendGameMessage(roomId, webSocketService.getUsernameFromSession(headerAccessor), message);
         wsGameService.submitAnswer(roomId, headerAccessor, message);
     }
