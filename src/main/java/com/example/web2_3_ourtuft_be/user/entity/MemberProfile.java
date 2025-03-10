@@ -25,11 +25,11 @@ public class MemberProfile extends BaseTime {
 
     private Long eyeItemId = 1L;
 
-    private Long mouseItemId = 4L;
+    private Long mouseItemId = 11L;
 
-    private Long skinItemId = 7L;
+    private Long skinItemId = 21L;
 
-    private Long nicknameItemId = 10L;
+    private Long nicknameItemId = 31L;
 
     public MemberProfile(Long userId, String nickname) {
         this.userId = userId;
