@@ -53,9 +53,9 @@ public class InventoryService {
         List<Inventory> defaultItems =
                 List.of(
                         Inventory.create(userId, 1L, Category.EYE),
-                        Inventory.create(userId, 4L, Category.MOUTH),
-                        Inventory.create(userId, 7L, Category.SKIN),
-                        Inventory.create(userId, 10L, Category.NICKNAME));
+                        Inventory.create(userId, 11L, Category.MOUTH),
+                        Inventory.create(userId, 21L, Category.SKIN),
+                        Inventory.create(userId, 31L, Category.NICKNAME));
 
         inventoryRepository.saveAll(defaultItems);
     }
