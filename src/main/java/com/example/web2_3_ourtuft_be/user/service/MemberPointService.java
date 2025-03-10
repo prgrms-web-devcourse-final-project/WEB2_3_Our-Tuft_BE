@@ -24,8 +24,7 @@ public class MemberPointService {
                 .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
     }
 
-    public MyPointsResponseDto getMyPoints() {
-        Long userId = 1L;
+    public MyPointsResponseDto getMyPoints(Long userId) {
 
         return new MyPointsResponseDto(getPoint(userId).getPoints());
     }

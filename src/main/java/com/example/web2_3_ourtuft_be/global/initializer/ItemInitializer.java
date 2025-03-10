@@ -34,6 +34,7 @@ public class ItemInitializer implements CommandLineRunner {
     }
 
     private void createNickItem() {
+
         Map<String, String> colorNames =
                 Map.of(
                         "#000000", "Black",
