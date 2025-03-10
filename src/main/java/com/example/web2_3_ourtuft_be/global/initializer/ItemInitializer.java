@@ -4,6 +4,7 @@ import com.example.web2_3_ourtuft_be.item.entity.Item;
 import com.example.web2_3_ourtuft_be.item.entity.enums.Category;
 import com.example.web2_3_ourtuft_be.item.repository.ItemRepository;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.springframework.boot.CommandLineRunner;
@@ -33,13 +34,28 @@ public class ItemInitializer implements CommandLineRunner {
     }
 
     private void createNickItem() {
-        Item item =
-                Item.builder()
-                        .name("white")
-                        .category(Category.NICKNAME.name())
-                        .nickColor("#FFFFFF")
-                        .build();
-        itemRepository.save(item);
+        Map<String, String> colorNames =
+                Map.of(
+                        "#000000", "Black",
+                        "#B91C1C", "Red",
+                        "#166534", "Green",
+                        "#7E22CE", "Purple",
+                        "#4338CA", "Blue",
+                        "#ED4D0E", "Orange",
+                        "#F761A0", "Pink",
+                        "#DDDD05", "Yellow");
+
+        for (Map.Entry<String, String> entry : colorNames.entrySet()) {
+            Item item =
+                    Item.builder()
+                            .name(entry.getValue())
+                            .category(Category.NICKNAME.name())
+                            .nickColor(entry.getKey())
+                            .originalPrice(300)
+                            .stock(200)
+                            .build();
+            itemRepository.save(item);
+        }
     }
 
     private List<Item> createCategoryItems(Category category) {
