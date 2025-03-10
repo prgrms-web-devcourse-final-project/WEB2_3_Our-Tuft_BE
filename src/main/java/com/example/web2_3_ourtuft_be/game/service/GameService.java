@@ -117,25 +117,46 @@ public class GameService {
         return playerScores;
     }
 
-    public List<GameResponse.Scores> getGameScores(String roomId) {
-        Set<ZSetOperations.TypedTuple<String>> result =
-                redisTemplate
-                        .opsForZSet()
-                        .rangeWithScores("game:participants:score:" + roomId, 0, -1);
+    //    public List<GameResponse.Scores> getGameScores(String roomId) {
+    //        String key = "game:participants:score:" + roomId;
+    //        Set<ZSetOperations.TypedTuple<String>> result =
+    //                redisTemplate
+    //                        .opsForZSet()
+    //                        .rangeWithScores("game:participants:score:" + roomId, 0, -1);
+    //
+    //        List<GameResponse.Scores> list = new ArrayList<>();
+    //
+    //        for (ZSetOperations.TypedTuple<String> tuple : result) {
+    //            String userId = tuple.getValue();
+    //            System.out.println(userId);
+    //            String score = String.valueOf(tuple.getScore());
+    //            String username =
+    //                    (String)
+    //                            redisTemplate
+    //                                    .opsForHash()
+    //                                    .get(wsGameService.getUsernameKey(roomId), userId);
+    //
+    //            list.add(GameResponse.Scores.from(username, score));
+    //        }
+    //
+    //        return list;
+    //    }
 
+    public List<GameResponse.Scores> getGameScores(String roomId) {
+        String key = "game:participants:score:" + roomId;
+
+        Set<String> participants = redisTemplate.opsForZSet().range(key, 0, -1);
         List<GameResponse.Scores> list = new ArrayList<>();
 
-        for (ZSetOperations.TypedTuple<String> tuple : result) {
-            String userId = tuple.getValue();
-            System.out.println(userId);
-            String score = String.valueOf(tuple.getScore());
+        for (String userId : participants) {
+            Double score = redisTemplate.opsForZSet().score(key, userId);
             String username =
                     (String)
                             redisTemplate
                                     .opsForHash()
                                     .get(wsGameService.getUsernameKey(roomId), userId);
 
-            list.add(GameResponse.Scores.from(username, score));
+            list.add(GameResponse.Scores.from(username, String.valueOf(score != null ? score : 0)));
         }
 
         return list;
