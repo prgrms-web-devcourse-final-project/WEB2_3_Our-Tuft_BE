@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 public class ItemInitializer implements CommandLineRunner {
 
     private static final String S3_URL = "https://team09-bucket.s3.ap-northeast-2.amazonaws.com";
-    private static final String DEFAULT_PREFIX = "default-";
     private static final String PNG = ".png";
     private final ItemRepository itemRepository;
 
@@ -25,12 +24,7 @@ public class ItemInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         for (int i = 0; i < 3; i++) {
             Category category = Category.values()[i];
-            // 기본 아이템이 없는 경우에만 추가
-            if (!itemRepository.existsByName(DEFAULT_PREFIX + category.name())) {
-                saveItem(createDefaultItem(category));
-            }
 
-            // 해당 카테고리 아이템이 없을 경우에만 추가
             if (itemRepository.countByCategory(category.name()) <= 1) {
                 saveItems(createCategoryItems(category));
             }
@@ -41,34 +35,25 @@ public class ItemInitializer implements CommandLineRunner {
     private void createNickItem() {
         Item item =
                 Item.builder()
-                        .name("black")
+                        .name("white")
                         .category(Category.NICKNAME.name())
-                        .nickColor("#000000")
+                        .nickColor("#FFFFFF")
                         .build();
         itemRepository.save(item);
     }
 
     private List<Item> createCategoryItems(Category category) {
-        return IntStream.range(2, 4)
+        return IntStream.range(1, 11)
                 .mapToObj(i -> createItem(category, i))
                 .collect(Collectors.toList());
     }
 
     private Item createItem(Category category, int index) {
+        String itemName = (index == 1 ? "default-" : "") + category.name() + index;
         return Item.builder()
-                .name(category.name() + index)
+                .name(itemName)
                 .category(category.name())
                 .imageUrl(formatImageUrl(category, String.valueOf(index)))
-                .originalPrice(300)
-                .stock(200)
-                .build();
-    }
-
-    private Item createDefaultItem(Category category) {
-        return Item.builder()
-                .name(DEFAULT_PREFIX + category.name())
-                .category(category.name())
-                .imageUrl(formatDefaultImageUrl(category))
                 .originalPrice(300)
                 .stock(200)
                 .build();
@@ -82,20 +67,6 @@ public class ItemInitializer implements CommandLineRunner {
                 category.name().toLowerCase(),
                 identifier,
                 PNG);
-    }
-
-    private String formatDefaultImageUrl(Category category) {
-        return String.format(
-                "%s/%s/%s%s%s",
-                S3_URL,
-                category.name().toLowerCase(),
-                DEFAULT_PREFIX,
-                category.name().toLowerCase(),
-                PNG);
-    }
-
-    private void saveItem(Item item) {
-        itemRepository.save(item);
     }
 
     private void saveItems(List<Item> items) {
