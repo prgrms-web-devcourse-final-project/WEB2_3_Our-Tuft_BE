@@ -25,6 +25,7 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
             throws IOException, ServletException {
 
         log.error(this.getClass().getName() + "에러 핸들링");
+        log.error(authException.getMessage());
         response.setContentType("application/json; charset=UTF-8");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 

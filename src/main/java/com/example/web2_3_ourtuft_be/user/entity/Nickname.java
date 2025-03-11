@@ -1,26 +1,16 @@
-package com.example.web2_3_ourtuft_be.user.value;
+package com.example.web2_3_ourtuft_be.user.entity;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidValueException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.BadRequestMessages;
-import jakarta.persistence.Column;
 import lombok.Getter;
 
 @Getter
 public class Nickname {
-    @Column(name = "nickname")
-    private final String value;
+    private final String nickname;
 
-    public Nickname() {
-        this.value = null;
-    }
-
-    public Nickname(String value) {
-        this.value = value;
-    }
-
-    public Nickname changeNickname(String value) {
-        validate(value);
-        return new Nickname(value);
+    public Nickname(String nickname) {
+        validate(nickname);
+        this.nickname = nickname;
     }
 
     private void validate(String nickname) {

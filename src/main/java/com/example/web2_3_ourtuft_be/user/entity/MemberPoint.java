@@ -31,3 +31,10 @@ public class MemberPoint {
         this.point = point.updatePoint(value, type);
     }
 }
+
+// 포인트가 바뀔때 값을 바꾸는 것이 아니라 포인트를 새로 생성해서 할당
+// MemberPoint 자체를 새로 생성해서 업데이트
+// public MemberPoint update(PointChangeType type, int value) {
+//    Point point = this.point.updatePoint(value, type);
+//    return new MemberPoint(this.id, this.userId, point)
+// }

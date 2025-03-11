@@ -155,6 +155,7 @@ class QuizServiceTest {
                         .quizSetType("OX")
                         .quizSetRunCnt(0)
                         .build();
+
         QuizSet savedQuizSet = quizSetRepository.save(quizSet);
 
         Quiz quiz1 =

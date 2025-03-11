@@ -35,23 +35,17 @@ public class CustomRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
-        String authorizationHeader = request.getHeader("Authorization");
-
-        // 인증이 필요 없는 URL은 바로 필터 체인을 진행
-        if (authorizationHeader == null
-                || authorizationHeader.isBlank()
-                || request.getRequestURI().contains("/api/v1/auth")) {
+        // 현재 token 가져왔을떄 "Bearer " 문자열이 붙어서 들어옴 -> 인증 실패
+        String token = request.getHeader("Authorization");
+        if (token == null || request.getRequestURI().contains("/api/v1/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        // Bearer 토큰이면 "Bearer "를 제거, 아니면 그대로 사용
-        String accessToken =
-                authorizationHeader.startsWith("Bearer ")
-                        ? authorizationHeader.substring(7)
-                        : authorizationHeader;
-
+        String accessToken = "";
+        // token 이 null 일수도 있으므로 여기서 떼주었습니다. 변수명이나 조건문 위치 등등 수정 필요할듯
+        if (token.startsWith("Bearer ")) {
+            accessToken = token.substring(7);
+        }
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
