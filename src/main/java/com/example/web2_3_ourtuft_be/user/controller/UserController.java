@@ -127,7 +127,7 @@ public class UserController {
         return ResponseEntity.ok(
                 GlobalResponse.success(
                         new UserResponse.GetUserByContext(
-                                user.getId(), user.getName(), user.getRole())));
+                                user.getId(), user.getNickname(), user.getRole())));
     }
 
     // 게임종료 후, 경험치와 포인트를 받아 올리는 api, 아마 게임 쪽에서 메서드를 호출해서 처리할 듯( 임시로 작성해뒀습니다. )

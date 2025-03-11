@@ -58,6 +58,6 @@ public class User extends BaseTime {
     }
 
     public static User to(Long id, String name, String role) {
-        return User.builder().id(id).name(name).role(role).build();
+        return User.builder().id(id).name(name).role(role).profile(new Profile(name)).build();
     }
 }
