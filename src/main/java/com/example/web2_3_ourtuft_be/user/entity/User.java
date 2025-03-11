@@ -1,6 +1,7 @@
 package com.example.web2_3_ourtuft_be.user.entity;
 
 import com.example.web2_3_ourtuft_be.common.BaseTime;
+import com.example.web2_3_ourtuft_be.user.model.Profile;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-@Table(name = "USERS")
+@Table(name = "USERS", uniqueConstraints = @UniqueConstraint(columnNames = "nickname"))
 public class User extends BaseTime {
 
     @Id
@@ -32,7 +33,31 @@ public class User extends BaseTime {
     @Column(name = "ROLE", nullable = false)
     private String role;
 
+    @Embedded private Profile profile;
+
+    public String getNickname() {
+        return profile.getNickname();
+    }
+
+    public String getIntroduction() {
+        return profile.getIntroduction();
+    }
+
+    public void changeNickname(String nickname) {
+        profile.updateNickname(nickname);
+    }
+
+    public void updateProfile(
+            String introduction, Long eyeId, Long mouseId, Long skinId, Long nicknameId) {
+        this.profile =
+                profile.updateIntroAndAvatar(introduction, eyeId, mouseId, skinId, nicknameId);
+    }
+
+    public void createProfile(Profile profile) {
+        this.profile = profile;
+    }
+
     public static User to(Long id, String name, String role) {
-        return User.builder().id(id).name(name).role(role).build();
+        return User.builder().id(id).name(name).role(role).profile(new Profile(name)).build();
     }
 }
