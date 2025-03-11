@@ -58,7 +58,6 @@ public class UserFacadeService {
                         profile.getNicknameItemId(),
                         itemService.getItem(profile.getNicknameItemId()).getNickColor());
 
-        // TODO : 빌더패턴 도입 검토 (아이템이 없을시 Response 생성 오류 발생)
         return new UserInfoResponseDto(profile, record, exp, eye, mouse, skin, nickColor);
     }
 
@@ -116,6 +115,7 @@ public class UserFacadeService {
         memberPointService.createPoint(userId);
         memberRecordService.createRecord(userId);
         expService.createExp(userId);
+        inventoryService.registerDefaultItem(userId);
         return newUser;
     }
 
@@ -129,9 +129,9 @@ public class UserFacadeService {
     }
 
     @Transactional
-    public void AddWishItem(Long userId, WishItemRequestDto request) {
-        itemService.validItemId(request.getItemId());
-        wishlistItemService.addItem(userId, request.getItemId());
+    public void AddWishItem(Long userId, Long itemId) {
+        itemService.validItemId(itemId);
+        wishlistItemService.addItem(userId, itemId);
     }
 
     @Transactional

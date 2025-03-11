@@ -107,8 +107,9 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "포인트가 존재하지 않습니다.")
     })
     @GetMapping("/myInfo/points")
-    public ResponseEntity<GlobalResponse<MyPointsResponseDto>> getMyPoints() {
-        MyPointsResponseDto response = memberPointService.getMyPoints();
+    public ResponseEntity<GlobalResponse<MyPointsResponseDto>> getMyPoints(
+            @AuthenticationPrincipal(expression = "user") User user) {
+        MyPointsResponseDto response = memberPointService.getMyPoints(user.getId());
 
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
@@ -127,7 +128,7 @@ public class UserController {
         return ResponseEntity.ok(
                 GlobalResponse.success(
                         new UserResponse.GetUserByContext(
-                                user.getId(), user.getNickname(), user.getRole())));
+                                user.getId(), user.getName(), user.getRole())));
     }
 
     // 게임종료 후, 경험치와 포인트를 받아 올리는 api, 아마 게임 쪽에서 메서드를 호출해서 처리할 듯( 임시로 작성해뒀습니다. )
