@@ -11,7 +11,7 @@ import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.*;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeType;
-import com.example.web2_3_ourtuft_be.user.value.Nickname;
+import com.example.web2_3_ourtuft_be.user.model.Profile;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -35,9 +35,10 @@ public class UserFacadeService {
     @Transactional(readOnly = true)
     public UserInfoResponseDto getUserInfo(Long userId) {
 
-        MemberProfile profile = profileService.getMemberProfile(userId);
-        MemberRecord record = recordService.getRecord(userId);
-        MemberExp exp = expService.getMemberExp(userId);
+        User user = userService.getUser(userId);
+        Profile profile = user.getProfile();
+        MemberRecord record = recordService.getRecord(user.getId());
+        MemberExp exp = expService.getMemberExp(user.getId());
 
         // TODO: Item 생성 후 변경 예정
         ItemImageUrlDto eye =
@@ -62,14 +63,15 @@ public class UserFacadeService {
     }
 
     @Transactional(readOnly = true)
-    public UserInfoResponseDto getMyInfo(Long userId) {
-        return getUserInfo(userId);
+    public UserInfoResponseDto getMyInfo(User user) {
+        return getUserInfo(user.getId());
     }
 
     @Transactional
     public UserInfoResponseDto updateProfile(Long userId, UserInfoRequestDto request) {
 
-        // TODO: Item 로직 생성 후 ItemService 에서 처리 예정
+        User user = userService.getUser(userId);
+
         ItemImageUrlDto eye =
                 new ItemImageUrlDto(
                         request.getEye(), itemService.getItem(request.getEye()).getImageUrl());
@@ -85,15 +87,15 @@ public class UserFacadeService {
                         itemService.getItem(request.getNickColor()).getNickColor());
         EquipItems equipItems = new EquipItems(eye, mouse, skin, nickColor);
 
-        profileService.updateMemberProfile(userId, request.getIntroduction(), equipItems);
+        profileService.updateMemberProfile(user, request.getIntroduction(), equipItems);
 
-        return getMyInfo(userId);
+        return getMyInfo(user);
     }
 
     @Transactional
     public NickNameResponseDto changeNickName(Long userId, NickNameRequestDto request) {
-        Nickname nickname = new Nickname(request.getNickName());
-        return profileService.changeNickname(userId, nickname.getValue());
+        User user = userService.getUser(userId);
+        return profileService.changeNickname(user, request.getNickName());
     }
 
     @Transactional
@@ -110,7 +112,7 @@ public class UserFacadeService {
     public User registerUser(OAuth2Response userInfo) {
         User newUser = userService.createUser(userInfo);
         Long userId = newUser.getId();
-        profileService.createProfile(userId);
+        profileService.createProfile(newUser);
         memberPointService.createPoint(userId);
         memberRecordService.createRecord(userId);
         expService.createExp(userId);
@@ -119,7 +121,6 @@ public class UserFacadeService {
 
     public RewardDto reward(Long userId, RewardDto request) {
         int exp = expService.increaseExp(userId, request.getExp());
-        // TODO: UserId 로직 변경하면서 points 가져오는 부분 중복 제거 예정
         pointService.updatePoints(
                 userId, request.getPoints(), PointChangeType.INCREASE, PointChangeReason.REWARD);
         int points = pointService.getPoint(userId).getPoints();
@@ -133,7 +134,6 @@ public class UserFacadeService {
         wishlistItemService.addItem(userId, request.getItemId());
     }
 
-    // TODO : 찜 페이지에서 찜 아이템을 취소한다면 새로운 찜 목록을 반환해야 할 것 같음, 응답값 수정 필요한지 논의
     @Transactional
     public void deleteWishItem(Long userId, Long itemId) {
         wishlistItemService.deleteWishItem(userId, itemId);
@@ -153,7 +153,7 @@ public class UserFacadeService {
         }
         User newUser = userService.createUserForFE(userInfo);
         Long userId = newUser.getId();
-        profileService.createProfile(userId);
+        profileService.createProfile(newUser);
         memberPointService.createPoint(userId);
         memberRecordService.createRecord(userId);
         expService.createExp(userId);

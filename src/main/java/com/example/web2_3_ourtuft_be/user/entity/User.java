@@ -35,12 +35,26 @@ public class User extends BaseTime {
 
     @Embedded private Profile profile;
 
-    public void changeNickname(String nickname) {
-        this.profile = profile.updateNickname(nickname);
+    public String getNickname() {
+        return profile.getNickname();
     }
 
-    public void updateProfile(String introduction, Long eyeId, Long mouseId, Long skinId, Long nicknameId) {
-        this.profile = profile.updateIntroAndAvatar(introduction, eyeId, mouseId, skinId, nicknameId);
+    public String getIntroduction() {
+        return profile.getIntroduction();
+    }
+
+    public void changeNickname(String nickname) {
+        profile.updateNickname(nickname);
+    }
+
+    public void updateProfile(
+            String introduction, Long eyeId, Long mouseId, Long skinId, Long nicknameId) {
+        this.profile =
+                profile.updateIntroAndAvatar(introduction, eyeId, mouseId, skinId, nicknameId);
+    }
+
+    public void createProfile(Profile profile) {
+        this.profile = profile;
     }
 
     public static User to(Long id, String name, String role) {

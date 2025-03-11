@@ -41,7 +41,7 @@ public class UserController {
     public ResponseEntity<GlobalResponse<UserInfoResponseDto>> getMyProfile(
             @AuthenticationPrincipal(expression = "user") User user) {
 
-        UserInfoResponseDto response = userFacadeService.getMyInfo(user.getId());
+        UserInfoResponseDto response = userFacadeService.getMyInfo(user);
         return ResponseEntity.ok(GlobalResponse.success(response));
     }
 

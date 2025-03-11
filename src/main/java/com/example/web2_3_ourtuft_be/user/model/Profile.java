@@ -4,6 +4,7 @@ import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidValueExc
 import com.example.web2_3_ourtuft_be.global.exception.messages.BadRequestMessages;
 import com.example.web2_3_ourtuft_be.user.value.Avatar;
 import com.example.web2_3_ourtuft_be.user.value.Nickname;
+
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import lombok.Getter;
@@ -22,17 +23,38 @@ public class Profile {
         this.avatar = new Avatar();
     }
 
-    public Profile updateNickname(String newName) {
+    public void updateNickname(String newName) {
         this.nickname = nickname.changeNickname(newName);
-        return this;
     }
 
     public Profile updateIntroAndAvatar(
             String introduction, Long eye, Long mouse, Long skin, Long nickname) {
-        validIntroduction(introduction);
-        this.introduction = introduction;
+        if (introduction != null) {
+            validIntroduction(introduction);
+            this.introduction = introduction;
+        }
         this.avatar = avatar.update(eye, mouse, skin, nickname);
         return this;
+    }
+
+    public Long getEyeItemId() {
+        return avatar.getEyeItemId();
+    }
+
+    public Long getMouseItemId() {
+        return avatar.getMouseItemId();
+    }
+
+    public Long getSkinItemId() {
+        return avatar.getSkinItemId();
+    }
+
+    public Long getNicknameItemId() {
+        return avatar.getNicknameItemId();
+    }
+
+    public String getNickname() {
+        return nickname.getValue();
     }
 
     private void validIntroduction(String introduction) {

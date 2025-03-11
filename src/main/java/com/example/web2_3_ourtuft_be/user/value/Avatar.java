@@ -14,9 +14,9 @@ public class Avatar {
 
     public Avatar() {
         this.eyeItemId = 1L;
-        this.mouseItemId = 4L;
-        this.skinItemId = 7L;
-        this.nicknameItemId = 10L;
+        this.mouseItemId = 11L;
+        this.skinItemId = 21L;
+        this.nicknameItemId = 31L;
     }
 
     @Builder
@@ -29,10 +29,10 @@ public class Avatar {
 
     public Avatar update(Long eyeItemId, Long mouseItemId, Long skinItemId, Long nicknameItemId) {
         return Avatar.builder()
-                     .eyeItemId(eyeItemId)
-                     .mouseItemId(mouseItemId)
-                     .skinItemId(skinItemId)
-                     .nicknameItemId(nicknameItemId)
-                     .build();
+                .eyeItemId(eyeItemId)
+                .mouseItemId(mouseItemId)
+                .skinItemId(skinItemId)
+                .nicknameItemId(nicknameItemId)
+                .build();
     }
 }
