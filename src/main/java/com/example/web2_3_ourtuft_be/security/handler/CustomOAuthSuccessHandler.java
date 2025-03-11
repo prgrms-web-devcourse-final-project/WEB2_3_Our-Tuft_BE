@@ -39,7 +39,7 @@ public class CustomOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         jwtUtil.saveRefreshTokenInRedis(refreshToken);
 
-        String SUCCESS_TARGET_URL = "http://localhost:3000/success#token=";
+        String SUCCESS_TARGET_URL = "http://localhost:3000/login#token=";
         String targetUrl = SUCCESS_TARGET_URL + accessToken;
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);

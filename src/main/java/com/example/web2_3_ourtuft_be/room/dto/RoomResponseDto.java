@@ -2,6 +2,7 @@ package com.example.web2_3_ourtuft_be.room.dto;
 
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,6 +17,7 @@ public class RoomResponseDto {
     private final QuizSetType gameType;
     private final int time;
     private final int maxUsers;
+    private final boolean isGameRunning;
 
     public RoomResponseDto(Room room) {
         this.roomId = room.getId();
@@ -26,5 +28,24 @@ public class RoomResponseDto {
         this.gameType = room.getGameType();
         this.time = room.getTime();
         this.maxUsers = room.getMaxUsers();
+        this.isGameRunning = room.isGameRunning();
+    }
+
+    public record GetPlayerInRoom(String userId, String username, String isReady) {
+        public static GetPlayerInRoom of(String userId, String username, String isReady) {
+            return new GetPlayerInRoom(userId, username, isReady);
+        }
+    }
+
+    public record GetPlayersInRoom(Long hostId, List<GetPlayerInRoom> dto) {
+        public static GetPlayersInRoom of(Long hostId, List<GetPlayerInRoom> dto) {
+            return new GetPlayersInRoom(hostId, dto);
+        }
+    }
+
+    public record GetPlayerInGame(String userId, String username) {
+        public static GetPlayerInGame of(String userId, String username) {
+            return new GetPlayerInGame(userId, username);
+        }
     }
 }

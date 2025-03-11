@@ -4,7 +4,6 @@ import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidValueExc
 import com.example.web2_3_ourtuft_be.global.exception.messages.BadRequestMessages;
 import com.example.web2_3_ourtuft_be.user.value.Avatar;
 import com.example.web2_3_ourtuft_be.user.value.Nickname;
-
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import lombok.Getter;
