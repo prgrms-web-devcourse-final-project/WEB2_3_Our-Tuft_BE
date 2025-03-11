@@ -50,4 +50,8 @@ public class Item {
     public void updateDiscountPrice(int discountPrice) {
         this.discountPrice = discountPrice;
     }
+
+    public void updateDiscountId(Long discountId) {
+        this.discountId = discountId;
+    }
 }

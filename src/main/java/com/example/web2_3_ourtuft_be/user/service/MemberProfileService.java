@@ -1,12 +1,13 @@
 package com.example.web2_3_ourtuft_be.user.service;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.DuplicatedException;
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.DuplicatedMessages;
+import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.user.dto.EquipItems;
 import com.example.web2_3_ourtuft_be.user.dto.NickNameResponseDto;
-import com.example.web2_3_ourtuft_be.user.entity.User;
-import com.example.web2_3_ourtuft_be.user.model.Profile;
-import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
+import com.example.web2_3_ourtuft_be.user.entity.MemberProfile;
+import com.example.web2_3_ourtuft_be.user.repository.MemberProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,39 +16,55 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberProfileService {
 
-    private static final String DEMETER = "_";
-    private final UserRepository userRepository;
+    private final MemberProfileRepository profileRepository;
+
+    public MemberProfile getMemberProfile(Long userId) {
+        return profileRepository
+                .findByUserId(userId)
+                .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
+    }
 
     @Transactional
-    public void updateMemberProfile(User user, String introduction, EquipItems equipItems) {
+    public void updateMemberProfile(Long userId, String introduction, EquipItems equipItems) {
+        MemberProfile userProfile =
+                profileRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
 
-        user.updateProfile(
-                introduction,
+        userProfile.updateIntroduction(introduction);
+        userProfile.updateEquipItem(
                 equipItems.getEyeItemId(),
                 equipItems.getMouseItemId(),
                 equipItems.getSkinItemId(),
                 equipItems.getNameItemId());
+        profileRepository.save(userProfile);
     }
 
-    @Transactional
-    public NickNameResponseDto changeNickname(User user, String nickname) {
+    public NickNameResponseDto changeNickname(Long userId, String nickname) {
         duplicateNickname(nickname);
-        user.changeNickname(nickname);
+        MemberProfile userProfile =
+                profileRepository
+                        .findByUserId(userId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
 
-        return new NickNameResponseDto(user.getNickname());
+        userProfile.changeNickname(nickname);
+        profileRepository.save(userProfile);
+
+        return new NickNameResponseDto(userProfile.getNickname());
     }
 
     public void duplicateNickname(String nickname) {
-        boolean isExist = userRepository.existsByProfile_Nickname_Value(nickname);
+        boolean isExist = profileRepository.existsByNickname(nickname);
 
         if (isExist) {
             throw new DuplicatedException(DuplicatedMessages.NICKNAME);
         }
     }
 
-    public void createProfile(User user) {
-        Profile profile =
-                new Profile(user.getProvider() + DEMETER + user.getName() + DEMETER + user.getId());
-        user.createProfile(profile);
+    // TODO: nickname 임시로 처리했음 수정 필요
+    public void createProfile(Long userId, String tempNickname) {
+        MemberProfile profile = new MemberProfile(userId, tempNickname);
+
+        profileRepository.save(profile);
     }
 }

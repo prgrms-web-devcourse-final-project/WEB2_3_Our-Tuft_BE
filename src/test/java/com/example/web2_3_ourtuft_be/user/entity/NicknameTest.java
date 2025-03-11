@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidValueException;
-import com.example.web2_3_ourtuft_be.user.value.Nickname;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

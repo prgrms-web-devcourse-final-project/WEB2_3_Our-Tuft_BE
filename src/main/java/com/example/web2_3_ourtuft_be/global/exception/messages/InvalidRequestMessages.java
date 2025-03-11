@@ -13,6 +13,7 @@ public enum InvalidRequestMessages {
     INVALID_QUIZ_COUNT("퀴즈 리스트는 최소 1개 이상이어야 합니다."),
     PERCENTAGE_VALUE("퍼센트 할인 값은 100을 넘을 수 없습니다"),
     INVALID_DATE("시작일은 종료일보다 앞서야 합니다."),
+    INVALID_ROOM_ID("방 ID 가 로비가 될 수 없습니다."),
     NO_MORE_QUIZ("더 이상 진행할 라운드가 없습니다");
 
     private final String message;
