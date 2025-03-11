@@ -3,14 +3,14 @@ package com.example.web2_3_ourtuft_be.shop.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 import com.example.web2_3_ourtuft_be.item.entity.Item;
 import com.example.web2_3_ourtuft_be.item.service.ItemService;
 import com.example.web2_3_ourtuft_be.shop.dto.OrderItemDto;
 import com.example.web2_3_ourtuft_be.shop.dto.OrderListResponse;
 import com.example.web2_3_ourtuft_be.shop.entity.Order;
-import com.example.web2_3_ourtuft_be.user.service.InventoryService;
 import com.example.web2_3_ourtuft_be.user.service.MemberPointService;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -35,8 +35,6 @@ public class OrderFacadeServiceTest {
     @Mock private OrderItemService orderItemService;
 
     @Mock private MemberPointService memberPointService;
-
-    @Mock private InventoryService inventoryService;
 
     @InjectMocks private OrderFacadeService orderFacadeService;
 
@@ -108,7 +106,5 @@ public class OrderFacadeServiceTest {
         assertEquals(2, response.getItems().size());
         assertEquals("item1", response.getItems().get(0).getName());
         assertEquals(900, response.getItems().get(0).getFinalPrice());
-
-        verify(inventoryService).createInventory(eq(userId), eq(mockedItems));
     }
 }

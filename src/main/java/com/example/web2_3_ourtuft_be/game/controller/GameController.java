@@ -1,70 +1,26 @@
 package com.example.web2_3_ourtuft_be.game.controller;
 
-import com.example.web2_3_ourtuft_be.game.dto.*;
 import com.example.web2_3_ourtuft_be.game.service.GameService;
-import com.example.web2_3_ourtuft_be.game.service.OXQuizService;
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
-import com.example.web2_3_ourtuft_be.user.entity.User;
-import io.swagger.v3.oas.annotations.Operation;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/api/v1/game")
+@RequestMapping("/game")
 @RequiredArgsConstructor
 public class GameController {
 
-    private final OXQuizService oxQuizService;
     private final GameService gameService;
 
-    @Operation(summary = "OX 정답 제출 API", description = "사용자가 O, X를 입력하여 정답 여부를 받습니다.")
-    @PostMapping("/ox/quiz/{roomId}/{round}")
-    public ResponseEntity<OXResponseDto> submitAnswer(
-            @RequestBody OXSubmitRequestDto requestDto,
-            @PathVariable Long roomId,
-            @PathVariable int round,
-            @AuthenticationPrincipal(expression = "user") User user) {
+    @PostMapping("/start/{roomId}")
+    public ResponseEntity<GlobalResponse<String>> startGame(
+            @PathVariable Long roomId, Long quizSetId) {
+        gameService.startGame(roomId, quizSetId);
 
-        OXResponseDto response =
-                oxQuizService.checkAnswer(user.getId(), roomId, round, requestDto.getAnswer());
-
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/ox/quiz/{roomId}/{round}")
-    public ResponseEntity<GlobalResponse<OXQuizResponse>> getQuiz(
-            @PathVariable Long roomId, @PathVariable int round) {
-        OXQuizResponse response = oxQuizService.getQuiz(roomId, round);
-
-        return ResponseEntity.ok(GlobalResponse.success(response));
-    }
-
-    // 시작은 1번문제 조회 -> 1번문제, 현재 번호, 마지막 문제인지 아닌지 true/false
-
-    @GetMapping("/ox/quiz/{roomId}/finish")
-    public ResponseEntity<GlobalResponse<OXFinishDto>> finish(
-            @PathVariable Long roomId, @AuthenticationPrincipal(expression = "user") User user) {
-
-        OXFinishDto response = oxQuizService.finish(user.getId(), roomId);
-        return ResponseEntity.ok(GlobalResponse.success(response));
-    }
-
-    @PostMapping("/ox/quiz/{roomId}/start")
-    public ResponseEntity<GlobalResponse<String>> start(
-            @PathVariable Long roomId, @AuthenticationPrincipal(expression = "user") User user) {
-
-        gameService.initializePlayerScores(roomId);
-        return ResponseEntity.ok(GlobalResponse.success("스코어 세팅"));
-    }
-
-    @GetMapping("/api/v1/game/{roomId}/scores")
-    @Operation(summary = "플레이어의 점수 조회", description = "게임 종료 후 플레이어 들의 점수를 정렬 후 가져오는 API 입니다")
-    public ResponseEntity<GlobalResponse<List<GameResponse.Scores>>> getGameScores(
-            @PathVariable String roomId) {
-        return ResponseEntity.ok(GlobalResponse.success(gameService.getGameScores(roomId)));
+        return ResponseEntity.ok(GlobalResponse.success("Game started"));
     }
 }

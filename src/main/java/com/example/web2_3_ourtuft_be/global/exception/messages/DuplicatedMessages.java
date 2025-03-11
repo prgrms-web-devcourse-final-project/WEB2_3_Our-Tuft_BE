@@ -12,7 +12,7 @@ public enum DuplicatedMessages {
     CONFLICT("충돌 발생, 다시 시도해주세요"),
     MISMATCH_POINT("포인트 정보가 일치하지 않습니다."),
     WISH_ITEM("이미 찜한 상품입니다."),
-    EVENT("이미 신청한 이벤트입니다.");
+    ;
 
     private final String message;
 }

@@ -117,7 +117,7 @@ public class JwtUtil {
     public Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60);
-        cookie.setSecure(true);
+        // cookie.setSecure(true); // nginx ssl 리버스 프록시 또는 스프링 서버 https 로 변경시 true
         cookie.setPath("/");
         cookie.setHttpOnly(true);
 

@@ -1,164 +1,73 @@
 package com.example.web2_3_ourtuft_be.game.service;
 
-import com.example.web2_3_ourtuft_be.game.dto.GameResponse;
-import com.example.web2_3_ourtuft_be.game.dto.PlayerScoreDto;
-import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
-import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
-import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
+import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
+import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
+import com.example.web2_3_ourtuft_be.quiz.entity.Quiz;
+import com.example.web2_3_ourtuft_be.quiz.repository.QuizRepository;
+import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
-import com.example.web2_3_ourtuft_be.websocket.service.WSGameService;
-import java.util.ArrayList;
+import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class GameService {
 
-    private final LobbyService lobbyService;
-    private final RoomStatusService roomStatusService;
-    private final RoomQuizService roomQuizService;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ParticipantService participantService;
-    private final RedisTemplate<String, String> redisTemplate;
-    private final WSGameService wsGameService;
+    private final QuizRepository quizRepository;
+    private final LobbyService lobbyService;
 
-    //    public void gameSet(Long roomId) {
+    // TODO: roomId로 redis에서 quiz 가져오기
+    //    public List<Quiz> getQuizList(Long roomId){
     //
-    //        System.out.println("게임 세팅 시작");
-    //
-    //        roomStatusService.setGameStatus(roomId, "RUNNING");
-    //        roomStatusService.setCurrentRound(roomId, 0);
-    //
-    //        startQuizSending(roomId);
     //    }
 
-    //    private void startQuizSending(Long roomId) {
-    //
-    //        Room room = lobbyService.findByRoomId(roomId);
-    //        int totalRound = room.getRound();
-    //
-    //        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
-    //        scheduler.scheduleAtFixedRate(() -> sendQuiz(roomId, totalRound), 0, 5,
-    // TimeUnit.SECONDS);
-    //    }
+    @Transactional
+    public void startGame(Long roomId, Long quizSetId) {
 
-    //    public void sendQuiz(Long roomId, int totalRound) {
-    //        System.out.println("sendQuiz함수 실행 ~~~~~~~~~~~~");
-    //        Set<Map<String, String>> quizzes = roomQuizService.getCurrentGameQuizzes(roomId);
-    //        int currentRound = roomStatusService.getCurrentRound(roomId);
-    //
-    //        if (!quizzes.isEmpty() && currentRound < totalRound) {
-    //
-    //            Map<String, String> quiz = quizzes.get(currentRound);
-    //            String question = quiz.get("question");
-    //            String hint = quiz.get("hint");
-    //
-    //            System.out.println("문제 내기 : " + question);
-    //            messagingTemplate.convertAndSend("/topic/gameRoom/" + roomId, question);
-    //            roomStatusService.setCurrentRound(roomId, currentRound + 1);
-    //
-    //        } else {
-    //            stopGame(roomId);
-    //        }
-    //    }
+        Room room = lobbyService.findByRoomId(roomId);
 
-    public void stopGame(Long roomId) {
-        roomStatusService.setGameStatus(roomId, "WAITING");
+        // 레디스에서 List 가져옴
+        List<Quiz> quizzes =
+                quizRepository
+                        .findAllByQuizSetId(quizSetId)
+                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.NOT_FOUND_QUIZ));
+
+        room.startGame();
+
+        // TODO: redis에 상태, topic 저장...
+
+        System.out.println("게임 시작 : ");
+        sendQuiz();
+    }
+
+    @Scheduled(fixedRate = 30000)
+    public void sendQuiz() {
+
+        //        if (room.isGameRunning() || quizzes == null) return;
+        //
+        //        if (room.getCurrentRound() >= quizzes.size()) {
+        //            messagingTemplate.convertAndSend("/topic/room/" + room.getId(), "GAME_OVER");
+        //            stopGame(room);
+        //            return;
+        //        }
+        //
+        //        Quiz nextQuiz = quizzes.get(room.getCurrentRound()); // TODO: 예외처리
+        //        messagingTemplate.convertAndSend("/topic/room/" + room.getId(), nextQuiz);
+        //
+        //        System.out.println("출제된 문제: " + nextQuiz);
+        //        room.nextRound();
+    }
+
+    public void stopGame(Room room) {
+
+        room.endGame();
         System.out.println("게임 종료!");
     }
 
-    public void initializePlayerScores(Long roomId) {
-        String participantsScoreKey = participantService.getParticipantsScoreKey(roomId.toString());
-        String participantsOrderKey = participantService.getParticipantsOrderKey(roomId.toString());
-
-        Set<String> range = redisTemplate.opsForZSet().range(participantsOrderKey, 0, -1);
-
-        if (range != null && !range.isEmpty()) {
-            for (String participant : range) {
-                redisTemplate.opsForZSet().add(participantsScoreKey, participant, 0);
-            }
-        }
-    }
-
-    // TODO : RestAPI용 함수 웹소켓 구현시 삭제예정
-    public void updatePlayerScore(Long roomId, Long userId) {
-
-        String participantsScoreKey = participantService.getParticipantsScoreKey(roomId.toString());
-
-        redisTemplate.opsForZSet().incrementScore(participantsScoreKey, userId.toString(), 1);
-    }
-
-    // TODO : RestAPI용 함수 웹소켓 구현시 삭제예정
-    public List<PlayerScoreDto> getPlayerScores(Long roomId) {
-        List<PlayerScoreDto> playerScores = new ArrayList<>();
-
-        String participantsScoreKey = participantService.getParticipantsScoreKey(roomId.toString());
-        String getParticipantsInfoKey =
-                participantService.getParticipantsInfoKey(roomId.toString());
-
-        Set<ZSetOperations.TypedTuple<String>> typedTuples =
-                redisTemplate.opsForZSet().reverseRangeWithScores(participantsScoreKey, 0, -1);
-        for (ZSetOperations.TypedTuple<String> tuple : typedTuples) {
-
-            String userId = tuple.getValue();
-            int score = tuple.getScore().intValue();
-            Object nickName = redisTemplate.opsForHash().get(getParticipantsInfoKey, userId);
-
-            PlayerScoreDto playerScoreDto = new PlayerScoreDto(userId, nickName.toString(), score);
-
-            playerScores.add(playerScoreDto);
-        }
-        return playerScores;
-    }
-
-    //    public List<GameResponse.Scores> getGameScores(String roomId) {
-    //        String key = "game:participants:score:" + roomId;
-    //        Set<ZSetOperations.TypedTuple<String>> result =
-    //                redisTemplate
-    //                        .opsForZSet()
-    //                        .rangeWithScores("game:participants:score:" + roomId, 0, -1);
-    //
-    //        List<GameResponse.Scores> list = new ArrayList<>();
-    //
-    //        for (ZSetOperations.TypedTuple<String> tuple : result) {
-    //            String userId = tuple.getValue();
-    //            System.out.println(userId);
-    //            String score = String.valueOf(tuple.getScore());
-    //            String username =
-    //                    (String)
-    //                            redisTemplate
-    //                                    .opsForHash()
-    //                                    .get(wsGameService.getUsernameKey(roomId), userId);
-    //
-    //            list.add(GameResponse.Scores.from(username, score));
-    //        }
-    //
-    //        return list;
-    //    }
-
-    public List<GameResponse.Scores> getGameScores(String roomId) {
-        String key = "game:participants:score:" + roomId;
-
-        Set<String> participants = redisTemplate.opsForZSet().range(key, 0, -1);
-        List<GameResponse.Scores> list = new ArrayList<>();
-
-        for (String userId : participants) {
-            Double score = redisTemplate.opsForZSet().score(key, userId);
-            String username =
-                    (String)
-                            redisTemplate
-                                    .opsForHash()
-                                    .get(wsGameService.getUsernameKey(roomId), userId);
-
-            list.add(GameResponse.Scores.from(username, String.valueOf(score != null ? score : 0)));
-        }
-
-        return list;
-    }
+    // TODO: 응답자 확인 - 누가 몇문제 맞췄는지
 }

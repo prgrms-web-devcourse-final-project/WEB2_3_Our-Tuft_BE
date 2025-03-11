@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import com.example.web2_3_ourtuft_be.common.PageResponse;
-import com.example.web2_3_ourtuft_be.discount.entity.Discount;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
@@ -16,7 +15,6 @@ import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
 import com.example.web2_3_ourtuft_be.item.entity.Item;
 import com.example.web2_3_ourtuft_be.item.entity.enums.Category;
 import com.example.web2_3_ourtuft_be.item.repository.ItemRepository;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -74,7 +72,7 @@ public class ItemServiceTest {
         PageRequest pageable = PageRequest.of(0, 6);
         Slice<Item> items = new SliceImpl<>(List.of(item1, item2), pageable, false);
 
-        when(itemRepository.findFilteredItems(null, null, "default", pageable)).thenReturn(items);
+        when(itemRepository.findAllBy(eq(pageable))).thenReturn(items);
 
         // when
         PageResponse<ItemResponse> response = itemService.getItems(null, null, pageable);
@@ -93,7 +91,7 @@ public class ItemServiceTest {
         PageRequest pageable = PageRequest.of(0, 6);
         Slice<Item> items = new PageImpl<>(List.of(item1), pageable, 1);
 
-        when(itemRepository.findFilteredItems("EYE", null, "default", pageable)).thenReturn(items);
+        when(itemRepository.findByCategory(eq("EYE"), eq(pageable))).thenReturn(items);
 
         // when
         PageResponse<ItemResponse> response = itemService.getItems("EYE", null, pageable);
@@ -245,33 +243,5 @@ public class ItemServiceTest {
         assertTrue(response.isLast());
         assertTrue(response.isEmpty());
         assertEquals(0, response.getNumberOfElements());
-    }
-
-    @Test
-    @DisplayName("주어진 아이템들의 할인 ID를 업데이트한다")
-    void testSetDiscountId() {
-        // given
-        List<Long> itemIds = List.of(1L, 2L);
-
-        Item item1 = mock(Item.class);
-        Item item2 = mock(Item.class);
-
-        Discount discount =
-                Discount.builder()
-                        .id(1L)
-                        .type("PERCENTAGE")
-                        .value(20)
-                        .startDate(LocalDate.now())
-                        .endDate(LocalDate.now().plusDays(1))
-                        .build();
-
-        when(itemRepository.findAllById(itemIds)).thenReturn(List.of(item1, item2));
-
-        // when
-        itemService.setDiscountId(itemIds, discount);
-
-        // then
-        verify(item1).updateDiscountId(discount.getId());
-        verify(item2).updateDiscountId(discount.getId());
     }
 }

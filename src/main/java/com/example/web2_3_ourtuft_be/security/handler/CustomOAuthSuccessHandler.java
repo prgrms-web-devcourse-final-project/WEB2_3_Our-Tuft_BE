@@ -30,17 +30,16 @@ public class CustomOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         String accessToken =
                 jwtUtil.createJwt(
-                        "access", user.getId(), user.getName(), user.getRole(), 604800000L);
-
+                        "access", user.getId(), user.getNickname(), user.getRole(), 900000L);
         String refreshToken =
                 jwtUtil.createJwt(
-                        "refresh", user.getId(), user.getName(), user.getRole(), 604800000L);
+                        "refresh", user.getId(), user.getNickname(), user.getRole(), 86400000L);
 
         response.addCookie(jwtUtil.createCookie("refresh", refreshToken));
 
         jwtUtil.saveRefreshTokenInRedis(refreshToken);
 
-        String SUCCESS_TARGET_URL = "http://localhost:3000/login#token=";
+        String SUCCESS_TARGET_URL = "http://localhost:3000/success#token=";
         String targetUrl = SUCCESS_TARGET_URL + accessToken;
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);

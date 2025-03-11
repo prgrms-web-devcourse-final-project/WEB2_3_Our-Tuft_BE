@@ -31,9 +31,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setErrorHandler(new StompSubProtocolErrorHandler())
                 .addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
-                .setAllowedOrigins("https://hiq-lounge.duckdns.org")
-                .addInterceptors(new WebsocketHandshakeInterceptor(jwtUtil))
-                .withSockJS();
+                .addInterceptors(new WebsocketHandshakeInterceptor(jwtUtil));
     }
 
     @Override

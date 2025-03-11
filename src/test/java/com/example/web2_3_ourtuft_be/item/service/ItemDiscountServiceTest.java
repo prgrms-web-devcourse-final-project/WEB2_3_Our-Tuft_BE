@@ -63,8 +63,7 @@ class ItemDiscountServiceTest {
 
         when(discountService.getDiscountByStartDate(today))
                 .thenReturn(List.of(percentageDiscount, amountDiscount));
-        when(discountService.getDiscountByEndDate(today.minusDays(1)))
-                .thenReturn(List.of(expiredDiscount));
+        when(discountService.getDiscountByEndDate(today)).thenReturn(List.of(expiredDiscount));
 
         when(itemService.getItemsByDiscountId(1L)).thenReturn(List.of(item1));
         when(itemService.getItemsByDiscountId(2L)).thenReturn(List.of(item2));

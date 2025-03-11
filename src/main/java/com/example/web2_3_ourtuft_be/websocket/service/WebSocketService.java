@@ -1,8 +1,10 @@
 package com.example.web2_3_ourtuft_be.websocket.service;
 
 import com.example.web2_3_ourtuft_be.websocket.dto.WebSocketResponse;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -12,85 +14,102 @@ import org.springframework.stereotype.Service;
 public class WebSocketService {
 
     private final SimpMessagingTemplate messagingTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
+
+    public WebSocketResponse.Send processMessage(
+            SimpMessageHeaderAccessor headerAccessor, Long roomId, String message) {
+        String username = getUsernameFromSession(headerAccessor);
+        String userId = getUserIdFromSession(headerAccessor);
+
+        // TODO: redis에서 방 상태 불러오기
+        // RoomStatus roomStatus = roomStatusRedisService.getRoomStatus(roomId);
+        boolean isGameRunning = true;
+        if (isGameRunning) {
+            String correctAnswer = getCorrectAnswerFromRedis(roomId);
+
+            if (correctAnswer.equalsIgnoreCase(message.trim())) { // 정답 맞췄을 때 - 대소문자 구분없이 비교
+                increaseUserScore(roomId, userId);
+
+                // 정답자에게만 "정답입니다!" 전송
+                messagingTemplate.convertAndSendToUser(
+                        userId,
+                        "/topic/room/" + roomId,
+                        WebSocketResponse.Send.of("SYSTEM", "정답입니다!"));
+
+                // 모든 게임방 인원에게 "@@님이 정답을 맞췄습니다!" 전송
+                messagingTemplate.convertAndSend(
+                        "/topic/room/" + roomId,
+                        WebSocketResponse.Send.of("SYSTEM", username + "님이 정답을 맞췄습니다!"));
+
+                return null; // 정답 메세지는 숨기기
+            }
+        }
+
+        return WebSocketResponse.Send.of(username, message);
+    }
+
+    public String getCorrectAnswerFromRedis(Long roomId) {
+        String key = "room_" + roomId + ":correctAnswer";
+        return redisTemplate.opsForValue().get(key);
+    }
+
+    public void increaseUserScore(Long roomId, String userId) {}
+
+    // 구독을 하면 방 정보에 유저가 추가
+    // 로비는 세부 정보를 로비에 추가 X
+    public void handleRoomSubscribe(SimpMessageHeaderAccessor headerAccessor, String roomId) {
+        String username = getUsernameFromSession(headerAccessor);
+        String userId = getUserIdFromSession(headerAccessor);
+
+        addParticipantToRoom(roomId, userId);
+
+        if (!"lobby".equals(roomId)) {
+            addParticipantDetailToRoom(roomId, userId, username);
+        }
+
+        messagingTemplate.convertAndSend(
+                "/topic/room/" + roomId,
+                WebSocketResponse.Send.of("SYSTEM", username + "님이 입장하였습니다"));
+    }
+
+    public WebSocketResponse.Send sendMessageToRoom(
+            SimpMessageHeaderAccessor headerAccessor, String message) {
+        String username = getUsernameFromSession(headerAccessor);
+        return WebSocketResponse.Send.of(username, message);
+    }
 
     // 핸드셰이크에서 Principal 객체에 회원 정보를 담으려고 했지만 Null 값이 넘어오는 문제를 아직 해결 X
     // 핸드셰이크 JWT 인증단계에서 attributes 에 키벨류로 담아뒀다
-    public String getUserIdFromSession(SimpMessageHeaderAccessor headerAccessor) {
+    private String getUserIdFromSession(SimpMessageHeaderAccessor headerAccessor) {
         return (String) headerAccessor.getSessionAttributes().get("userId");
     }
 
     // 핸드셰이크에서 Principal 객체에 회원 정보를 담으려고 했지만 Null 값이 넘어오는 문제를 아직 해결 X
     // 핸드셰이크 JWT 인증단계에서 attributes 에 키벨류로 담아뒀다
-    public String getUsernameFromSession(SimpMessageHeaderAccessor headerAccessor) {
+    private String getUsernameFromSession(SimpMessageHeaderAccessor headerAccessor) {
         return (String) headerAccessor.getSessionAttributes().get("username");
     }
 
-    public void sendMessage(
-            SimpMessageHeaderAccessor headerAccessor, String roomId, String message) {
-        String username = getUsernameFromSession(headerAccessor);
+    private void addParticipantToRoom(String roomId, String userId) {
+        String key = "room:" + roomId + ":participants";
 
-        messagingTemplate.convertAndSend(
-                "/topic/room/" + roomId, WebSocketResponse.Send.of(username, message));
+        // ZRANGE room:1:participants 0 -1 WITHSCORES, 로 조회
+        redisTemplate.opsForZSet().add(key, userId, System.currentTimeMillis());
     }
 
-    public void sendSystemMessageToUser(String userId, Long roomId, String message) {
-        messagingTemplate.convertAndSendToUser(
-                userId, "/topic/room/" + roomId, WebSocketResponse.Send.of(userId, message));
-    }
+    private void addParticipantDetailToRoom(String roomId, String userId, String username) {
+        String key = "room:" + roomId + ":participant:" + userId;
 
-    public void sendGameSystemMessageToUser(String userId, String roomId, String message) {
-        messagingTemplate.convertAndSendToUser(
-                userId, "/topic/game/" + roomId, WebSocketResponse.Send.of("System", message));
-    }
+        Map<String, String> participantDetail = new HashMap<>();
 
-    public void sendEvent(String roomId, String event) {
-        messagingTemplate.convertAndSend(
-                "/topic/room/" + roomId, WebSocketResponse.SendEvent.of(event));
-    }
+        participantDetail.put("role", "PLAYER");
+        participantDetail.put("username", username);
+        participantDetail.put("userId", userId);
+        participantDetail.put("score", Integer.toString(0));
 
-    public void sendGameEvent(String roomId, String event) {
-        messagingTemplate.convertAndSend(
-                "/topic/game/" + roomId, WebSocketResponse.SendEvent.of(event));
-    }
-
-    public void sendSystemMessage(String roomId, String message) {
-        messagingTemplate.convertAndSend(
-                "/topic/room/" + roomId, WebSocketResponse.Send.of("SYSTEM", message));
-    }
-
-    public void sendGameSystemMessage(String roomId, String message) {
-        messagingTemplate.convertAndSend(
-                "/topic/game/" + roomId, WebSocketResponse.Send.of("SYSTEM", message));
-    }
-
-    public void sendGameMessage(String roomId, String username, String message) {
-        messagingTemplate.convertAndSend(
-                "/topic/game/" + roomId, WebSocketResponse.Send.of(username, message));
-    }
-
-    public void sendGameQuizMessage(String roomId, String type, String message) {
-
-        if ("question".equals(type)) {
-            messagingTemplate.convertAndSend(
-                    "/topic/game/" + roomId, WebSocketResponse.SendQuestion.of(message));
-        }
-        if ("answer".equals(type)) {
-            messagingTemplate.convertAndSend(
-                    "/topic/game/" + roomId, WebSocketResponse.SendAnswer.of(message));
-        }
-        if ("hint".equals(type)) {
-            messagingTemplate.convertAndSend(
-                    "/topic/game/" + roomId, WebSocketResponse.SendHint.of(message));
-        }
-    }
-
-    public void changeSessionFlag(SimpMessageHeaderAccessor headerAccessor) {
-        Map<String, Object> session = headerAccessor.getSessionAttributes();
-        String flag = (String) session.get("changeRoomToGame");
-
-        if (flag == null || "false".equals(flag)) flag = "true";
-        else flag = "false";
-
-        session.put("changeRoomToGame", flag);
+        // 한글은 바이트 코드로 나옴
+        // redis 직렬화를 따로 해주면 된다고 함
+        // HGETALL room:1:participant:{userId} 모든 필드를 다 조회 가능
+        redisTemplate.opsForHash().putAll(key, participantDetail);
     }
 }

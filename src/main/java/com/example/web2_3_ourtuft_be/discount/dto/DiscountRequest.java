@@ -2,7 +2,6 @@ package com.example.web2_3_ourtuft_be.discount.dto;
 
 import com.example.web2_3_ourtuft_be.discount.entity.enums.DiscountType;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,5 +12,4 @@ public class DiscountRequest {
     private int value;
     private LocalDate startDate;
     private LocalDate endDate;
-    private List<Long> itemIds;
 }

@@ -42,7 +42,7 @@ public class TestController {
                 jwtUtil.createJwt(
                         "access",
                         user.getId(),
-                        user.getName(),
+                        user.getNickname(),
                         user.getRole(),
                         24 * 60 * 60 * 1000L);
         return ResponseEntity.ok(GlobalResponse.success(accessToken));

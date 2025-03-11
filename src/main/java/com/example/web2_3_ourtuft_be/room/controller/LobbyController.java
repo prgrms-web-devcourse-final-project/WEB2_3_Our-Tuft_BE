@@ -1,8 +1,6 @@
 package com.example.web2_3_ourtuft_be.room.controller;
 
 import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
-import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
-import com.example.web2_3_ourtuft_be.room.dto.RoomDetailResponseDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
@@ -26,8 +24,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "📬 Lobby", description = "로비 및 방 관련 API")
 public class LobbyController {
     private final LobbyService lobbyService;
-
-    private final RoomQuizService roomQuizService;
 
     @Operation(summary = "방 전체 조회 API", description = "로비에서 생성된 방을 조회합니다.")
     @ApiResponses({
@@ -90,16 +86,12 @@ public class LobbyController {
         return ResponseEntity.ok(GlobalResponse.success("방장 변경 성공"));
     }
 
-    @Operation(summary = "대기실 정보 조회 API", description = "특정 대기실로 입장합니다.")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "성공"),
-        @ApiResponse(responseCode = "404", description = "해당 방을 찾을 수 없습니다.")
-    })
-    @GetMapping("/rooms/{roomId}")
-    public ResponseEntity<GlobalResponse<RoomDetailResponseDto>> getRooms(
-            @PathVariable Long roomId, @RequestParam(required = false) String password) {
-        RoomDetailResponseDto roomDetail = lobbyService.getRoomDetail(roomId, password);
+    @Operation(summary = "방 삭제 API", description = "방을 삭제합니다.")
+    @DeleteMapping("/rooms/{roomId}")
+    public GlobalResponse<String> deleteRoom(@PathVariable Long roomId) {
 
-        return ResponseEntity.ok(GlobalResponse.success(roomDetail));
+        lobbyService.deleteRoom(roomId);
+
+        return GlobalResponse.success("방이 삭제되었습니다.");
     }
 }

@@ -13,10 +13,10 @@ public class LobbyTestUtils {
             boolean disclosure) {
         return Room.builder()
                 .roomName(roomName)
-                //                .peopleEntering(peopleEntering)
+                .peopleEntering(peopleEntering)
                 .round(round)
-                //                .gameStatus(gameStatus)
-                //                .host(host)
+                .gameStatus(gameStatus)
+                .host(host)
                 .disclosure(disclosure)
                 .build();
     }

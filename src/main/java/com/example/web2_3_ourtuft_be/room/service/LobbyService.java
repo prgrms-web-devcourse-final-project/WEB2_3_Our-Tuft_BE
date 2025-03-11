@@ -2,25 +2,21 @@ package com.example.web2_3_ourtuft_be.room.service;
 
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.AccessDeniedException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidValueException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.AccessDeniedMessages;
-import com.example.web2_3_ourtuft_be.global.exception.messages.BadRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
-import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
-import com.example.web2_3_ourtuft_be.redis.service.RoomSettingService;
-import com.example.web2_3_ourtuft_be.room.dto.RoomDetailResponseDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
 import com.example.web2_3_ourtuft_be.user.entity.User;
-import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
 import com.example.web2_3_ourtuft_be.user.service.UserService;
-import com.example.web2_3_ourtuft_be.websocket.service.WebSocketService;
 import jakarta.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -33,22 +29,11 @@ public class LobbyService {
     private final RoomRepository roomRepository;
     private final UserService userService;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ParticipantService participantService;
-    private final UserRepository userRepository;
-    private final RoomSettingService roomSettingService;
-    private final WebSocketService webSocketService;
 
     public List<RoomResponseDto> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
 
         return rooms.stream().map(RoomResponseDto::new).collect(Collectors.toList());
-    }
-
-    @Transactional
-    public void changeRoomPlayingStatus(String roomId) {
-        Room room = findByRoomId(Long.valueOf(roomId));
-
-        room.changePlayingStatus();
     }
 
     public List<RoomResponseDto> searchRoom(String roomName, Long roomId) {
@@ -89,18 +74,6 @@ public class LobbyService {
                         .build();
 
         room = roomRepository.save(room);
-
-        // 해당 룸 key로 참여인원 저장
-        User host =
-                userRepository
-                        .findById(userId)
-                        .orElseThrow(() -> new NotFoundException(NotFoundMessages.USER));
-
-        participantService.addHost(room.getId(), userId, host.getName());
-
-        roomSettingService.saveRoomSettingsToRedis(room.getId(), roomRequestDto);
-
-        webSocketService.sendEvent("lobby", "ROOM_CREATED");
 
         return new RoomResponseDto(room);
     }
@@ -144,9 +117,13 @@ public class LobbyService {
 
         room.changeHost(newHost.getId());
 
-        participantService.changeReadyForNewHost(room.getId(), newHost.getId());
-
         roomRepository.save(room);
+
+        Map<String, Object> hostChangeInfo = new HashMap<>();
+        hostChangeInfo.put("roomID", roomId);
+        hostChangeInfo.put("newHostID", newHostId);
+
+        messagingTemplate.convertAndSend("/topic/room/" + roomId, hostChangeInfo);
     }
 
     public Room findByRoomId(Long roomId) {
@@ -158,37 +135,9 @@ public class LobbyService {
     public void deleteRoom(Long roomId) {
 
         Room room = findByRoomId(roomId);
+
         roomRepository.delete(room);
-    }
 
-    public boolean isHost(Long roomId, Long userId) {
-        Room room = findByRoomId(roomId);
-        Long hostId = room.getHostId();
-        return hostId != null && hostId.equals(userId);
-    }
-
-    public RoomDetailResponseDto getRoomDetail(Long roomId, String password) {
-        Room room = findByRoomId(roomId);
-
-        if (room.isDisclosure()) { // 공개방
-            if (password != null && !password.isEmpty()) {
-                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_DISCLOSURE);
-            }
-        } else { // 비공개방
-            if (password == null || password.isEmpty()) {
-                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD);
-            }
-            if (password.length() != 4) {
-                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_LENGTH);
-            }
-            if (!password.matches("^[0-9]+$")) {
-                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_FORMAT);
-            }
-            if (!room.getRoomPassword().equals(password)) {
-                throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_WRONG);
-            }
-        }
-
-        return new RoomDetailResponseDto(room);
+        messagingTemplate.convertAndSend("/topic/lobby/", "deleted:" + roomId);
     }
 }
