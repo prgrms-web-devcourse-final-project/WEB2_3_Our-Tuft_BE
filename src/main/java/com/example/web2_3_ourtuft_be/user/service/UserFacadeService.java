@@ -62,8 +62,9 @@ public class UserFacadeService {
     }
 
     @Transactional(readOnly = true)
-    public UserInfoResponseDto getMyInfo(User user) {
-        return getUserInfo(user.getId());
+    public MyInfoResponseDto getMyInfo(Long userId) {
+        UserInfoResponseDto userInfo = getUserInfo(userId);
+        return new MyInfoResponseDto(userId, userInfo);
     }
 
     @Transactional
@@ -88,7 +89,7 @@ public class UserFacadeService {
 
         profileService.updateMemberProfile(user, request.getIntroduction(), equipItems);
 
-        return getMyInfo(user);
+        return getUserInfo(user.getId());
     }
 
     @Transactional
