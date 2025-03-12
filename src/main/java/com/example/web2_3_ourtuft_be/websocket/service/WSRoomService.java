@@ -20,7 +20,6 @@ public class WSRoomService {
     private final LobbyService lobbyService;
     private final WSGameService wsGameService;
     private final RoomQuizService roomQuizService;
-    private final RoomSettingService roomSettingService;
 
     public void handleRoomEvent(
             SimpMessageHeaderAccessor headerAccessor, String roomId, String event) {
