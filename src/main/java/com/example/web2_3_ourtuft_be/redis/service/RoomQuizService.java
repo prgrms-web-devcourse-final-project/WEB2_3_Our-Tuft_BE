@@ -56,13 +56,10 @@ public class RoomQuizService {
 
     public void setQuiz(String roomId, int totalRound) {
         Set<String> quizSet = getQuizzes(roomId);
-        System.out.println(quizSet);
         int count = Math.min(quizSet.size(), totalRound);
-
         List<String> quizList = new ArrayList<>(quizSet);
         Collections.shuffle(quizList);
         List<String> selected = quizList.subList(0, count);
-
         String quizOrderKey = getQuizOrderKey(roomId);
 
         redisTemplate.delete(quizOrderKey);
@@ -76,7 +73,6 @@ public class RoomQuizService {
     public boolean checkQuizIds(String roomId) {
 
         Long quizSetId = getQuizSet(Long.parseLong(roomId));
-        System.out.println(quizSetId);
         if (quizSetId == null) {
             webSocketService.sendEvent(roomId, "퀴즈가 등록되지 않았습니다.");
             return false;

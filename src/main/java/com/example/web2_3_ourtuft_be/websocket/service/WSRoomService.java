@@ -20,17 +20,17 @@ public class WSRoomService {
     private final LobbyService lobbyService;
     private final WSGameService wsGameService;
     private final RoomQuizService roomQuizService;
-    private final RoomSettingService roomSettingService;
 
     public void handleRoomEvent(
             SimpMessageHeaderAccessor headerAccessor, String roomId, String event) {
 
         if (event.contains(EVENT.READY.getValue())) changeReadyStatus(headerAccessor, roomId);
-        if (event.contains(EVENT.SWITCHING_ROOM_TO_GAME.getValue())) {}
-        if (roomQuizService.checkQuizIds(roomId)) {
-            savePlayerCount(roomId);
-            webSocketService.changeSessionFlag(headerAccessor);
-            lobbyService.changeRoomPlayingStatus(roomId);
+        if (event.contains(EVENT.SWITCHING_ROOM_TO_GAME.getValue())) {
+            if (roomQuizService.checkQuizIds(roomId)) {
+                savePlayerCount(roomId);
+                webSocketService.changeSessionFlag(headerAccessor);
+                lobbyService.changeRoomPlayingStatus(roomId);
+            }
         }
         if (event.contains(EVENT.GAME_STARTED.getValue()))
             wsGameService.startGame(headerAccessor, roomId);
