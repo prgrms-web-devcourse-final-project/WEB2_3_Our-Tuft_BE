@@ -161,6 +161,8 @@ public class WSGameService {
     public void sendQuiz(SimpMessageHeaderAccessor headerAccessor, String roomId, int totalRound) {
         String userId = webSocketService.getUserIdFromSession(headerAccessor);
         setPlayerCorrectFlag(roomId);
+//        List<GameResponse.Scores> scores = gameService.getGameScores(roomId);
+//        webSocketService.sendGameSystemMessage(roomId, scores.toString());
 
         int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
         currentRound += 1;
@@ -177,7 +179,7 @@ public class WSGameService {
         if (quizId == null || quizId.trim().isEmpty()) {
             webSocketService.sendGameSystemMessage(roomId, "모든 퀴즈가 소진되었습니다.");
             webSocketService.sendGameSystemMessage(roomId, "게임이 종료되었습니다.");
-            endGame(headerAccessor, roomId, getWinnerId(roomId));
+//            endGame(headerAccessor, roomId, getWinnerId(roomId));
             return;
         }
 
@@ -396,9 +398,5 @@ public class WSGameService {
 
     public String getPlayerCorrectFlagKey(String roomId) {
         return "game:participants:correct:" + roomId;
-    }
-
-    public String getUsernameKey(String roomId) {
-        return "game:participants:info:" + roomId;
     }
 }
