@@ -33,11 +33,6 @@ public class WSRoomService {
                 lobbyService.changeRoomPlayingStatus(roomId);
             }
         }
-        if (roomQuizService.checkQuizIds(roomId)) {
-            savePlayerCount(roomId);
-            webSocketService.changeSessionFlag(headerAccessor);
-            lobbyService.changeRoomPlayingStatus(roomId);
-        }
         if (event.contains(EVENT.GAME_STARTED.getValue()))
             wsGameService.startGame(headerAccessor, roomId);
         if (event.contains(EVENT.GAME_END.getValue())) {
