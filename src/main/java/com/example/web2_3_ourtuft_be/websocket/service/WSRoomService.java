@@ -5,18 +5,14 @@ import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomSettingService;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import com.example.web2_3_ourtuft_be.websocket.event.EVENT;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class WSRoomService {
-
-
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ParticipantService participantService;
@@ -31,12 +27,13 @@ public class WSRoomService {
 
         if (event.contains(EVENT.READY.getValue())) changeReadyStatus(headerAccessor, roomId);
         if (event.contains(EVENT.SWITCHING_ROOM_TO_GAME.getValue())) {}
-            if (roomQuizService.checkQuizIds(roomId)) {
-                savePlayerCount(roomId);
-                webSocketService.changeSessionFlag(headerAccessor);
-                lobbyService.changeRoomPlayingStatus(roomId);
-            }
-        if (event.contains(EVENT.GAME_STARTED.getValue())) wsGameService.startGame(headerAccessor, roomId);
+        if (roomQuizService.checkQuizIds(roomId)) {
+            savePlayerCount(roomId);
+            webSocketService.changeSessionFlag(headerAccessor);
+            lobbyService.changeRoomPlayingStatus(roomId);
+        }
+        if (event.contains(EVENT.GAME_STARTED.getValue()))
+            wsGameService.startGame(headerAccessor, roomId);
         if (event.contains(EVENT.GAME_END.getValue())) {
             String winnerId = wsGameService.getWinnerId(roomId);
             wsGameService.endGame(headerAccessor, roomId, winnerId);
