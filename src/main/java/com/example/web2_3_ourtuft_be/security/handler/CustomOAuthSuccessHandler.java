@@ -39,7 +39,7 @@ public class CustomOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         jwtUtil.saveRefreshTokenInRedis(refreshToken);
 
-        String SUCCESS_TARGET_URL = "https://hiq-lounge.vercel.app:3000/login#token=";
+        String SUCCESS_TARGET_URL = "https://hiq-lounge.vercel.app/login#token=";
         String targetUrl = SUCCESS_TARGET_URL + accessToken;
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
