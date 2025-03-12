@@ -18,7 +18,7 @@ public class RoomRequestDto {
 
     private String password;
 
-    @Min(value = 5, message = "라운드는 최소 5 이상이어야 합니다.") private int round;
+    @Min(value = 1, message = "라운드는 최소 1 이상이어야 합니다.") private int round;
 
     private QuizSetType gameType;
 
