@@ -27,6 +27,15 @@ public class WSRoomService {
 
         if (event.contains(EVENT.READY.getValue())) changeReadyStatus(headerAccessor, roomId);
         if (event.contains(EVENT.SWITCHING_ROOM_TO_GAME.getValue())) {}
+        if (event.contains(EVENT.READY.getValue()))
+            changeReadyStatus(headerAccessor, roomId);
+        if (event.contains(EVENT.SWITCHING_ROOM_TO_GAME.getValue())) {
+            if (roomQuizService.checkQuizIds(roomId)) {
+                savePlayerCount(roomId);
+                webSocketService.changeSessionFlag(headerAccessor);
+                lobbyService.changeRoomPlayingStatus(roomId);
+            }
+        }
         if (roomQuizService.checkQuizIds(roomId)) {
             savePlayerCount(roomId);
             webSocketService.changeSessionFlag(headerAccessor);

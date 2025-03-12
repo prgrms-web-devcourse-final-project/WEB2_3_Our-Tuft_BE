@@ -159,10 +159,8 @@ public class WSGameService {
     }
 
     public void sendQuiz(SimpMessageHeaderAccessor headerAccessor, String roomId, int totalRound) {
-        String userId = webSocketService.getUserIdFromSession(headerAccessor);
+//        String userId = webSocketService.getUserIdFromSession(headerAccessor);
         setPlayerCorrectFlag(roomId);
-        //        List<GameResponse.Scores> scores = gameService.getGameScores(roomId);
-        //        webSocketService.sendGameSystemMessage(roomId, scores.toString());
 
         int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
         currentRound += 1;

@@ -92,7 +92,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(
-                List.of("http://localhost:3000", "https://hiq-lounge.duckdns.org"));
+                List.of("http://localhost:3000", "https://hiq-lounge.duckdns.org", "https://hiq-lounge.vercel.app"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
