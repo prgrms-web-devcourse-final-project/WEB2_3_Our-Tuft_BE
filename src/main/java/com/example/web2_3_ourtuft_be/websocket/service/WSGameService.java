@@ -349,8 +349,6 @@ public class WSGameService {
         String participantOrderKey = getPlayerOrderKey(roomId);
         String participantInfoKey = getPlayerInfoKey(roomId);
 
-        User user = userService.getUser(Long.parseLong(userId));
-
         redisTemplate
                 .opsForZSet()
                 .add(participantOrderKey, userId, participantService.getTimeStamp());
