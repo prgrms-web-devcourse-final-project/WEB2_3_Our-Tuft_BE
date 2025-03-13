@@ -81,6 +81,10 @@ public class WSRoomService {
         String participantOrderKey = participantService.getParticipantsOrderKey(roomId);
         String participantInfoKey = participantService.getParticipantsInfoKey(roomId);
 
+        if(redisTemplate.opsForZSet().size(participantOrderKey) == null) {
+            webSocketService.sendEvent(roomId, "PLAYER_DENIED");
+        }
+
         redisTemplate
                 .opsForZSet()
                 .add(participantOrderKey, userId, participantService.getTimeStamp());

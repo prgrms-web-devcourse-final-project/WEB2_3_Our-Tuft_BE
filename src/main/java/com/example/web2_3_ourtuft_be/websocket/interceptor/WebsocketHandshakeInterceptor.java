@@ -47,7 +47,7 @@ public class WebsocketHandshakeInterceptor implements HandshakeInterceptor {
             attributes.put("username", username);
             Long userId = jwtUtil.getUserId(token);
             attributes.put("userId", String.valueOf(userId));
-
+            attributes.put("changeRoomToGame", "false");
             return true;
         }
 
