@@ -20,11 +20,11 @@ public class Avatar {
 
     public Avatar() {
         this.eyeItemId = 1L;
-        this.eyeImage = BASE_URL + "/eye/eye1" + PNG;
+        this.eyeImage = BASE_URL + "eye/eye1" + PNG;
         this.mouseItemId = 11L;
-        this.mouseImage = BASE_URL + "/mouse/mouse1" + PNG;
+        this.mouseImage = BASE_URL + "mouse/mouse1" + PNG;
         this.skinItemId = 21L;
-        this.skinImage = BASE_URL + "/skin/skin1" + PNG;
+        this.skinImage = BASE_URL + "skin/skin1" + PNG;
         this.nicknameItemId = 31L;
         this.nicknameColor = "#000000";
     }
