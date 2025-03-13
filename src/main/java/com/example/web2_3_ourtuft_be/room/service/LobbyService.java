@@ -170,6 +170,10 @@ public class LobbyService {
     public RoomDetailResponseDto getRoomDetail(Long roomId, String password) {
         Room room = findByRoomId(roomId);
 
+        if (room.isGameRunning()) {
+            throw new InvalidValueException(BadRequestMessages.PLAYING_GAME_ROOM);
+        }
+
         if (room.isDisclosure()) { // 공개방
             if (password != null && !password.isEmpty()) {
                 throw new InvalidValueException(BadRequestMessages.ROOM_PASSWORD_DISCLOSURE);

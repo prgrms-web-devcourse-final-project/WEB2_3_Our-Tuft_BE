@@ -27,12 +27,21 @@ public class Profile {
     }
 
     public Profile updateIntroAndAvatar(
-            String introduction, Long eye, Long mouse, Long skin, Long nickname) {
+            String introduction,
+            Long eye,
+            String eyeImage,
+            Long mouse,
+            String mouseImage,
+            Long skin,
+            String skinImage,
+            Long nickname,
+            String color) {
         if (introduction != null) {
             validIntroduction(introduction);
             this.introduction = introduction;
         }
-        this.avatar = avatar.update(eye, mouse, skin, nickname);
+        this.avatar =
+                avatar.update(eye, eyeImage, mouse, mouseImage, skin, skinImage, nickname, color);
         return this;
     }
 
@@ -40,16 +49,32 @@ public class Profile {
         return avatar.getEyeItemId();
     }
 
+    public String getEyeImage() {
+        return avatar.getEyeImage();
+    }
+
     public Long getMouseItemId() {
         return avatar.getMouseItemId();
+    }
+
+    public String getMouseImage() {
+        return avatar.getMouseImage();
     }
 
     public Long getSkinItemId() {
         return avatar.getSkinItemId();
     }
 
+    public String getSkinImage() {
+        return avatar.getSkinImage();
+    }
+
     public Long getNicknameItemId() {
         return avatar.getNicknameItemId();
+    }
+
+    public String getNicknameColor() {
+        return avatar.getNicknameColor();
     }
 
     public String getNickname() {

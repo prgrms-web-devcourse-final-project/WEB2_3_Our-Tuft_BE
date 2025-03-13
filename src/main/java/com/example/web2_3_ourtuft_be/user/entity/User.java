@@ -48,13 +48,46 @@ public class User extends BaseTime {
     }
 
     public void updateProfile(
-            String introduction, Long eyeId, Long mouseId, Long skinId, Long nicknameId) {
+            String introduction,
+            Long eyeId,
+            String eyeImage,
+            Long mouseId,
+            String mouseImage,
+            Long skinId,
+            String skinImage,
+            Long nicknameId,
+            String nickColor) {
         this.profile =
-                profile.updateIntroAndAvatar(introduction, eyeId, mouseId, skinId, nicknameId);
+                profile.updateIntroAndAvatar(
+                        introduction,
+                        eyeId,
+                        eyeImage,
+                        mouseId,
+                        mouseImage,
+                        skinId,
+                        skinImage,
+                        nicknameId,
+                        nickColor);
     }
 
     public void createProfile(Profile profile) {
         this.profile = profile;
+    }
+
+    public String getEyeImage() {
+        return profile.getEyeImage();
+    }
+
+    public String getSkinImage() {
+        return profile.getSkinImage();
+    }
+
+    public String getMouseImage() {
+        return profile.getMouseImage();
+    }
+
+    public String getNickNameColor() {
+        return profile.getNicknameColor();
     }
 
     public static User to(Long id, String name, String role) {
