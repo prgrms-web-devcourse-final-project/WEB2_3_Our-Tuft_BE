@@ -30,7 +30,7 @@ public class CustomOAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         String accessToken =
                 jwtUtil.createJwt(
-                        "access", user.getId(), user.getNickname(), user.getRole(), 900000L);
+                        "access", user.getId(), user.getNickname(), user.getRole(), 86400000L);
         String refreshToken =
                 jwtUtil.createJwt(
                         "refresh", user.getId(), user.getNickname(), user.getRole(), 86400000L);
