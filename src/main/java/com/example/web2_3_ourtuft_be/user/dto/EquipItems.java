@@ -17,15 +17,31 @@ public class EquipItems {
         return eye.getItemId();
     }
 
+    public String getEyeUrl() {
+        return eye.getImageUrl();
+    }
+
     public Long getMouseItemId() {
         return mouse.getItemId();
+    }
+
+    public String getMouseUrl() {
+        return mouse.getImageUrl();
     }
 
     public Long getSkinItemId() {
         return skin.getItemId();
     }
 
+    public String getSkinUrl() {
+        return skin.getImageUrl();
+    }
+
     public Long getNameItemId() {
         return name.getItemId();
+    }
+
+    public String getNameColor() {
+        return name.getValue();
     }
 }

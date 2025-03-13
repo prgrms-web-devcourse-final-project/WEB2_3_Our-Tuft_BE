@@ -24,9 +24,13 @@ public class MemberProfileService {
         user.updateProfile(
                 introduction,
                 equipItems.getEyeItemId(),
+                equipItems.getEyeUrl(),
                 equipItems.getMouseItemId(),
+                equipItems.getMouseUrl(),
                 equipItems.getSkinItemId(),
-                equipItems.getNameItemId());
+                equipItems.getSkinUrl(),
+                equipItems.getNameItemId(),
+                equipItems.getNameColor());
     }
 
     @Transactional
@@ -46,8 +50,7 @@ public class MemberProfileService {
     }
 
     public void createProfile(User user) {
-        Profile profile =
-                new Profile(user.getProvider() + DEMETER + user.getName() + DEMETER + user.getId());
+        Profile profile = new Profile(user.getName() + DEMETER + user.getId());
         user.createProfile(profile);
     }
 }
