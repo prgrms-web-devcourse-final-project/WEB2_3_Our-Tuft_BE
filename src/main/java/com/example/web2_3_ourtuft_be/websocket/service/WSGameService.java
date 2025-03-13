@@ -41,6 +41,7 @@ public class WSGameService {
     public void startGame(SimpMessageHeaderAccessor headerAccessor, String roomId) {
         int totalRound = Integer.parseInt(getTotalRound(roomId));
         int timeLimit = Integer.parseInt(getTimeLimit(roomId));
+        webSocketService.changeSessionFlag(headerAccessor);
 
         roomQuizService.setQuiz(roomId, totalRound);
 
@@ -219,7 +220,6 @@ public class WSGameService {
 
     public void endGame(SimpMessageHeaderAccessor headerAccessor, String roomId, String winnerId) {
         endSchedule(roomId);
-        webSocketService.changeSessionFlag(headerAccessor);
         createNewRoom(roomId, winnerId);
         deleteGameInfo(roomId);
     }
@@ -281,7 +281,7 @@ public class WSGameService {
     }
 
     private void deleteGame(String roomId) {
-        redisTemplate.delete(getPlayerInfoKey(roomId));
+//        redisTemplate.delete(getPlayerInfoKey(roomId));
         redisTemplate.delete(getPlayerOrderKey(roomId));
     }
 
