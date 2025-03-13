@@ -2,7 +2,6 @@ package com.example.web2_3_ourtuft_be.websocket.service;
 
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
-import com.example.web2_3_ourtuft_be.redis.service.RoomSettingService;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import com.example.web2_3_ourtuft_be.websocket.event.EVENT;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +31,7 @@ public class WSRoomService {
                 lobbyService.changeRoomPlayingStatus(roomId);
             }
         }
+
         if (event.contains(EVENT.GAME_STARTED.getValue()))
             wsGameService.startGame(headerAccessor, roomId);
         if (event.contains(EVENT.GAME_END.getValue())) {
@@ -117,12 +117,12 @@ public class WSRoomService {
             isHost = lobbyService.isHost(Long.valueOf(roomId), Long.valueOf(userId));
         }
 
-        int remaining = participantService.getPlayersInRoom(roomId).size();
-
         removePlayerFromRoom(roomId, userId);
 
+        int remaining = participantService.getPlayersInRoom(roomId).size();
+
         if (!isLobby) {
-            if (remaining == 1) {
+            if (remaining == 0) {
                 lobbyService.deleteRoom(Long.valueOf(roomId));
                 return;
             }

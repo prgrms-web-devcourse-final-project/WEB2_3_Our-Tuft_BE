@@ -7,6 +7,8 @@ import com.example.web2_3_ourtuft_be.redis.service.RoomStatusService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
+import com.example.web2_3_ourtuft_be.user.entity.User;
+import com.example.web2_3_ourtuft_be.user.service.UserService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +32,7 @@ public class WSGameService {
     private final ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
     private final Map<String, ScheduledFuture<?>> gameSchedulers = new HashMap<>();
     private final LobbyService lobbyService;
+    private final UserService userService;
 
     public void gameSetting(String roomId, SimpMessageHeaderAccessor headerAccessor) {
         roomStatusService.setGameStatus(Long.valueOf(roomId), "RUNNING");
@@ -160,7 +163,7 @@ public class WSGameService {
     }
 
     public void sendQuiz(SimpMessageHeaderAccessor headerAccessor, String roomId, int totalRound) {
-//        String userId = webSocketService.getUserIdFromSession(headerAccessor);
+        //        String userId = webSocketService.getUserIdFromSession(headerAccessor);
         setPlayerCorrectFlag(roomId);
 
         int currentRound = roomStatusService.getCurrentRound(Long.valueOf(roomId));
@@ -281,7 +284,7 @@ public class WSGameService {
     }
 
     private void deleteGame(String roomId) {
-//        redisTemplate.delete(getPlayerInfoKey(roomId));
+        //        redisTemplate.delete(getPlayerInfoKey(roomId));
         redisTemplate.delete(getPlayerOrderKey(roomId));
     }
 
@@ -344,6 +347,8 @@ public class WSGameService {
     private void addPlayerToGame(String roomId, String userId, String username) {
         String participantOrderKey = getPlayerOrderKey(roomId);
         String participantInfoKey = getPlayerInfoKey(roomId);
+
+        User user = userService.getUser(Long.parseLong(userId));
 
         redisTemplate
                 .opsForZSet()

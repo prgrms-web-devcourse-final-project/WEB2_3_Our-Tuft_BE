@@ -51,14 +51,26 @@ public class RoomResponseDto {
         }
     }
 
-    public record GetPlayersInRoom(Long hostId, List<GetPlayerInRoom> dto) {
-        public static GetPlayersInRoom of(Long hostId, List<GetPlayerInRoom> dto) {
-            return new GetPlayersInRoom(hostId, dto);
+    public record GetPlayersInRoom(Long hostId, Integer currentPlayers, List<GetPlayerInRoom> dto) {
+        public static GetPlayersInRoom of(Long hostId, Integer currentPlayers, List<GetPlayerInRoom> dto) {
+            return new GetPlayersInRoom(hostId, currentPlayers, dto);
         }
     }
 
-    public record GetPlayerInGame(String userId, String username, String eye, String mouth, String skin, String nickColor) {
-        public static GetPlayerInGame of(String userId, String username, String eye, String mouth, String skin, String nickColor) {
+    public record GetPlayerInGame(
+            String userId,
+            String username,
+            String eye,
+            String mouth,
+            String skin,
+            String nickColor) {
+        public static GetPlayerInGame of(
+                String userId,
+                String username,
+                String eye,
+                String mouth,
+                String skin,
+                String nickColor) {
             return new GetPlayerInGame(userId, username, eye, mouth, skin, nickColor);
         }
     }
