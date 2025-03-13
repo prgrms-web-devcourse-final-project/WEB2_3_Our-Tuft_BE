@@ -26,27 +26,30 @@ public class ItemInitializer implements CommandLineRunner {
         for (int i = 0; i < 3; i++) {
             Category category = Category.values()[i];
 
-            if (itemRepository.countByCategory(category.name()) <= 1) {
+            if (itemRepository.countByCategory(category.name()) < 1) {
                 saveItems(createCategoryItems(category));
             }
         }
-        createNickItem();
+
+        if (itemRepository.countByCategory(Category.NICKNAME.name()) < 1) {
+            createNickItem();
+        }
     }
 
     private void createNickItem() {
 
-        Map<String, String> colorNames =
-                Map.of(
-                        "#000000", "Black",
-                        "#B91C1C", "Red",
-                        "#166534", "Green",
-                        "#7E22CE", "Purple",
-                        "#4338CA", "Blue",
-                        "#ED4D0E", "Orange",
-                        "#F761A0", "Pink",
-                        "#DDDD05", "Yellow");
+        List<Map.Entry<String, String>> colorNames =
+                List.of(
+                        Map.entry("#000000", "Black"),
+                        Map.entry("#B91C1C", "Red"),
+                        Map.entry("#166534", "Green"),
+                        Map.entry("#7E22CE", "Purple"),
+                        Map.entry("#4338CA", "Blue"),
+                        Map.entry("#ED4D0E", "Orange"),
+                        Map.entry("#F761A0", "Pink"),
+                        Map.entry("#DDDD05", "Yellow"));
 
-        for (Map.Entry<String, String> entry : colorNames.entrySet()) {
+        for (Map.Entry<String, String> entry : colorNames) {
             Item item =
                     Item.builder()
                             .name(entry.getValue())
