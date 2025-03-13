@@ -8,6 +8,8 @@ import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
+import com.example.web2_3_ourtuft_be.user.entity.User;
+import com.example.web2_3_ourtuft_be.user.service.UserService;
 import com.example.web2_3_ourtuft_be.websocket.service.WSGameService;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,7 @@ public class RoomService {
     private final LobbyService lobbyService;
     private final WSGameService wsGameService;
     private final RedisTemplate<String, String> redisTemplate;
+    private final UserService userService;
 
     public QuizSetType getGameTypeByRoomId(Long roomId) {
         return roomRepository
@@ -56,8 +59,9 @@ public class RoomService {
         for (Map.Entry<Object, Object> entry : entries.entrySet()) {
             String userId = entry.getKey().toString();
             String username = (String) entry.getValue();
+            User user = userService.getUser(Long.parseLong(userId));
 
-            players.add(RoomResponseDto.GetPlayerInGame.of(userId, username));
+            players.add(RoomResponseDto.GetPlayerInGame.of(userId, username, user.getEyeImage(), user.getMouseImage(), user.getSkinImage(), user.getNickNameColor()));
         }
 
         return players;

@@ -40,6 +40,9 @@ public class RoomSettingService {
         redisTemplate
                 .opsForHash()
                 .put(roomSettingsKey, "timelimit", String.valueOf(roomRequestDto.getTime()));
+        redisTemplate
+                .opsForHash()
+                .put(roomSettingsKey, "gameType", String.valueOf(roomRequestDto.getGameType()));
     }
 
     public RoomRequestDto getRoomSettingsFromRedis(String roomId) {
@@ -48,12 +51,16 @@ public class RoomSettingService {
         // Redis에서 방 설정을 가져옵니다.
         Map<Object, Object> settingsMap = redisTemplate.opsForHash().entries(roomSettingsKey);
 
+        QuizSetType setType = QuizSetType.SPEED;
+        if(settingsMap.get("gameType").equals("OX")) setType = QuizSetType.OX;
+        if(settingsMap.get("gameType").equals("CATCHMIND")) setType = QuizSetType.CATCHMIND;
+
         return new RoomRequestDto(
                 (String) settingsMap.get("title"),
                 Boolean.parseBoolean((String) settingsMap.get("disclosure")),
                 (String) settingsMap.get("password"),
                 Integer.parseInt((String) settingsMap.get("rounds")),
-                QuizSetType.SPEED,
+                setType,
                 Integer.parseInt((String) settingsMap.get("timelimit")),
                 8);
     }
