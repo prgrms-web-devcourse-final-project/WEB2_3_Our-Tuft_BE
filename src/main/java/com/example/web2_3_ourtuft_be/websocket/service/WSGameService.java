@@ -37,16 +37,19 @@ public class WSGameService {
     public void gameSetting(String roomId, SimpMessageHeaderAccessor headerAccessor) {
         roomStatusService.setGameStatus(Long.valueOf(roomId), "RUNNING");
         roomStatusService.setCurrentRound(Long.valueOf(roomId), 0);
+
         initializePlayerScores(roomId);
         setPlayerCorrectFlag(roomId);
+
     }
 
     public void startGame(SimpMessageHeaderAccessor headerAccessor, String roomId) {
         int totalRound = Integer.parseInt(getTotalRound(roomId));
         int timeLimit = Integer.parseInt(getTimeLimit(roomId));
-        webSocketService.changeSessionFlag(headerAccessor);
 
         roomQuizService.setQuiz(roomId, totalRound);
+        lobbyService.changeRoomPlayingStatus(roomId);
+
 
         // FixedDelay
         scheduledQuizWithFixedDelay(headerAccessor, roomId, totalRound, timeLimit);

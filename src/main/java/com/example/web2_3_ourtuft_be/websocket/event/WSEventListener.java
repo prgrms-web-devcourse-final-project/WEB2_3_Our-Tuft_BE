@@ -94,4 +94,5 @@ public class WSEventListener {
 
         return parts[parts.length - 1];
     }
+
 }
