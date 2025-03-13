@@ -1,8 +1,6 @@
 package com.example.web2_3_ourtuft_be.room.service;
 
-import com.example.web2_3_ourtuft_be.global.exception.exceptions.InvalidRequestException;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundException;
-import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
@@ -15,6 +13,7 @@ import com.example.web2_3_ourtuft_be.websocket.service.WSGameService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -24,12 +23,10 @@ import org.springframework.stereotype.Service;
 public class RoomService {
 
     private final RoomRepository roomRepository;
-    private final LobbyService lobbyService;
     private final WSGameService wsGameService;
     private final RedisTemplate<String, String> redisTemplate;
     private final UserService userService;
     private final ParticipantService participantService;
-
 
     public QuizSetType getGameTypeByRoomId(Long roomId) {
         return roomRepository
@@ -38,19 +35,18 @@ public class RoomService {
                 .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
     }
 
-    public int getRoundByRoomId(Long roomId) {
-        Room room = lobbyService.findByRoomId(roomId);
+    public List<RoomResponseDto> getAllRooms() {
+        List<Room> rooms = roomRepository.findAll();
 
-        return room.getRound();
-    }
+        return rooms.stream()
+                .map(
+                        room -> {
+                            Long roomId = room.getId();
+                            Integer currentPlayer = getCurrentPlayer(String.valueOf(roomId));
 
-    public Long getHostIdByRoomId(String roomId) {
-        if ("lobby".equals(roomId))
-            throw new InvalidRequestException(InvalidRequestMessages.INVALID_ROOM_ID);
-
-        Room room = lobbyService.findByRoomId(Long.valueOf(roomId));
-
-        return room.getHostId();
+                            return new RoomResponseDto(room, currentPlayer);
+                        })
+                .collect(Collectors.toList());
     }
 
     public Integer getCurrentPlayer(String roomId) {
@@ -70,8 +66,14 @@ public class RoomService {
             String username = (String) entry.getValue();
             User user = userService.getUser(Long.parseLong(userId));
 
-
-            players.add(RoomResponseDto.GetPlayerInGame.of(userId, username, user.getEyeImage(), user.getMouseImage(), user.getSkinImage(), user.getNickNameColor()));
+            players.add(
+                    RoomResponseDto.GetPlayerInGame.of(
+                            userId,
+                            username,
+                            user.getEyeImage(),
+                            user.getMouseImage(),
+                            user.getSkinImage(),
+                            user.getNickNameColor()));
         }
 
         return players;

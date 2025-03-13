@@ -6,6 +6,7 @@ import com.example.web2_3_ourtuft_be.room.dto.RoomDetailResponseDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomRequestDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
+import com.example.web2_3_ourtuft_be.room.service.RoomService;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,6 +29,7 @@ public class LobbyController {
     private final LobbyService lobbyService;
 
     private final RoomQuizService roomQuizService;
+    private final RoomService roomService;
 
     @Operation(summary = "방 전체 조회 API", description = "로비에서 생성된 방을 조회합니다.")
     @ApiResponses({
@@ -36,7 +38,7 @@ public class LobbyController {
     })
     @GetMapping("/rooms")
     public ResponseEntity<GlobalResponse<List<RoomResponseDto>>> viewAllRooms() {
-        List<RoomResponseDto> responseList = lobbyService.getAllRooms();
+        List<RoomResponseDto> responseList = roomService.getAllRooms();
         return ResponseEntity.ok(GlobalResponse.success(responseList));
     }
 

@@ -8,6 +8,7 @@ import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
 import com.example.web2_3_ourtuft_be.room.service.LobbyService;
+import com.example.web2_3_ourtuft_be.room.service.RoomService;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,7 @@ public class LobbyServiceTest {
     @Autowired private LobbyService lobbyService;
 
     private Room testRoom;
+    @Autowired private RoomService roomService;
 
     @BeforeEach
     void setUp() {
@@ -50,7 +52,7 @@ public class LobbyServiceTest {
     @DisplayName("전체 방 조회")
     void testGetAllRoom() {
 
-        List<RoomResponseDto> result = lobbyService.getAllRooms();
+        List<RoomResponseDto> result = roomService.getAllRooms();
 
         assertEquals(4, result.size());
     }

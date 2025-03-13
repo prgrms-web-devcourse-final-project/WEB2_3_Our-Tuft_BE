@@ -38,12 +38,6 @@ public class LobbyService {
     private final RoomSettingService roomSettingService;
     private final WebSocketService webSocketService;
 
-    public List<RoomResponseDto> getAllRooms() {
-        List<Room> rooms = roomRepository.findAll();
-
-        return rooms.stream().map(RoomResponseDto::new).collect(Collectors.toList());
-    }
-
     @Transactional
     public void changeRoomPlayingStatus(String roomId) {
         Room room = findByRoomId(Long.valueOf(roomId));
@@ -153,6 +147,15 @@ public class LobbyService {
         return roomRepository
                 .findById(roomId)
                 .orElseThrow(() -> new NotFoundException(NotFoundMessages.ROOM_ID));
+    }
+
+    public Long getHostIdByRoomId(String roomId) {
+        if ("lobby".equals(roomId))
+            throw new InvalidRequestException(InvalidRequestMessages.INVALID_ROOM_ID);
+
+        Room room = findByRoomId(Long.valueOf(roomId));
+
+        return room.getHostId();
     }
 
     public void deleteRoom(Long roomId) {
