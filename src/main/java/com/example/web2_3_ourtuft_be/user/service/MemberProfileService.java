@@ -3,7 +3,6 @@ package com.example.web2_3_ourtuft_be.user.service;
 import com.example.web2_3_ourtuft_be.global.exception.exceptions.DuplicatedException;
 import com.example.web2_3_ourtuft_be.global.exception.messages.DuplicatedMessages;
 import com.example.web2_3_ourtuft_be.user.dto.EquipItems;
-import com.example.web2_3_ourtuft_be.user.dto.NickNameResponseDto;
 import com.example.web2_3_ourtuft_be.user.entity.User;
 import com.example.web2_3_ourtuft_be.user.model.Profile;
 import com.example.web2_3_ourtuft_be.user.repository.UserRepository;
@@ -34,11 +33,11 @@ public class MemberProfileService {
     }
 
     @Transactional
-    public NickNameResponseDto changeNickname(User user, String nickname) {
+    public String changeNickname(User user, String nickname) {
         duplicateNickname(nickname);
         user.changeNickname(nickname);
 
-        return new NickNameResponseDto(user.getNickname());
+        return user.getNickname();
     }
 
     public void duplicateNickname(String nickname) {

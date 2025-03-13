@@ -7,6 +7,7 @@ import com.example.web2_3_ourtuft_be.global.exception.exceptions.DuplicatedExcep
 import com.example.web2_3_ourtuft_be.global.exception.messages.DuplicatedMessages;
 import com.example.web2_3_ourtuft_be.item.dto.ItemResponse;
 import com.example.web2_3_ourtuft_be.item.service.ItemService;
+import com.example.web2_3_ourtuft_be.security.util.JwtUtil;
 import com.example.web2_3_ourtuft_be.user.dto.*;
 import com.example.web2_3_ourtuft_be.user.entity.*;
 import com.example.web2_3_ourtuft_be.user.entity.enums.PointChangeReason;
@@ -31,6 +32,7 @@ public class UserFacadeService {
     private final MemberPointService pointService;
     private final WishlistItemService wishlistItemService;
     private final InventoryService inventoryService;
+    private final JwtUtil jwtUtil;
 
     @Transactional(readOnly = true)
     public UserInfoResponseDto getUserInfo(Long userId) {
@@ -95,7 +97,13 @@ public class UserFacadeService {
     @Transactional
     public NickNameResponseDto changeNickName(Long userId, NickNameRequestDto request) {
         User user = userService.getUser(userId);
-        return profileService.changeNickname(user, request.getNickName());
+        String nickname = profileService.changeNickname(user, request.getNickName());
+
+        String accessToken =
+                jwtUtil.createJwt(
+                        "access", user.getId(), user.getNickname(), user.getRole(), 86400000L);
+
+        return new NickNameResponseDto(nickname, accessToken);
     }
 
     @Transactional
