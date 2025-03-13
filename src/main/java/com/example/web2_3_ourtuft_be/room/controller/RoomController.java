@@ -4,6 +4,7 @@ import com.example.web2_3_ourtuft_be.global.response.GlobalResponse;
 import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.redis.service.RoomQuizService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
+import com.example.web2_3_ourtuft_be.room.service.LobbyService;
 import com.example.web2_3_ourtuft_be.room.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +24,7 @@ public class RoomController {
     private final RoomService roomService;
     private final ParticipantService participantService;
     private final RoomQuizService roomQuizService;
+    private final LobbyService lobbyService;
 
     @Operation(summary = "방 참가자 목록 조회", description = "현재 방의 참가자 목록을 조회합니다.")
     @GetMapping("/{roomId}/players")
@@ -31,7 +33,7 @@ public class RoomController {
         return ResponseEntity.ok(
                 GlobalResponse.success(
                         RoomResponseDto.GetPlayersInRoom.of(
-                                roomService.getHostIdByRoomId(roomId),
+                                lobbyService.getHostIdByRoomId(roomId),
                                 roomService.getCurrentPlayer(roomId),
                                 participantService.getPlayersInRoom(roomId))));
     }

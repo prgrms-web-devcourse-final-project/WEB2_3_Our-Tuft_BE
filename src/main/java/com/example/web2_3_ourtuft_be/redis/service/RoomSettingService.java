@@ -52,8 +52,8 @@ public class RoomSettingService {
 
         QuizSetType setType = QuizSetType.SPEED;
 
-        if(settingsMap.get("gameType").equals("OX")) setType = QuizSetType.OX;
-        if(settingsMap.get("gameType").equals("CATCHMIND")) setType = QuizSetType.CATCHMIND;
+        if (settingsMap.get("gameType").equals("OX")) setType = QuizSetType.OX;
+        if (settingsMap.get("gameType").equals("CATCHMIND")) setType = QuizSetType.CATCHMIND;
 
         return new RoomRequestDto(
                 (String) settingsMap.get("title"),

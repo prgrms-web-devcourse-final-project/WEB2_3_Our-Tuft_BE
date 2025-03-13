@@ -284,7 +284,7 @@ public class WSGameService {
     }
 
     private void deleteGame(String roomId) {
-//        redisTemplate.delete(getPlayerInfoKey(roomId));
+        //        redisTemplate.delete(getPlayerInfoKey(roomId));
 
         redisTemplate.delete(getPlayerOrderKey(roomId));
     }

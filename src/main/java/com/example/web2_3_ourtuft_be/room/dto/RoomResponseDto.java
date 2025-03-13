@@ -18,6 +18,20 @@ public class RoomResponseDto {
     private final int time;
     private final int maxUsers;
     private final boolean isGameRunning;
+    private final int currentPlayer;
+
+    public RoomResponseDto(Room room, int currentPlayer) {
+        this.roomId = room.getId();
+        this.roomName = room.getRoomName();
+        this.round = room.getRound();
+        this.hostId = room.getHostId();
+        this.disclosure = room.isDisclosure();
+        this.gameType = room.getGameType();
+        this.time = room.getTime();
+        this.maxUsers = room.getMaxUsers();
+        this.isGameRunning = room.isGameRunning();
+        this.currentPlayer = currentPlayer;
+    }
 
     public RoomResponseDto(Room room) {
         this.roomId = room.getId();
@@ -29,6 +43,7 @@ public class RoomResponseDto {
         this.time = room.getTime();
         this.maxUsers = room.getMaxUsers();
         this.isGameRunning = room.isGameRunning();
+        currentPlayer = 0;
     }
 
     public record GetPlayerInRoom(
@@ -52,13 +67,26 @@ public class RoomResponseDto {
     }
 
     public record GetPlayersInRoom(Long hostId, Integer currentPlayers, List<GetPlayerInRoom> dto) {
-        public static GetPlayersInRoom of(Long hostId, Integer currentPlayers, List<GetPlayerInRoom> dto) {
+        public static GetPlayersInRoom of(
+                Long hostId, Integer currentPlayers, List<GetPlayerInRoom> dto) {
             return new GetPlayersInRoom(hostId, currentPlayers, dto);
         }
     }
 
-    public record GetPlayerInGame(String userId, String username, String eye, String mouth, String skin, String nickColor) {
-        public static GetPlayerInGame of(String userId, String username, String eye, String mouth, String skin, String nickColor) {
+    public record GetPlayerInGame(
+            String userId,
+            String username,
+            String eye,
+            String mouth,
+            String skin,
+            String nickColor) {
+        public static GetPlayerInGame of(
+                String userId,
+                String username,
+                String eye,
+                String mouth,
+                String skin,
+                String nickColor) {
             return new GetPlayerInGame(userId, username, eye, mouth, skin, nickColor);
         }
     }
