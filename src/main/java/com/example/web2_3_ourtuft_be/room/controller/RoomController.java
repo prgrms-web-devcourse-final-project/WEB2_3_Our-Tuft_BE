@@ -32,6 +32,7 @@ public class RoomController {
                 GlobalResponse.success(
                         RoomResponseDto.GetPlayersInRoom.of(
                                 roomService.getHostIdByRoomId(roomId),
+                                roomService.getCurrentPlayer(roomId),
                                 participantService.getPlayersInRoom(roomId))));
     }
 

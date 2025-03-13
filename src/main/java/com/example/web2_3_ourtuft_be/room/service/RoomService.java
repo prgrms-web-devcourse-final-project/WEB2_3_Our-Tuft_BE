@@ -5,6 +5,7 @@ import com.example.web2_3_ourtuft_be.global.exception.exceptions.NotFoundExcepti
 import com.example.web2_3_ourtuft_be.global.exception.messages.InvalidRequestMessages;
 import com.example.web2_3_ourtuft_be.global.exception.messages.NotFoundMessages;
 import com.example.web2_3_ourtuft_be.quiz.entity.enums.QuizSetType;
+import com.example.web2_3_ourtuft_be.redis.service.ParticipantService;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
 import com.example.web2_3_ourtuft_be.room.entity.Room;
 import com.example.web2_3_ourtuft_be.room.repository.RoomRepository;
@@ -27,6 +28,8 @@ public class RoomService {
     private final WSGameService wsGameService;
     private final RedisTemplate<String, String> redisTemplate;
     private final UserService userService;
+    private final ParticipantService participantService;
+
 
     public QuizSetType getGameTypeByRoomId(Long roomId) {
         return roomRepository
@@ -50,6 +53,12 @@ public class RoomService {
         return room.getHostId();
     }
 
+    public Integer getCurrentPlayer(String roomId) {
+        String key = participantService.getParticipantsOrderKey(roomId);
+
+        return Math.toIntExact(redisTemplate.opsForZSet().size(key));
+    }
+
     public List<RoomResponseDto.GetPlayerInGame> getPlayersInGame(String roomId) {
         String key = wsGameService.getPlayerInfoKey(roomId);
 
@@ -60,6 +69,7 @@ public class RoomService {
             String userId = entry.getKey().toString();
             String username = (String) entry.getValue();
             User user = userService.getUser(Long.parseLong(userId));
+
 
             players.add(RoomResponseDto.GetPlayerInGame.of(userId, username, user.getEyeImage(), user.getMouseImage(), user.getSkinImage(), user.getNickNameColor()));
         }

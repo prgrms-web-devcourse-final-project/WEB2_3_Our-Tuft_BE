@@ -51,9 +51,9 @@ public class RoomResponseDto {
         }
     }
 
-    public record GetPlayersInRoom(Long hostId, List<GetPlayerInRoom> dto) {
-        public static GetPlayersInRoom of(Long hostId, List<GetPlayerInRoom> dto) {
-            return new GetPlayersInRoom(hostId, dto);
+    public record GetPlayersInRoom(Long hostId, Integer currentPlayers, List<GetPlayerInRoom> dto) {
+        public static GetPlayersInRoom of(Long hostId, Integer currentPlayers, List<GetPlayerInRoom> dto) {
+            return new GetPlayersInRoom(hostId, currentPlayers, dto);
         }
     }
 
