@@ -2,6 +2,8 @@ package com.example.web2_3_ourtuft_be.redis.service;
 
 import com.example.web2_3_ourtuft_be.redis.dto.ParticipantDto;
 import com.example.web2_3_ourtuft_be.room.dto.RoomResponseDto;
+import com.example.web2_3_ourtuft_be.user.entity.User;
+import com.example.web2_3_ourtuft_be.user.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class ParticipantService {
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final UserService userService;
 
     // 타임스탬프로 입장순서를 관리
     public String getParticipantsOrderKey(String roomId) {
@@ -136,7 +139,16 @@ public class ParticipantService {
                             String isReady =
                                     (String) redisTemplate.opsForHash().get(readyStatusKey, userId);
 
-                            return RoomResponseDto.GetPlayerInRoom.of(userId, username, isReady);
+                            User user = userService.getUser(Long.parseLong(userId));
+
+                            return RoomResponseDto.GetPlayerInRoom.of(
+                                    userId,
+                                    username,
+                                    isReady,
+                                    user.getEyeImage(),
+                                    user.getMouseImage(),
+                                    user.getSkinImage(),
+                                    user.getNickNameColor());
                         })
                 .collect(Collectors.toList());
     }
