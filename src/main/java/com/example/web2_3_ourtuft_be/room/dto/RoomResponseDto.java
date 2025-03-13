@@ -57,20 +57,8 @@ public class RoomResponseDto {
         }
     }
 
-    public record GetPlayerInGame(
-            String userId,
-            String username,
-            String eye,
-            String mouth,
-            String skin,
-            String nickColor) {
-        public static GetPlayerInGame of(
-                String userId,
-                String username,
-                String eye,
-                String mouth,
-                String skin,
-                String nickColor) {
+    public record GetPlayerInGame(String userId, String username, String eye, String mouth, String skin, String nickColor) {
+        public static GetPlayerInGame of(String userId, String username, String eye, String mouth, String skin, String nickColor) {
             return new GetPlayerInGame(userId, username, eye, mouth, skin, nickColor);
         }
     }

@@ -30,6 +30,7 @@ public class RoomService {
     private final UserService userService;
     private final ParticipantService participantService;
 
+
     public QuizSetType getGameTypeByRoomId(Long roomId) {
         return roomRepository
                 .findById(roomId)
@@ -69,14 +70,8 @@ public class RoomService {
             String username = (String) entry.getValue();
             User user = userService.getUser(Long.parseLong(userId));
 
-            players.add(
-                    RoomResponseDto.GetPlayerInGame.of(
-                            userId,
-                            username,
-                            user.getEyeImage(),
-                            user.getMouseImage(),
-                            user.getSkinImage(),
-                            user.getNickNameColor()));
+
+            players.add(RoomResponseDto.GetPlayerInGame.of(userId, username, user.getEyeImage(), user.getMouseImage(), user.getSkinImage(), user.getNickNameColor()));
         }
 
         return players;
