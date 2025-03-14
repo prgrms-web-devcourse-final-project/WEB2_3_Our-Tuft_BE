@@ -32,6 +32,7 @@ public class WSEventListener {
         if (currentRoomId != null) {
             wsRoomService.removePlayer(currentRoomId, userId, username);
             sessionAttributes.remove("roomId");
+
             log.info(
                     "roomId: {}, userId: {}, username: {} disconnected",
                     currentRoomId,
