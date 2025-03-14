@@ -228,6 +228,7 @@ public class WSGameService {
         endSchedule(roomId);
         createNewRoom(roomId, winnerId);
         deleteGameInfo(roomId);
+        webSocketService.changeSessionFlagFalse(headerAccessor);
     }
 
     public void endSchedule(String roomId) {
