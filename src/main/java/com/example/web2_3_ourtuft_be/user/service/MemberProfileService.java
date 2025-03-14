@@ -34,6 +34,9 @@ public class MemberProfileService {
 
     @Transactional
     public String changeNickname(User user, String nickname) {
+        if (user.getNickname().equals(nickname)) {
+            return nickname;
+        }
         duplicateNickname(nickname);
         user.changeNickname(nickname);
 

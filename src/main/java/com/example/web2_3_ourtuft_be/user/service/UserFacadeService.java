@@ -101,7 +101,7 @@ public class UserFacadeService {
 
         String accessToken =
                 jwtUtil.createJwt(
-                        "access", user.getId(), user.getNickname(), user.getRole(), 86400000L);
+                        "access", user.getId(), user.getNickname(), user.getRole(), 3600000L);
 
         return new NickNameResponseDto(nickname, accessToken);
     }
