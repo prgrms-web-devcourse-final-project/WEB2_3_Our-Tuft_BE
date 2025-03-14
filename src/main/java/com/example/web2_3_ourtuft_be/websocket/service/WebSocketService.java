@@ -93,4 +93,10 @@ public class WebSocketService {
 
         session.put("changeRoomToGame", flag);
     }
+
+    public void changeSessionFlagFalse(SimpMessageHeaderAccessor headerAccessor) {
+        Map<String, Object> session = headerAccessor.getSessionAttributes();
+
+        session.put("changeRoomToGame", "false");
+    }
 }
