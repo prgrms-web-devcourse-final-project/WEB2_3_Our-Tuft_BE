@@ -23,7 +23,7 @@ public class WSGameController {
 
         wsGameService.gameSetting(roomId, headerAccessor);
         wsGameService.addPlayer(headerAccessor, roomId);
-        webSocketService.changeSessionFlag(headerAccessor);
+        webSocketService.changeSessionFlagFalse(headerAccessor);
     }
 
     @MessageMapping("/game/{roomId}/speed")
